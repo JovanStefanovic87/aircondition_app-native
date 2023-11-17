@@ -1,0 +1,13 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "src/assets/images/aussenluftkanal.png",
+      "sha1": "3ba571cdf9a3421a62c58590e35450992311bb33"
+    },
+    {
+      "path": "src/assets/selection.json",
+      "sha1": "e01c0ae9dbcdae684942bc6cea9edf5cef2e86f8"
+    }
+  ]
+}
