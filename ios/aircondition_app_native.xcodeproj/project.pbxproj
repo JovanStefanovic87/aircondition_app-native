@@ -14,8 +14,59 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		7699B88040F8A987B510C191 /* libPods-aircondition_app_native-aircondition_app_nativeTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-aircondition_app_native-aircondition_app_nativeTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		ED751746D6A1462D8B939E9F /* aussenluftkanal.png in Resources */ = {isa = PBXBuildFile; fileRef = D7AFAC5ABF90467FAFCDE114 /* aussenluftkanal.png */; };
-		FE40ED00870B4AF68F4517D9 /* selection.json in Resources */ = {isa = PBXBuildFile; fileRef = 16E193C852F2455EA616EBE2 /* selection.json */; };
+		41E3DCF8336D4FA9AD6E59DD /* app_icons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F684061D41D64B278B065996 /* app_icons.ttf */; };
+		C6BBA7BD69964B33989B4950 /* IcoMoon-Free.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 76B9E68404424C2EB4261048 /* IcoMoon-Free.ttf */; };
+		971D9BCD2D304A1484038CA8 /* Poppins-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BACDC4F0D1BB4CDFB8ED06BF /* Poppins-Black.ttf */; };
+		E420915EC02B441EB59A1070 /* Poppins-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2DB889BF393E4253B0026A6B /* Poppins-Bold.ttf */; };
+		B5CECF055FE044BE8FF4CC0B /* Poppins-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AFB6E03C233E45EF9CCE7E5E /* Poppins-ExtraBold.ttf */; };
+		0D4EB3FBD22C4998A511E209 /* Poppins-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6030692CA944424A91B49572 /* Poppins-ExtraLight.ttf */; };
+		7D2EE7A94E5F427E8459ADF6 /* Poppins-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D7D1C666E8C34726ADB6066C /* Poppins-Light.ttf */; };
+		A6565B2FDD744889939F6387 /* Poppins-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2E4EF582100542E18127695A /* Poppins-Medium.ttf */; };
+		6219BEE6EA214FB4A594E673 /* Poppins-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 230CBFE230104BD897D73F95 /* Poppins-Regular.ttf */; };
+		5A9D70F389994F799469DEB0 /* Poppins-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0930FEAA92DC4D7A91490373 /* Poppins-SemiBold.ttf */; };
+		3636E6FE906D49119110D32D /* Poppins-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1B81CC7ABA08463C81271511 /* Poppins-Thin.ttf */; };
+		9B684F7480514C33B6158F95 /* customStyles.ts in Resources */ = {isa = PBXBuildFile; fileRef = 41E2EF9C04EC496E84999D2A /* customStyles.ts */; };
+		71E21E31737B4A01BD2B3303 /* abluftanglage.png in Resources */ = {isa = PBXBuildFile; fileRef = 6CCE971C683D4BB59D4A318B /* abluftanglage.png */; };
+		1DFDFA94809940F99FB4872C /* abluftgitterdig.png in Resources */ = {isa = PBXBuildFile; fileRef = 55DD022C36824A84A770290F /* abluftgitterdig.png */; };
+		CBCBE53C355E490EAC104894 /* abluftkanaldig.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C58E9AB7EFD4C78A6E9CB3F /* abluftkanaldig.png */; };
+		F462A5C836C74EC3B186B691 /* abstellplatz.png in Resources */ = {isa = PBXBuildFile; fileRef = 41ECDDAE563349BC8274F3ED /* abstellplatz.png */; };
+		F8FFA034961A4398ADFB1BDC /* aussenluftansaugung.png in Resources */ = {isa = PBXBuildFile; fileRef = F86151F8DB51484787CE0B11 /* aussenluftansaugung.png */; };
+		C8A22284BD2848759288127F /* aussenluftkanal.png in Resources */ = {isa = PBXBuildFile; fileRef = 4122E7D2E8084C6CB3399FED /* aussenluftkanal.png */; };
+		ADA66A92F61E4C93B7FB8A62 /* becken.png in Resources */ = {isa = PBXBuildFile; fileRef = 4ECF132C03B94CCEB7680FBD /* becken.png */; };
+		66C71BC2A1244CCBBF78C691 /* befeuchter.png in Resources */ = {isa = PBXBuildFile; fileRef = B5BB1BE97B04481C91934033 /* befeuchter.png */; };
+		AC38A4BA6B74487E97063BA4 /* behandlungzso.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C407C0BDB5343A09312BED7 /* behandlungzso.png */; };
+		09C4703B514D47F7B1C4B7B3 /* berieselungd.png in Resources */ = {isa = PBXBuildFile; fileRef = 29DA6B89AF174ADF96D490CC /* berieselungd.png */; };
+		89A5629D17DD44DB890F6DC8 /* dampfbefeuch.png in Resources */ = {isa = PBXBuildFile; fileRef = B6B94181A12F4D178D082D1A /* dampfbefeuch.png */; };
+		A491548B60654CAA8632874E /* dummyelement.png in Resources */ = {isa = PBXBuildFile; fileRef = 66DE792C60D64CFFB13C668C /* dummyelement.png */; };
+		85D41B1F0EB049348DF6B898 /* entfeuchter.png in Resources */ = {isa = PBXBuildFile; fileRef = 25E8CC39DCCE4899AF045F15 /* entfeuchter.png */; };
+		DEE4F24836F140DBBB2304D3 /* erhitzer.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D86913AEC05464381867597 /* erhitzer.png */; };
+		D1EFC6A73BBE40F4BCEB15C3 /* filtercoarse.png in Resources */ = {isa = PBXBuildFile; fileRef = 664DC50ED492480081E96512 /* filtercoarse.png */; };
+		780A05C459E54D178B1A07F2 /* filterdigestori.png in Resources */ = {isa = PBXBuildFile; fileRef = D21B89E193424F098A89AAC6 /* filterdigestori.png */; };
+		639DE20FC49D4A28B8E08A23 /* filterepm10_50.png in Resources */ = {isa = PBXBuildFile; fileRef = C53D3FD17D194D4091256649 /* filterepm10_50.png */; };
+		F68EBFB1295847E1B5909280 /* filterepm1_50.png in Resources */ = {isa = PBXBuildFile; fileRef = B5887ADAFB4741C490F5C386 /* filterepm1_50.png */; };
+		39E65F7366CD44E2B106025C /* filterepm1_80.png in Resources */ = {isa = PBXBuildFile; fileRef = 0F3D4B228DF74A87B1A40926 /* filterepm1_80.png */; };
+		A17636714DDE4084A1910346 /* filtere_pm_2dot5_50.png in Resources */ = {isa = PBXBuildFile; fileRef = 5333215E473249CD9CC15221 /* filtere_pm_2dot5_50.png */; };
+		A847ED4693DA40108741B0D4 /* filter_f_7.png in Resources */ = {isa = PBXBuildFile; fileRef = 0DCB100E63CC4EF381D523D6 /* filter_f_7.png */; };
+		359F273ABD0748689727F04A /* filter_f_9.png in Resources */ = {isa = PBXBuildFile; fileRef = 33FC7A893DC74125A93A7491 /* filter_f_9.png */; };
+		9D76EB61B31240C197778BA4 /* filter_h_13.png in Resources */ = {isa = PBXBuildFile; fileRef = 66E9AAF8DD814DA68EF80591 /* filter_h_13.png */; };
+		1658CDA06851406BB0FF2A7A /* filter_m_5.png in Resources */ = {isa = PBXBuildFile; fileRef = F95B4BB198D748E3833F0F23 /* filter_m_5.png */; };
+		B30D4C4D785C4E9C9D650637 /* fullkorper.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C27B8C0153A440F94CED4DA /* fullkorper.png */; };
+		95707784D8E8413F914D9F37 /* gefahrstoffschran.png in Resources */ = {isa = PBXBuildFile; fileRef = 56714384CB6C48FEBE925C16 /* gefahrstoffschran.png */; };
+		90456F0D4F154F168F57887B /* jalousieklappe.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E4C99FD3F484A82960AC2B7 /* jalousieklappe.png */; };
+		74C58104D0974AA093E113B1 /* kreislaufverbu.png in Resources */ = {isa = PBXBuildFile; fileRef = 05FF6333F37D4FA89FB72EAF /* kreislaufverbu.png */; };
+		A51686B9551C4567810558AD /* kreuzwarmeta.png in Resources */ = {isa = PBXBuildFile; fileRef = CC8DECA2A43746CB8DA00FB0 /* kreuzwarmeta.png */; };
+		CA32E200E1B64EA6A9E21D84 /* kuhler.png in Resources */ = {isa = PBXBuildFile; fileRef = 6171D4FED8984E0CB15AE203 /* kuhler.png */; };
+		14C88CC34A0F45B3B95EBEF4 /* luftauslass.png in Resources */ = {isa = PBXBuildFile; fileRef = 48F6A2E015B64E4A8320EC34 /* luftauslass.png */; };
+		80E03C7D703D4591A7B40DDD /* mischluftklappe.png in Resources */ = {isa = PBXBuildFile; fileRef = 911F3C33908245419F24CFAF /* mischluftklappe.png */; };
+		458EFB8E97514DF487E9CC1C /* rotationswarm.png in Resources */ = {isa = PBXBuildFile; fileRef = F218B5EE377F4C61AB5249DA /* rotationswarm.png */; };
+		65927D15998A45E182D08D85 /* schalldampfer.png in Resources */ = {isa = PBXBuildFile; fileRef = 959A605F25AF41D983D80862 /* schalldampfer.png */; };
+		81500C580A6E4F1687D1404C /* splitgerat.png in Resources */ = {isa = PBXBuildFile; fileRef = A448F930442B48F7B95672A0 /* splitgerat.png */; };
+		935155CA07F046799A9320E5 /* tropfenabsche.png in Resources */ = {isa = PBXBuildFile; fileRef = 361742BBB80D4D5E82564211 /* tropfenabsche.png */; };
+		EE7C0F98B8E04D7DAF15886C /* umluftansaugung.png in Resources */ = {isa = PBXBuildFile; fileRef = 41BA844579E84A3D8D16A790 /* umluftansaugung.png */; };
+		C94A307696C44BF0A4DC53E1 /* umluftkuhlgerat.png in Resources */ = {isa = PBXBuildFile; fileRef = D2E92149D07248CA8DD46ACD /* umluftkuhlgerat.png */; };
+		8561E41402EC4BF785654A1A /* uv_lampe.png in Resources */ = {isa = PBXBuildFile; fileRef = 618AF076E14B48C1B2EF1BF9 /* uv_lampe.png */; };
+		E67142A8569743598B299BC5 /* ventilator.png in Resources */ = {isa = PBXBuildFile; fileRef = 5E14E56737E648FE978A7DDF /* ventilator.png */; };
+		27B5274EB8074F64BCCBF84F /* zuluftkanalint.png in Resources */ = {isa = PBXBuildFile; fileRef = F8DBDAA3BDF04CA29FA4909F /* zuluftkanalint.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,8 +97,59 @@
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = aircondition_app_native/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-aircondition_app_native-aircondition_app_nativeTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-aircondition_app_native-aircondition_app_nativeTests.release.xcconfig"; path = "Target Support Files/Pods-aircondition_app_native-aircondition_app_nativeTests/Pods-aircondition_app_native-aircondition_app_nativeTests.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		D7AFAC5ABF90467FAFCDE114 /* aussenluftkanal.png */ = {isa = PBXFileReference; name = "aussenluftkanal.png"; path = "../src/assets/images/aussenluftkanal.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		16E193C852F2455EA616EBE2 /* selection.json */ = {isa = PBXFileReference; name = "selection.json"; path = "../src/assets/selection.json"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		F684061D41D64B278B065996 /* app_icons.ttf */ = {isa = PBXFileReference; name = "app_icons.ttf"; path = "../src/assets/fonts/app_icons.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		76B9E68404424C2EB4261048 /* IcoMoon-Free.ttf */ = {isa = PBXFileReference; name = "IcoMoon-Free.ttf"; path = "../src/assets/fonts/IcoMoon-Free.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		BACDC4F0D1BB4CDFB8ED06BF /* Poppins-Black.ttf */ = {isa = PBXFileReference; name = "Poppins-Black.ttf"; path = "../src/assets/fonts/Poppins-Black.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		2DB889BF393E4253B0026A6B /* Poppins-Bold.ttf */ = {isa = PBXFileReference; name = "Poppins-Bold.ttf"; path = "../src/assets/fonts/Poppins-Bold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		AFB6E03C233E45EF9CCE7E5E /* Poppins-ExtraBold.ttf */ = {isa = PBXFileReference; name = "Poppins-ExtraBold.ttf"; path = "../src/assets/fonts/Poppins-ExtraBold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		6030692CA944424A91B49572 /* Poppins-ExtraLight.ttf */ = {isa = PBXFileReference; name = "Poppins-ExtraLight.ttf"; path = "../src/assets/fonts/Poppins-ExtraLight.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		D7D1C666E8C34726ADB6066C /* Poppins-Light.ttf */ = {isa = PBXFileReference; name = "Poppins-Light.ttf"; path = "../src/assets/fonts/Poppins-Light.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		2E4EF582100542E18127695A /* Poppins-Medium.ttf */ = {isa = PBXFileReference; name = "Poppins-Medium.ttf"; path = "../src/assets/fonts/Poppins-Medium.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		230CBFE230104BD897D73F95 /* Poppins-Regular.ttf */ = {isa = PBXFileReference; name = "Poppins-Regular.ttf"; path = "../src/assets/fonts/Poppins-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		0930FEAA92DC4D7A91490373 /* Poppins-SemiBold.ttf */ = {isa = PBXFileReference; name = "Poppins-SemiBold.ttf"; path = "../src/assets/fonts/Poppins-SemiBold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		1B81CC7ABA08463C81271511 /* Poppins-Thin.ttf */ = {isa = PBXFileReference; name = "Poppins-Thin.ttf"; path = "../src/assets/fonts/Poppins-Thin.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		41E2EF9C04EC496E84999D2A /* customStyles.ts */ = {isa = PBXFileReference; name = "customStyles.ts"; path = "../src/assets/styles/customStyles.ts"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		6CCE971C683D4BB59D4A318B /* abluftanglage.png */ = {isa = PBXFileReference; name = "abluftanglage.png"; path = "../src/assets/images/abluftanglage.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		55DD022C36824A84A770290F /* abluftgitterdig.png */ = {isa = PBXFileReference; name = "abluftgitterdig.png"; path = "../src/assets/images/abluftgitterdig.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		9C58E9AB7EFD4C78A6E9CB3F /* abluftkanaldig.png */ = {isa = PBXFileReference; name = "abluftkanaldig.png"; path = "../src/assets/images/abluftkanaldig.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		41ECDDAE563349BC8274F3ED /* abstellplatz.png */ = {isa = PBXFileReference; name = "abstellplatz.png"; path = "../src/assets/images/abstellplatz.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		F86151F8DB51484787CE0B11 /* aussenluftansaugung.png */ = {isa = PBXFileReference; name = "aussenluftansaugung.png"; path = "../src/assets/images/aussenluftansaugung.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		4122E7D2E8084C6CB3399FED /* aussenluftkanal.png */ = {isa = PBXFileReference; name = "aussenluftkanal.png"; path = "../src/assets/images/aussenluftkanal.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		4ECF132C03B94CCEB7680FBD /* becken.png */ = {isa = PBXFileReference; name = "becken.png"; path = "../src/assets/images/becken.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		B5BB1BE97B04481C91934033 /* befeuchter.png */ = {isa = PBXFileReference; name = "befeuchter.png"; path = "../src/assets/images/befeuchter.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		4C407C0BDB5343A09312BED7 /* behandlungzso.png */ = {isa = PBXFileReference; name = "behandlungzso.png"; path = "../src/assets/images/behandlungzso.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		29DA6B89AF174ADF96D490CC /* berieselungd.png */ = {isa = PBXFileReference; name = "berieselungd.png"; path = "../src/assets/images/berieselungd.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		B6B94181A12F4D178D082D1A /* dampfbefeuch.png */ = {isa = PBXFileReference; name = "dampfbefeuch.png"; path = "../src/assets/images/dampfbefeuch.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		66DE792C60D64CFFB13C668C /* dummyelement.png */ = {isa = PBXFileReference; name = "dummyelement.png"; path = "../src/assets/images/dummyelement.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		25E8CC39DCCE4899AF045F15 /* entfeuchter.png */ = {isa = PBXFileReference; name = "entfeuchter.png"; path = "../src/assets/images/entfeuchter.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		9D86913AEC05464381867597 /* erhitzer.png */ = {isa = PBXFileReference; name = "erhitzer.png"; path = "../src/assets/images/erhitzer.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		664DC50ED492480081E96512 /* filtercoarse.png */ = {isa = PBXFileReference; name = "filtercoarse.png"; path = "../src/assets/images/filtercoarse.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		D21B89E193424F098A89AAC6 /* filterdigestori.png */ = {isa = PBXFileReference; name = "filterdigestori.png"; path = "../src/assets/images/filterdigestori.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		C53D3FD17D194D4091256649 /* filterepm10_50.png */ = {isa = PBXFileReference; name = "filterepm10_50.png"; path = "../src/assets/images/filterepm10_50.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		B5887ADAFB4741C490F5C386 /* filterepm1_50.png */ = {isa = PBXFileReference; name = "filterepm1_50.png"; path = "../src/assets/images/filterepm1_50.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		0F3D4B228DF74A87B1A40926 /* filterepm1_80.png */ = {isa = PBXFileReference; name = "filterepm1_80.png"; path = "../src/assets/images/filterepm1_80.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		5333215E473249CD9CC15221 /* filtere_pm_2dot5_50.png */ = {isa = PBXFileReference; name = "filtere_pm_2dot5_50.png"; path = "../src/assets/images/filtere_pm_2dot5_50.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		0DCB100E63CC4EF381D523D6 /* filter_f_7.png */ = {isa = PBXFileReference; name = "filter_f_7.png"; path = "../src/assets/images/filter_f_7.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		33FC7A893DC74125A93A7491 /* filter_f_9.png */ = {isa = PBXFileReference; name = "filter_f_9.png"; path = "../src/assets/images/filter_f_9.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		66E9AAF8DD814DA68EF80591 /* filter_h_13.png */ = {isa = PBXFileReference; name = "filter_h_13.png"; path = "../src/assets/images/filter_h_13.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		F95B4BB198D748E3833F0F23 /* filter_m_5.png */ = {isa = PBXFileReference; name = "filter_m_5.png"; path = "../src/assets/images/filter_m_5.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		1C27B8C0153A440F94CED4DA /* fullkorper.png */ = {isa = PBXFileReference; name = "fullkorper.png"; path = "../src/assets/images/fullkorper.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		56714384CB6C48FEBE925C16 /* gefahrstoffschran.png */ = {isa = PBXFileReference; name = "gefahrstoffschran.png"; path = "../src/assets/images/gefahrstoffschran.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		0E4C99FD3F484A82960AC2B7 /* jalousieklappe.png */ = {isa = PBXFileReference; name = "jalousieklappe.png"; path = "../src/assets/images/jalousieklappe.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		05FF6333F37D4FA89FB72EAF /* kreislaufverbu.png */ = {isa = PBXFileReference; name = "kreislaufverbu.png"; path = "../src/assets/images/kreislaufverbu.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		CC8DECA2A43746CB8DA00FB0 /* kreuzwarmeta.png */ = {isa = PBXFileReference; name = "kreuzwarmeta.png"; path = "../src/assets/images/kreuzwarmeta.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		6171D4FED8984E0CB15AE203 /* kuhler.png */ = {isa = PBXFileReference; name = "kuhler.png"; path = "../src/assets/images/kuhler.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		48F6A2E015B64E4A8320EC34 /* luftauslass.png */ = {isa = PBXFileReference; name = "luftauslass.png"; path = "../src/assets/images/luftauslass.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		911F3C33908245419F24CFAF /* mischluftklappe.png */ = {isa = PBXFileReference; name = "mischluftklappe.png"; path = "../src/assets/images/mischluftklappe.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		F218B5EE377F4C61AB5249DA /* rotationswarm.png */ = {isa = PBXFileReference; name = "rotationswarm.png"; path = "../src/assets/images/rotationswarm.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		959A605F25AF41D983D80862 /* schalldampfer.png */ = {isa = PBXFileReference; name = "schalldampfer.png"; path = "../src/assets/images/schalldampfer.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		A448F930442B48F7B95672A0 /* splitgerat.png */ = {isa = PBXFileReference; name = "splitgerat.png"; path = "../src/assets/images/splitgerat.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		361742BBB80D4D5E82564211 /* tropfenabsche.png */ = {isa = PBXFileReference; name = "tropfenabsche.png"; path = "../src/assets/images/tropfenabsche.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		41BA844579E84A3D8D16A790 /* umluftansaugung.png */ = {isa = PBXFileReference; name = "umluftansaugung.png"; path = "../src/assets/images/umluftansaugung.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		D2E92149D07248CA8DD46ACD /* umluftkuhlgerat.png */ = {isa = PBXFileReference; name = "umluftkuhlgerat.png"; path = "../src/assets/images/umluftkuhlgerat.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		618AF076E14B48C1B2EF1BF9 /* uv_lampe.png */ = {isa = PBXFileReference; name = "uv_lampe.png"; path = "../src/assets/images/uv_lampe.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		5E14E56737E648FE978A7DDF /* ventilator.png */ = {isa = PBXFileReference; name = "ventilator.png"; path = "../src/assets/images/ventilator.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		F8DBDAA3BDF04CA29FA4909F /* zuluftkanalint.png */ = {isa = PBXFileReference; name = "zuluftkanalint.png"; path = "../src/assets/images/zuluftkanalint.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -156,8 +258,59 @@
 		31034AACEE1B4B5F9CDD300D /* Resources */ = {
 			isa = "PBXGroup";
 			children = (
-				D7AFAC5ABF90467FAFCDE114 /* aussenluftkanal.png */,
-				16E193C852F2455EA616EBE2 /* selection.json */,
+				F684061D41D64B278B065996 /* app_icons.ttf */,
+				76B9E68404424C2EB4261048 /* IcoMoon-Free.ttf */,
+				BACDC4F0D1BB4CDFB8ED06BF /* Poppins-Black.ttf */,
+				2DB889BF393E4253B0026A6B /* Poppins-Bold.ttf */,
+				AFB6E03C233E45EF9CCE7E5E /* Poppins-ExtraBold.ttf */,
+				6030692CA944424A91B49572 /* Poppins-ExtraLight.ttf */,
+				D7D1C666E8C34726ADB6066C /* Poppins-Light.ttf */,
+				2E4EF582100542E18127695A /* Poppins-Medium.ttf */,
+				230CBFE230104BD897D73F95 /* Poppins-Regular.ttf */,
+				0930FEAA92DC4D7A91490373 /* Poppins-SemiBold.ttf */,
+				1B81CC7ABA08463C81271511 /* Poppins-Thin.ttf */,
+				41E2EF9C04EC496E84999D2A /* customStyles.ts */,
+				6CCE971C683D4BB59D4A318B /* abluftanglage.png */,
+				55DD022C36824A84A770290F /* abluftgitterdig.png */,
+				9C58E9AB7EFD4C78A6E9CB3F /* abluftkanaldig.png */,
+				41ECDDAE563349BC8274F3ED /* abstellplatz.png */,
+				F86151F8DB51484787CE0B11 /* aussenluftansaugung.png */,
+				4122E7D2E8084C6CB3399FED /* aussenluftkanal.png */,
+				4ECF132C03B94CCEB7680FBD /* becken.png */,
+				B5BB1BE97B04481C91934033 /* befeuchter.png */,
+				4C407C0BDB5343A09312BED7 /* behandlungzso.png */,
+				29DA6B89AF174ADF96D490CC /* berieselungd.png */,
+				B6B94181A12F4D178D082D1A /* dampfbefeuch.png */,
+				66DE792C60D64CFFB13C668C /* dummyelement.png */,
+				25E8CC39DCCE4899AF045F15 /* entfeuchter.png */,
+				9D86913AEC05464381867597 /* erhitzer.png */,
+				664DC50ED492480081E96512 /* filtercoarse.png */,
+				D21B89E193424F098A89AAC6 /* filterdigestori.png */,
+				C53D3FD17D194D4091256649 /* filterepm10_50.png */,
+				B5887ADAFB4741C490F5C386 /* filterepm1_50.png */,
+				0F3D4B228DF74A87B1A40926 /* filterepm1_80.png */,
+				5333215E473249CD9CC15221 /* filtere_pm_2dot5_50.png */,
+				0DCB100E63CC4EF381D523D6 /* filter_f_7.png */,
+				33FC7A893DC74125A93A7491 /* filter_f_9.png */,
+				66E9AAF8DD814DA68EF80591 /* filter_h_13.png */,
+				F95B4BB198D748E3833F0F23 /* filter_m_5.png */,
+				1C27B8C0153A440F94CED4DA /* fullkorper.png */,
+				56714384CB6C48FEBE925C16 /* gefahrstoffschran.png */,
+				0E4C99FD3F484A82960AC2B7 /* jalousieklappe.png */,
+				05FF6333F37D4FA89FB72EAF /* kreislaufverbu.png */,
+				CC8DECA2A43746CB8DA00FB0 /* kreuzwarmeta.png */,
+				6171D4FED8984E0CB15AE203 /* kuhler.png */,
+				48F6A2E015B64E4A8320EC34 /* luftauslass.png */,
+				911F3C33908245419F24CFAF /* mischluftklappe.png */,
+				F218B5EE377F4C61AB5249DA /* rotationswarm.png */,
+				959A605F25AF41D983D80862 /* schalldampfer.png */,
+				A448F930442B48F7B95672A0 /* splitgerat.png */,
+				361742BBB80D4D5E82564211 /* tropfenabsche.png */,
+				41BA844579E84A3D8D16A790 /* umluftansaugung.png */,
+				D2E92149D07248CA8DD46ACD /* umluftkuhlgerat.png */,
+				618AF076E14B48C1B2EF1BF9 /* uv_lampe.png */,
+				5E14E56737E648FE978A7DDF /* ventilator.png */,
+				F8DBDAA3BDF04CA29FA4909F /* zuluftkanalint.png */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -259,8 +412,59 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
-				ED751746D6A1462D8B939E9F /* aussenluftkanal.png in Resources */,
-				FE40ED00870B4AF68F4517D9 /* selection.json in Resources */,
+				41E3DCF8336D4FA9AD6E59DD /* app_icons.ttf in Resources */,
+				C6BBA7BD69964B33989B4950 /* IcoMoon-Free.ttf in Resources */,
+				971D9BCD2D304A1484038CA8 /* Poppins-Black.ttf in Resources */,
+				E420915EC02B441EB59A1070 /* Poppins-Bold.ttf in Resources */,
+				B5CECF055FE044BE8FF4CC0B /* Poppins-ExtraBold.ttf in Resources */,
+				0D4EB3FBD22C4998A511E209 /* Poppins-ExtraLight.ttf in Resources */,
+				7D2EE7A94E5F427E8459ADF6 /* Poppins-Light.ttf in Resources */,
+				A6565B2FDD744889939F6387 /* Poppins-Medium.ttf in Resources */,
+				6219BEE6EA214FB4A594E673 /* Poppins-Regular.ttf in Resources */,
+				5A9D70F389994F799469DEB0 /* Poppins-SemiBold.ttf in Resources */,
+				3636E6FE906D49119110D32D /* Poppins-Thin.ttf in Resources */,
+				9B684F7480514C33B6158F95 /* customStyles.ts in Resources */,
+				71E21E31737B4A01BD2B3303 /* abluftanglage.png in Resources */,
+				1DFDFA94809940F99FB4872C /* abluftgitterdig.png in Resources */,
+				CBCBE53C355E490EAC104894 /* abluftkanaldig.png in Resources */,
+				F462A5C836C74EC3B186B691 /* abstellplatz.png in Resources */,
+				F8FFA034961A4398ADFB1BDC /* aussenluftansaugung.png in Resources */,
+				C8A22284BD2848759288127F /* aussenluftkanal.png in Resources */,
+				ADA66A92F61E4C93B7FB8A62 /* becken.png in Resources */,
+				66C71BC2A1244CCBBF78C691 /* befeuchter.png in Resources */,
+				AC38A4BA6B74487E97063BA4 /* behandlungzso.png in Resources */,
+				09C4703B514D47F7B1C4B7B3 /* berieselungd.png in Resources */,
+				89A5629D17DD44DB890F6DC8 /* dampfbefeuch.png in Resources */,
+				A491548B60654CAA8632874E /* dummyelement.png in Resources */,
+				85D41B1F0EB049348DF6B898 /* entfeuchter.png in Resources */,
+				DEE4F24836F140DBBB2304D3 /* erhitzer.png in Resources */,
+				D1EFC6A73BBE40F4BCEB15C3 /* filtercoarse.png in Resources */,
+				780A05C459E54D178B1A07F2 /* filterdigestori.png in Resources */,
+				639DE20FC49D4A28B8E08A23 /* filterepm10_50.png in Resources */,
+				F68EBFB1295847E1B5909280 /* filterepm1_50.png in Resources */,
+				39E65F7366CD44E2B106025C /* filterepm1_80.png in Resources */,
+				A17636714DDE4084A1910346 /* filtere_pm_2dot5_50.png in Resources */,
+				A847ED4693DA40108741B0D4 /* filter_f_7.png in Resources */,
+				359F273ABD0748689727F04A /* filter_f_9.png in Resources */,
+				9D76EB61B31240C197778BA4 /* filter_h_13.png in Resources */,
+				1658CDA06851406BB0FF2A7A /* filter_m_5.png in Resources */,
+				B30D4C4D785C4E9C9D650637 /* fullkorper.png in Resources */,
+				95707784D8E8413F914D9F37 /* gefahrstoffschran.png in Resources */,
+				90456F0D4F154F168F57887B /* jalousieklappe.png in Resources */,
+				74C58104D0974AA093E113B1 /* kreislaufverbu.png in Resources */,
+				A51686B9551C4567810558AD /* kreuzwarmeta.png in Resources */,
+				CA32E200E1B64EA6A9E21D84 /* kuhler.png in Resources */,
+				14C88CC34A0F45B3B95EBEF4 /* luftauslass.png in Resources */,
+				80E03C7D703D4591A7B40DDD /* mischluftklappe.png in Resources */,
+				458EFB8E97514DF487E9CC1C /* rotationswarm.png in Resources */,
+				65927D15998A45E182D08D85 /* schalldampfer.png in Resources */,
+				81500C580A6E4F1687D1404C /* splitgerat.png in Resources */,
+				935155CA07F046799A9320E5 /* tropfenabsche.png in Resources */,
+				EE7C0F98B8E04D7DAF15886C /* umluftansaugung.png in Resources */,
+				C94A307696C44BF0A4DC53E1 /* umluftkuhlgerat.png in Resources */,
+				8561E41402EC4BF785654A1A /* uv_lampe.png in Resources */,
+				E67142A8569743598B299BC5 /* ventilator.png in Resources */,
+				27B5274EB8074F64BCCBF84F /* zuluftkanalint.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

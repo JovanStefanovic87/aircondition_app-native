@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
-import { useStore } from '../store/store';
 import PrimaryButton from '../components/buttons/PrimaryButton';
 import SubmitButton from '../components/buttons/SubmitButton';
+import ImageSlider from '../components/sliders/ImageSlider';
 
 const HomeScreen = () => {
   const [selectedTab, setSelectedTab] = useState('Tab 1');
+  const image1 = 'aussenluftkanal';
+  const image2 = 'gefahrstoffschran';
+  const image3 = 'schalldampfer';
 
-  const pickerPlaceholder = 'Select a tab...'; // Your custom placeholder text
+  const pickerPlaceholder = 'Select a tab...';
 
   return (
     <View style={styles.container}>
@@ -26,9 +29,12 @@ const HomeScreen = () => {
             { label: 'Tab 3', value: 'Tab 3' },
           ]}
           value={selectedTab}
-          placeholder={{ label: pickerPlaceholder, value: null }} // Set the custom placeholder
-          useNativeAndroidPickerStyle={false} // This ensures the placeholder displays correctly on Android
+          placeholder={{ label: pickerPlaceholder, value: null }}
+          useNativeAndroidPickerStyle={false}
         />
+      </View>
+      <View style={styles.buttonContainer}>
+        <ImageSlider images={[image1, image2, image3]} />
       </View>
     </View>
   );

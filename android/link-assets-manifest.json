@@ -2,12 +2,216 @@
   "migIndex": 1,
   "data": [
     {
+      "path": "src/assets/fonts/app_icons.ttf",
+      "sha1": "18e5fe2f93c853bbb495975f04df56438d595de5"
+    },
+    {
+      "path": "src/assets/fonts/IcoMoon-Free.ttf",
+      "sha1": "e40e2a5cb3d3aeee855a0b12ee49eac30bdcf202"
+    },
+    {
+      "path": "src/assets/fonts/Poppins-Black.ttf",
+      "sha1": "645e04c53c6b5b35bce654a811ebce16af8aa721"
+    },
+    {
+      "path": "src/assets/fonts/Poppins-Bold.ttf",
+      "sha1": "875cf0cecd647bcf22e79d633d868c1b1ec98dfa"
+    },
+    {
+      "path": "src/assets/fonts/Poppins-ExtraBold.ttf",
+      "sha1": "4b5c0750f073abd576413a0898d3b95adaf199c8"
+    },
+    {
+      "path": "src/assets/fonts/Poppins-ExtraLight.ttf",
+      "sha1": "85af6582a7e6155917c605f9d3fed68c02b23b06"
+    },
+    {
+      "path": "src/assets/fonts/Poppins-Light.ttf",
+      "sha1": "e247a92158e112f8bf7b638c8d95381d66b00dbb"
+    },
+    {
+      "path": "src/assets/fonts/Poppins-Medium.ttf",
+      "sha1": "283f21b44efbdbf276ba802be2d949a36bbc4233"
+    },
+    {
+      "path": "src/assets/fonts/Poppins-Regular.ttf",
+      "sha1": "fdd3002e7d814ee47c1c1b8487c72c6bbb3a2d00"
+    },
+    {
+      "path": "src/assets/fonts/Poppins-SemiBold.ttf",
+      "sha1": "8a4ace9392d06bcb7f8ea2f5169b07e4c383a90d"
+    },
+    {
+      "path": "src/assets/fonts/Poppins-Thin.ttf",
+      "sha1": "09ba4dcd5509c8085bf88c665dcc51cbdfced27b"
+    },
+    {
+      "path": "src/assets/images/abluftanglage.png",
+      "sha1": "0abf59b05ed543f56c852f5abbd2be440397f58b"
+    },
+    {
+      "path": "src/assets/images/abluftgitterdig.png",
+      "sha1": "523ee25d2b8ca7d8b74ce61deb6b15d4edc583fc"
+    },
+    {
+      "path": "src/assets/images/abluftkanaldig.png",
+      "sha1": "b228cdef52426d88b452389c8769beebc55311f8"
+    },
+    {
+      "path": "src/assets/images/abstellplatz.png",
+      "sha1": "7ad6598e7d29c4714332ef9a00256df700449ebd"
+    },
+    {
+      "path": "src/assets/images/aussenluftansaugung.png",
+      "sha1": "11d661fd330dda1a66eff93fbead20d2c85af5a8"
+    },
+    {
       "path": "src/assets/images/aussenluftkanal.png",
       "sha1": "3ba571cdf9a3421a62c58590e35450992311bb33"
     },
     {
-      "path": "src/assets/selection.json",
-      "sha1": "e01c0ae9dbcdae684942bc6cea9edf5cef2e86f8"
+      "path": "src/assets/images/becken.png",
+      "sha1": "f75d13325f3df3f6675f064713cfb45d9eddf363"
+    },
+    {
+      "path": "src/assets/images/befeuchter.png",
+      "sha1": "7e6ac2cfa3375ac1a0f8f12337f89812ce18cfb5"
+    },
+    {
+      "path": "src/assets/images/behandlungzso.png",
+      "sha1": "100495f873703eaaf09c57448ed81db7ad7ee531"
+    },
+    {
+      "path": "src/assets/images/berieselungd.png",
+      "sha1": "d01b46a91522ec9bd1b0bcc28c47e8364fd6e564"
+    },
+    {
+      "path": "src/assets/images/dampfbefeuch.png",
+      "sha1": "225a8cbb63aa7f33996e935826eea3a510bd123c"
+    },
+    {
+      "path": "src/assets/images/dummyelement.png",
+      "sha1": "76c668594669ae3b45247236e562de5252771533"
+    },
+    {
+      "path": "src/assets/images/entfeuchter.png",
+      "sha1": "92a60291c3f3c58b50dd8eb0551f1c050588953a"
+    },
+    {
+      "path": "src/assets/images/erhitzer.png",
+      "sha1": "62e4b0ec83e8ead8e1f20ed37868e5b5a43695c5"
+    },
+    {
+      "path": "src/assets/images/filtercoarse.png",
+      "sha1": "a81ad4d9adac635b8bdf6ed14f7e2215916cd176"
+    },
+    {
+      "path": "src/assets/images/filterdigestori.png",
+      "sha1": "4b31ef32d8f73fb51083501d31a11d09441c0b94"
+    },
+    {
+      "path": "src/assets/images/filterepm10_50.png",
+      "sha1": "4caeafe7117e0fa298f6d2b14bbe4cb978ddfb71"
+    },
+    {
+      "path": "src/assets/images/filterepm1_50.png",
+      "sha1": "b0599887f1849e57f14510ce059b0a4977e2ce70"
+    },
+    {
+      "path": "src/assets/images/filterepm1_80.png",
+      "sha1": "523daa0f20a02bc12fc047cbfd13fd44aa775ec0"
+    },
+    {
+      "path": "src/assets/images/filtere_pm_2dot5_50.png",
+      "sha1": "fb0401c8504d0554989f4a9a3721d645d2bc9956"
+    },
+    {
+      "path": "src/assets/images/filter_f_7.png",
+      "sha1": "7552be666de0303014bbe683eeefb578845da3e8"
+    },
+    {
+      "path": "src/assets/images/filter_f_9.png",
+      "sha1": "4cef5f069164e36dc85553123fc67ee1bf94d78e"
+    },
+    {
+      "path": "src/assets/images/filter_h_13.png",
+      "sha1": "973d9c2f9711286bf4ac4df2b1912b4af7fc4837"
+    },
+    {
+      "path": "src/assets/images/filter_m_5.png",
+      "sha1": "306369d5340886551b8ad2b53ef81646559216fd"
+    },
+    {
+      "path": "src/assets/images/fullkorper.png",
+      "sha1": "bca63c8346104de27dd378911451ad61b9c24f07"
+    },
+    {
+      "path": "src/assets/images/gefahrstoffschran.png",
+      "sha1": "2b64250b02809e15f7d3d634401d190fd5e12e38"
+    },
+    {
+      "path": "src/assets/images/jalousieklappe.png",
+      "sha1": "1bb6fa0b5159773bfafbc4e5e1d6097f16e40cbb"
+    },
+    {
+      "path": "src/assets/images/kreislaufverbu.png",
+      "sha1": "b04c2385ad3d82965eaacafc615b1d2b4986c9b6"
+    },
+    {
+      "path": "src/assets/images/kreuzwarmeta.png",
+      "sha1": "a2382b76594aa482e1112ccbc923b27b8b0b4880"
+    },
+    {
+      "path": "src/assets/images/kuhler.png",
+      "sha1": "d21067741b76ea6a3d5c863b44b8eb28d62fab46"
+    },
+    {
+      "path": "src/assets/images/luftauslass.png",
+      "sha1": "e0976c0316b71e14609ed08b5370f4d0010355da"
+    },
+    {
+      "path": "src/assets/images/mischluftklappe.png",
+      "sha1": "1702036cbae486100ce4c6544a96d7e8069c78b0"
+    },
+    {
+      "path": "src/assets/images/rotationswarm.png",
+      "sha1": "a75ad59374ce89de995648eb7f97746b48ab2209"
+    },
+    {
+      "path": "src/assets/images/schalldampfer.png",
+      "sha1": "d2d984f120d036d532430f0474298dcaf1b51daa"
+    },
+    {
+      "path": "src/assets/images/splitgerat.png",
+      "sha1": "689fa83d7fd5ab08c0caaeda426287e9233b64a9"
+    },
+    {
+      "path": "src/assets/images/tropfenabsche.png",
+      "sha1": "121d92c82d7bc3477c6ead862b435b44e104b960"
+    },
+    {
+      "path": "src/assets/images/umluftansaugung.png",
+      "sha1": "b77298ae6f0431dca8fdf813ed576e171ab64580"
+    },
+    {
+      "path": "src/assets/images/umluftkuhlgerat.png",
+      "sha1": "fbe94faee9bbc12da5306f542373aeac7a2c138c"
+    },
+    {
+      "path": "src/assets/images/uv_lampe.png",
+      "sha1": "68de810ad49fab4ab70ce2f5cf25e7d857e5d40c"
+    },
+    {
+      "path": "src/assets/images/ventilator.png",
+      "sha1": "4fadd4701a9e86e423a248fc2c88bb0f1c7bfa44"
+    },
+    {
+      "path": "src/assets/images/zuluftkanalint.png",
+      "sha1": "20e01a3cb15835f1adbdb9e976385d3b4cad9bbf"
+    },
+    {
+      "path": "src/assets/styles/customStyles.ts",
+      "sha1": "9c5859f14a359e5b9e94ea68d7d94993d88b1733"
     }
   ]
 }
