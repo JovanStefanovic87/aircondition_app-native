@@ -5,4 +5,13 @@ module.exports = {
       android: {},
     },
     assets: ['./src/assets'],
+    dependencies: {
+      'react-native-web': {
+        platforms: {
+          web: {
+            npmPackageName: 'react-native-web',
+          },
+        },
+      },
+    },
   };

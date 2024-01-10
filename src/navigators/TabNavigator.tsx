@@ -1,113 +1,28 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+// Navigator file (e.g., AppNavigator.tsx)
+import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from '../screens/HomeScreen';
-import CartScreen from '../screens/CartScreen';
-import OrderHistoryScreen from '../screens/OrderHistoryScreen';
-import FavoritesScreen from '../screens/FavoritesScreen';
-import CustomIcon from '../components/CustomIcon';
-import { COLORS } from '../theme/theme';
-import { BlurView } from '@react-native-community/blur';
+import NavScreen from '../screens/NavScreen';
+import NewInspectionScreen from '../screens/NewInspection';
 
-const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
 
 const TabNavigator = () => {
+  const navigationOptions = {
+    headerShown: false,
+  };
   return (
-    <Tab.Navigator
-      screenOptions={{
-        tabBarHideOnKeyboard: true,
-        headerShown: false,
-        tabBarShowLabel: false,
-        tabBarStyle: styles.tabBarStyle,
-        tabBarBackground: () => (
-          <BlurView
-            overlayColor=""
-            blurAmount={15}
-            style={styles.BlurViewStyles}
-          />
-        ),
-      }}
-    >
-      <Tab.Screen
-        name="Home"
-        component={HomeScreen}
-        options={{
-          tabBarIcon: ({ focused, color, size }) => (
-            <CustomIcon
-              name="folder-plus"
-              size={25}
-              color={
-                focused ? COLORS.primaryOrangeHex : COLORS.primaryLightGreyHex
-              }
-            />
-          ),
-        }}
-      ></Tab.Screen>
-      <Tab.Screen
-        name="In progress"
-        component={CartScreen}
-        options={{
-          tabBarIcon: ({ focused, color, size }) => (
-            <CustomIcon
-              name="spinner"
-              size={25}
-              color={
-                focused ? COLORS.primaryOrangeHex : COLORS.primaryLightGreyHex
-              }
-            />
-          ),
-        }}
-      ></Tab.Screen>
-      <Tab.Screen
-        name="Completed"
-        component={FavoritesScreen}
-        options={{
-          tabBarIcon: ({ focused, color, size }) => (
-            <CustomIcon
-              name="checkmark2"
-              size={25}
-              color={
-                focused ? COLORS.primaryOrangeHex : COLORS.primaryLightGreyHex
-              }
-            />
-          ),
-        }}
-      ></Tab.Screen>
-      <Tab.Screen
-        name="History"
-        component={OrderHistoryScreen}
-        options={{
-          tabBarIcon: ({ focused, color, size }) => (
-            <CustomIcon
-              name="bell"
-              size={25}
-              color={
-                focused ? COLORS.primaryOrangeHex : COLORS.primaryLightGreyHex
-              }
-            />
-          ),
-        }}
-      ></Tab.Screen>
-    </Tab.Navigator>
+    <Stack.Navigator>
+      <Stack.Screen name="NewInspection" component={NewInspectionScreen} />
+      <Stack.Screen name="HomeScreen" component={HomeScreen} />
+      <Stack.Screen
+        name="NavScreen"
+        component={NavScreen}
+        options={navigationOptions}
+      />
+
+      {/* Add other screens as needed */}
+    </Stack.Navigator>
   );
 };
-
-const styles = StyleSheet.create({
-  tabBarStyle: {
-    height: 80,
-    position: 'absolute',
-    backgroundColor: COLORS.primaryBlackRGBA,
-    borderTopWidth: 0,
-    elevation: 0,
-    borderTopColor: 'transparent',
-  },
-  BlurViewStyles: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-  },
-});
 
 export default TabNavigator;

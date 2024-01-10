@@ -1,12 +1,19 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import RNPickerSelect from 'react-native-picker-select';
+import { StyleSheet, Text, View, ScrollView } from 'react-native';
 import PrimaryButton from '../components/buttons/PrimaryButton';
 import SubmitButton from '../components/buttons/SubmitButton';
-import ImageSlider from '../components/sliders/ImageSlider';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import EmojisContainer from '../components/containers/EmojisContainer';
+import EmojisColumnContainer from '../components/containers/EmojisColumnContainer';
+import InputText from '../components/input/InputText';
+import InputNumber from '../components/input/InputNumber';
+import AssemblyPartsSourceContainer from '../components/containers/AssemblyPartsSourceContainer';
+import ZoneButton from '../components/buttons/ZoneButton';
 
 const HomeScreen = () => {
   const [selectedTab, setSelectedTab] = useState('Tab 1');
+  const [inputValue, setInputValue] = useState<number | null>(null);
+  const [inputTextValue, setInputTextValue] = useState<string>('');
   const image1 = 'aussenluftkanal';
   const image2 = 'gefahrstoffschran';
   const image3 = 'schalldampfer';
@@ -14,37 +21,52 @@ const HomeScreen = () => {
   const pickerPlaceholder = 'Select a tab...';
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>HomeScreen</Text>
-      <View style={styles.buttonContainer}>
-        <PrimaryButton title="Dugme" onPress={() => {}} />
-        <SubmitButton isDisabled={false} value="Submit" />
-      </View>
-      <View style={styles.dropdownContainer}>
-        <RNPickerSelect
-          onValueChange={(value) => setSelectedTab(value)}
-          items={[
-            { label: 'Tab 1', value: 'Tab 1' },
-            { label: 'Tab 2', value: 'Tab 2' },
-            { label: 'Tab 3', value: 'Tab 3' },
-          ]}
-          value={selectedTab}
-          placeholder={{ label: pickerPlaceholder, value: null }}
-          useNativeAndroidPickerStyle={false}
+    <GestureHandlerRootView style={styles.scrollContainer}>
+      <ScrollView style={styles.scrollView}>
+        <View style={styles.container}>
+          <View style={styles.buttonContainer}>
+            <PrimaryButton title="Dugme" onPress={() => {}} />
+            <SubmitButton isDisabled={false} value="Submit" />
+          </View>
+          <AssemblyPartsSourceContainer
+            selectedTab={selectedTab}
+            setSelectedTab={setSelectedTab}
+            pickerPlaceholder={pickerPlaceholder}
+            images={[image1, image2, image3]}
+          />
+          <EmojisColumnContainer title="ANLAGE" isComplited={true}>
+            <EmojisContainer description="Analge" green red yellow orange />
+            <EmojisContainer description="Analge" green red yellow orange />
+            <EmojisContainer description="Analge" green red yellow orange />
+          </EmojisColumnContainer>
+        </View>
+        <InputText
+          value={inputTextValue}
+          placeholder="Input"
+          setValue={setInputTextValue}
         />
-      </View>
-      <View style={styles.buttonContainer}>
-        <ImageSlider images={[image1, image2, image3]} />
-      </View>
-    </View>
+        <InputNumber
+          value={inputValue}
+          placeholder="Number"
+          setValue={setInputValue}
+        />
+        <ZoneButton />
+      </ScrollView>
+    </GestureHandlerRootView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  scrollContainer: {
     flex: 1,
     alignItems: 'center',
+  },
+  scrollView: {
+    width: '100%',
+  },
+  container: {
     gap: 7,
+    alignItems: 'center',
   },
   header: {
     fontSize: 24,
@@ -56,12 +78,6 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingHorizontal: 20,
     gap: 5,
-  },
-  dropdownContainer: {
-    borderColor: 'black',
-    borderWidth: 1,
-    borderRadius: 5,
-    width: 150,
   },
 });
 

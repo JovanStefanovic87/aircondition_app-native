@@ -1,0 +1,42 @@
+import React from 'react';
+import { TextInput, StyleSheet } from 'react-native';
+import { customColors } from '../../assets/styles/customStyles';
+
+interface InputNumberProps {
+  value: number | null;
+  placeholder: string;
+  setValue: (value: number | null) => void;
+}
+
+const InputNumber: React.FC<InputNumberProps> = ({
+  value,
+  placeholder,
+  setValue,
+}) => {
+  const handleChangeText = (text: string) => {
+    const numericValue = text.replace(/[^0-9,.]/g, '');
+    const normalizedValue = numericValue.replace(',', '.');
+    const parsedValue = normalizedValue ? parseFloat(normalizedValue) : null;
+    setValue(parsedValue);
+  };
+
+  const styles = StyleSheet.create({
+    input: {
+      height: 40,
+      borderColor: customColors.blueLight,
+      borderWidth: 2,
+    },
+  });
+
+  return (
+    <TextInput
+      value={value !== null ? value.toString() : ''}
+      placeholder={placeholder}
+      style={styles.input}
+      onChangeText={handleChangeText}
+      keyboardType="numeric"
+    />
+  );
+};
+
+export default InputNumber;
