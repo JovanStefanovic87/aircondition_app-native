@@ -8,6 +8,7 @@ import {
 import Modal from 'react-native-modal';
 import React, { useState } from 'react';
 // import { RNCamera, BarCodeReadEvent } from 'react-native-camera';
+import BarcodeScanner from '../components/camera/BarcodeScanner';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import InputText from '../components/input/InputText';
 import IconButton from '../components/buttons/IconButton';
@@ -43,8 +44,7 @@ const NewInspection = () => {
   return (
     <View style={styles.container}>
       {isScannerOpen ? (
-        <></>
-        // <RNCamera style={styles.camera} onBarCodeRead={handleBarCodeScanned} />
+        <BarcodeScanner onClose={() => setScannerOpen(false)} />
       ) : (
         <>
           <View style={styles.rowContainer}>

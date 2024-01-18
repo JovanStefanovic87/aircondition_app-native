@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { customColors } from '../../assets/styles/customStyles';
+import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+import {customColors} from '../../assets/styles/customStyles';
 
 interface TabButtonProps {
   value: string;
@@ -15,8 +15,8 @@ const TabButton: React.FC<TabButtonProps> = ({
   const border = isActive ? 'white' : 'transparent';
 
   return (
-    <TouchableOpacity style={[styles.button, { borderColor: border }]}>
-      <Text style={[styles.text, { color: textColor }]}>
+    <TouchableOpacity style={[styles.button, {borderColor: border}]}>
+      <Text style={[styles.text, {color: textColor}]}>
         {value.toUpperCase()}
       </Text>
     </TouchableOpacity>
@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     marginBottom: -0.5,
     zIndex: 3,
-    cursor: 'pointer',
+    /* cursor: 'pointer', */
     backgroundColor: 'white',
   },
   text: {
