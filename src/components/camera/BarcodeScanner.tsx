@@ -1,18 +1,31 @@
-import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, {
+  Dispatch,
+  FC,
+  SetStateAction,
+  useEffect,
+  useState,
+} from 'react';
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  PermissionsAndroid,
+} from 'react-native';
 import {
   useCameraDevice,
   useCodeScanner,
   Code,
   Camera,
 } from 'react-native-vision-camera';
-import { FC, useEffect, useState } from 'react';
 
 type BarcodeScannerProps = {
   onClose: () => void;
   width?: number;
   height?: number;
+  setScanResult: Dispatch<SetStateAction<string>>;
 };
+
 const BarcodeScanner: FC<BarcodeScannerProps> = (
   props: BarcodeScannerProps,
 ) => {
@@ -27,18 +40,39 @@ const BarcodeScanner: FC<BarcodeScannerProps> = (
       if (scanning) {
         setBarcodes(codes);
         setScanning(false);
+        props.setScanResult(codes[0].value);
       }
     },
   });
 
   useEffect(() => {
-    (async () => {
-      const status = await Camera.requestCameraPermission();
-      setHasPermission(status !== 'denied');
-    })();
+    requestCameraPermission();
   }, []);
 
-  console.log('barcodes', barcodes);
+  const requestCameraPermission = async () => {
+    try {
+      console.log('Requesting camera permission...');
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.CAMERA,
+        {
+          title: 'Camera Permission',
+          message: 'This app requires camera permission for barcode scanning.',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        setHasPermission(true);
+      } else {
+        setHasPermission(false);
+      }
+    } catch (err) {
+      console.warn('Error requesting camera permission:', err);
+      setHasPermission(false);
+    }
+  };
 
   return (
     device != null &&

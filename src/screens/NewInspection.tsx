@@ -1,38 +1,18 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  TextInput,
-} from 'react-native';
-import Modal from 'react-native-modal';
+import { StyleSheet, View, TextInput } from 'react-native';
 import React, { useState } from 'react';
-// import { RNCamera, BarCodeReadEvent } from 'react-native-camera';
 import BarcodeScanner from '../components/camera/BarcodeScanner';
-import Icon from 'react-native-vector-icons/FontAwesome';
 import InputText from '../components/input/InputText';
 import IconButton from '../components/buttons/IconButton';
 import Dropdown from '../components/input/Dropdown';
 
-interface BarcodeData {
-  data: string;
-}
-
 const NewInspection = () => {
   const [isScannerOpen, setScannerOpen] = useState(false);
-  const [scanResult, setScanResult] = useState<BarcodeData | null>(null);
+  const [scanResult, setScanResult] = useState<string | null>(null);
   const [barcodeInput, setBarcodeInput] = useState<string>('');
   const [selectedTab, setSelectedTab] = useState<string>('');
 
   const openScanner = () => {
     setScannerOpen(true);
-  };
-
-  const handleBarCodeScanned = (event: any) => {
-    const barcodeData: BarcodeData = { data: event.data };
-    setScanResult(barcodeData); // Store the scanned result
-    setScannerOpen(false); // Close the scanner after a successful scan
-    setBarcodeInput(event.data); // Set the scanned barcode to the input
   };
 
   const dropdownData = [
@@ -44,13 +24,16 @@ const NewInspection = () => {
   return (
     <View style={styles.container}>
       {isScannerOpen ? (
-        <BarcodeScanner onClose={() => setScannerOpen(false)} />
+        <BarcodeScanner
+          onClose={() => setScannerOpen(false)}
+          setScanResult={setScanResult}
+        />
       ) : (
         <>
           <View style={styles.rowContainer}>
             <InputText
               placeholder="Barcode"
-              value={barcodeInput}
+              value={scanResult}
               setValue={setBarcodeInput}
               width="84%"
             />
