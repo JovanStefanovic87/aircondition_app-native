@@ -36,6 +36,7 @@ const InputText: React.FC<TextInputProps> = ({
       placeholder={placeholder}
       style={styles.input}
       onChangeText={handleChange}
+      placeholderTextColor={customColors.placeholder}
     />
   );
 };

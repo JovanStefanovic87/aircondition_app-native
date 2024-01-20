@@ -1,5 +1,12 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+} from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 
@@ -9,58 +16,66 @@ const NavScreen: React.FC = () => {
   const navigation = useNavigation<NavScreenNavigationProp>();
 
   const handleNewInspectionPress = () => {
-    // Navigate to the 'HomeScreen'
-    navigation.navigate('HomeScreen');
+    navigation.navigate('NewInspectionScreen');
   };
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => console.log('NewInspection')}
-      >
-        <Icon name="user" size={30} color="#3498db" />
-        <Text style={styles.buttonText}>NewInspection</Text>
-      </TouchableOpacity>
+    <GestureHandlerRootView style={styles.scrollContainer}>
+      <ScrollView style={styles.scrollView}>
+        <View style={styles.container}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={handleNewInspectionPress}
+          >
+            <Icon name="plus" size={30} color="yellow" />
+            <Text style={styles.buttonText}>Neue Inspektion</Text>
+          </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={handleNewInspectionPress}
-      >
-        <Icon name="plus" size={30} color="#2ecc71" />
-        <Text style={styles.buttonText}>New Inspection</Text>
-      </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => console.log('Inspection Ongoing')}
+          >
+            <Icon name="clock-o" size={30} color="#e67e22" />
+            <Text style={styles.buttonText}>Laufende Inspektion</Text>
+          </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => console.log('Inspection Ongoing')}
-      >
-        <Icon name="clock-o" size={30} color="#e67e22" />
-        <Text style={styles.buttonText}>Inspection Ongoing</Text>
-      </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => console.log('Closed Inspection')}
+          >
+            <Icon name="check-circle" size={30} color="green" />
+            <Text style={styles.buttonText}>Closed Inspection</Text>
+          </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => console.log('Closed Inspection')}
-      >
-        <Icon name="check-circle" size={30} color="#e74c3c" />
-        <Text style={styles.buttonText}>Closed Inspection</Text>
-      </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={handleNewInspectionPress}
+          >
+            <Icon name="user" size={30} color="#3498db" />
+            <Text style={styles.buttonText}>Profile</Text>
+          </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => console.log('Logout')}
-      >
-        <Icon name="sign-out" size={30} color="#9b59b6" />
-        <Text style={styles.buttonText}>Logout</Text>
-      </TouchableOpacity>
-    </View>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => console.log('Logout')}
+          >
+            <Icon name="sign-out" size={30} color="red" />
+            <Text style={styles.buttonText}>Logout</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </GestureHandlerRootView>
   );
 };
 
 const styles = StyleSheet.create({
+  scrollContainer: {
+    alignItems: 'center',
+  },
+  scrollView: {
+    width: '100%',
+  },
   container: {
-    flex: 1,
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-around',

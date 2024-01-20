@@ -32,7 +32,7 @@ const Dropdown: FC<DropdownProps> = ({
             textAlign: 'center',
           },
           placeholder: {
-            color: customColors.blueLight,
+            color: customColors.placeholder,
             fontSize: 16,
             fontWeight: 'bold',
             textAlign: 'center',
