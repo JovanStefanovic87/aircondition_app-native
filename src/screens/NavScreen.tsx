@@ -19,6 +19,10 @@ const NavScreen: React.FC = () => {
     navigation.navigate('NewInspectionScreen');
   };
 
+  const handleHomePress = () => {
+    navigation.navigate('HomeScreen');
+  };
+
   return (
     <GestureHandlerRootView style={styles.scrollContainer}>
       <ScrollView style={styles.scrollView}>
@@ -47,10 +51,7 @@ const NavScreen: React.FC = () => {
             <Text style={styles.buttonText}>Closed Inspection</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.button}
-            onPress={handleNewInspectionPress}
-          >
+          <TouchableOpacity style={styles.button} onPress={handleHomePress}>
             <Icon name="user" size={30} color="#3498db" />
             <Text style={styles.buttonText}>Profile</Text>
           </TouchableOpacity>

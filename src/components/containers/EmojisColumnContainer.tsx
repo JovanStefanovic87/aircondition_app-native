@@ -1,8 +1,9 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import EmojisColumnHead from '../columns/EmojisColumnHead';
 import { customColors } from '../../assets/styles/customStyles';
 import EmojisColumnBody from '../columns/EmojisColumnBody';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 interface EmojisColumnContainerProps {
   title: string;
@@ -15,23 +16,53 @@ const EmojisColumnContainer: React.FC<EmojisColumnContainerProps> = ({
   children,
   isComplited,
 }) => {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  const handleToggleHeight = () => {
+    setIsOpen(!isOpen);
+  };
+
   const styles = StyleSheet.create({
-    container: {
+    innerContainer: {
       flex: 1,
       flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
+      width: '100%',
+    },
+    outerContainer: {
+      flex: 1,
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      width: '100%',
       borderWidth: 2,
       borderColor: customColors.blueLight,
       borderRadius: 8,
-      paddingBottom: 4,
+    },
+    toggleButton: {
+      alignSelf: 'center',
+      alignItems: 'center',
+      width: '100%',
     },
   });
 
   return (
-    <View style={styles.container}>
-      <EmojisColumnHead title={title} isCompleted={isComplited} />
-      <EmojisColumnBody>{children}</EmojisColumnBody>
+    <View style={styles.outerContainer}>
+      <View style={styles.innerContainer}>
+        <EmojisColumnHead title={title} isCompleted={isComplited} />
+        <EmojisColumnBody isOpen={isOpen}>{children}</EmojisColumnBody>
+      </View>
+      <TouchableOpacity
+        onPress={handleToggleHeight}
+        style={styles.toggleButton}
+      >
+        <Icon
+          name={isOpen ? 'caret-up' : 'caret-down'}
+          size={40}
+          color="black"
+        />
+      </TouchableOpacity>
     </View>
   );
 };

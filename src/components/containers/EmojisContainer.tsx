@@ -1,11 +1,29 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import GreenSmiley from '../icons/GreenSmiley';
 import OrangeSmiley from '../icons/OrangeSmiley';
 import RedSmiley from '../icons/RedSmiley';
 import YellowSmiley from '../icons/YellowSmiley';
 
-const EmojisContainer = ({
+interface SmileyColor {
+  color: string;
+  SmileyComponent: React.FC<{
+    isActive: boolean;
+    isVisible: boolean;
+    onClick: () => void;
+  }>;
+  isVisible: boolean;
+}
+
+interface EmojisContainerProps {
+  description?: string;
+  green?: boolean;
+  yellow?: boolean;
+  orange?: boolean;
+  red?: boolean;
+}
+
+const EmojisContainer: React.FC<EmojisContainerProps> = ({
   description = 'N/A',
   green = false,
   yellow = false,
@@ -22,34 +40,21 @@ const EmojisContainer = ({
     }
   };
 
-  const smileyColors = [
+  const smileyColors: SmileyColor[] = [
     { color: 'green', SmileyComponent: GreenSmiley, isVisible: green },
     { color: 'yellow', SmileyComponent: YellowSmiley, isVisible: yellow },
     { color: 'orange', SmileyComponent: OrangeSmiley, isVisible: orange },
     { color: 'red', SmileyComponent: RedSmiley, isVisible: red },
   ];
 
-  // Check if every GreenSmiley is active
   const areAllGreenSmileysActive = smileyColors
     .filter((smiley) => smiley.color === 'green')
     .every((smiley) => activeColor === 'green');
 
   return (
-    <View
-      style={{
-        flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-      }}
-    >
+    <View style={styles.container}>
       <Text>{description}</Text>
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          marginVertical: 8,
-        }}
-      >
+      <View style={styles.row}>
         {smileyColors.map(({ color, SmileyComponent, isVisible }) => (
           <TouchableOpacity
             key={color}
@@ -68,5 +73,20 @@ const EmojisContainer = ({
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginVertical: 8,
+    width: '100%',
+  },
+});
 
 export default EmojisContainer;
