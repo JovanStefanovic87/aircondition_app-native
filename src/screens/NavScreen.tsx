@@ -9,6 +9,7 @@ import {
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
+import { deleteAllTables, fillDeviceTable, getAllTables1, getDeviceTypes, getInspectionTypes, selectInsertedRecord } from '../../database/dbFunctions';
 
 type NavScreenNavigationProp = NavigationProp<any, any>;
 
@@ -22,6 +23,19 @@ const NavScreen: React.FC = () => {
   const handleHomePress = () => {
     navigation.navigate('HomeScreen');
   };
+
+  const displayDeviceTypes = async () => {
+    const data = await getDeviceTypes();
+    console.log('deviceTypes: ', JSON.stringify(data))
+  }
+
+  const displayInspectionTypes = async () => {
+    const data = await getInspectionTypes();
+    console.log('InspectionTypes: ', JSON.stringify(data))
+  }
+
+
+
 
   return (
     <GestureHandlerRootView style={styles.scrollContainer}>
@@ -37,7 +51,7 @@ const NavScreen: React.FC = () => {
 
           <TouchableOpacity
             style={styles.button}
-            onPress={() => console.log('Inspection Ongoing')}
+            onPress={() => console.log('')}
           >
             <Icon name="clock-o" size={30} color="#e67e22" />
             <Text style={styles.buttonText}>Laufende Inspektion</Text>
@@ -45,13 +59,13 @@ const NavScreen: React.FC = () => {
 
           <TouchableOpacity
             style={styles.button}
-            onPress={() => console.log('Closed Inspection')}
+            onPress={() => displayInspectionTypes()}
           >
             <Icon name="check-circle" size={30} color="green" />
             <Text style={styles.buttonText}>Closed Inspection</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button} onPress={handleHomePress}>
+          <TouchableOpacity style={styles.button} onPress={() => displayDeviceTypes()}>
             <Icon name="user" size={30} color="#3498db" />
             <Text style={styles.buttonText}>Profile</Text>
           </TouchableOpacity>
@@ -65,7 +79,7 @@ const NavScreen: React.FC = () => {
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </GestureHandlerRootView>
+    </GestureHandlerRootView >
   );
 };
 
