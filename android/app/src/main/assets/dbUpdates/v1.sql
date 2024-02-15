@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS UserRole (
 );
 
 CREATE TABLE IF NOT EXISTS User (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  id TEXT PRIMARY KEY,
   name VARCHAR(255),
   userName VARCHAR(255),
   password VARCHAR(255),
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS User (
 );
 
 CREATE TABLE IF NOT EXISTS Inspection (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  id TEXT PRIMARY KEY,
   barcode VARCHAR(13),
   deviceTypeId INTEGER,
   inspectionTypeId INTEGER,
@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS Inspection (
   contractNumber VARCHAR(100),
   createdAt DATE DEFAULT (datetime('now','localtime')),
   airVolume NUMERIC,
-  userId INTEGER,
+  userId TEXT,
   FOREIGN KEY (deviceTypeId) REFERENCES DeviceType(id),
   FOREIGN KEY (inspectionTypeId) REFERENCES InspectionType(id),
   FOREIGN KEY (userId) REFERENCES User(id)
@@ -66,4 +66,4 @@ INSERT INTO UserRole (name) VALUES ('admin');
 INSERT INTO UserRole (name) VALUES ('user');
 
 
-INSERT INTO User (name, userName, password, roleId) VALUES ('Darko Sovilj', 'darko', 'hashed_password', 1);
+INSERT INTO User (id, name, userName, password, roleId) VALUES (<GUID>, 'Darko Sovilj', 'darko', 'hashed_password', 1);
