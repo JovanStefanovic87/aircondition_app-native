@@ -15,6 +15,6 @@ module.exports = {
     ecmaVersion: 2022, // Set the correct ECMAScript version
   },
   rules: {
-    // Customize your ESLint rules here
+    '@typescript-eslint/no-unused-vars': 'warn',
   },
 };

@@ -90,7 +90,7 @@ export type InspectionDeviceComponentUpdate = {
 }
 
 export type DeviceStateByInspection = {
-    id: string;
+    id: number;
     inspectionId: string;
     deviceStateId: number;
     value: number | null;
