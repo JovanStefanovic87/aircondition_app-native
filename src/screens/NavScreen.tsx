@@ -9,7 +9,6 @@ import {
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
-import { deleteAllTables, fillDeviceTable, getAllTables1, getDeviceTypes, getInspectionTypes, selectInsertedRecord } from '../../database/dbFunctions';
 
 type NavScreenNavigationProp = NavigationProp<any, any>;
 
@@ -23,17 +22,6 @@ const NavScreen: React.FC = () => {
   const handleHomePress = () => {
     navigation.navigate('HomeScreen');
   };
-
-  const displayDeviceTypes = async () => {
-    const data = await getDeviceTypes();
-    console.log('deviceTypes: ', JSON.stringify(data))
-  }
-
-  const displayInspectionTypes = async () => {
-    const data = await getInspectionTypes();
-    console.log('InspectionTypes: ', JSON.stringify(data))
-  }
-
 
 
 
@@ -59,13 +47,13 @@ const NavScreen: React.FC = () => {
 
           <TouchableOpacity
             style={styles.button}
-            onPress={() => displayInspectionTypes()}
+            onPress={() => console.log('')}
           >
             <Icon name="check-circle" size={30} color="green" />
             <Text style={styles.buttonText}>Closed Inspection</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button} onPress={() => displayDeviceTypes()}>
+          <TouchableOpacity style={styles.button} onPress={() => console.log('')}>
             <Icon name="user" size={30} color="#3498db" />
             <Text style={styles.buttonText}>Profile</Text>
           </TouchableOpacity>

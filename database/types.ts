@@ -7,3 +7,119 @@ export type InspectionType = {
     id: number;
     name: string;
 }
+
+export type DatabaseVersionType = {
+    version: number;
+}
+
+
+/** 
+ * @param userId Format of param is UUID.
+ * @param createdAt The creation date of the inspection in the format 'YYYY-MM-DDTHH:mm:ssZ'.
+ */
+export type InspectionUpdate = {
+    id?: string;
+    barcode: string;
+    deviceTypeId: number;
+    inspectionTypeId: number;
+    facilityName: string;
+    location: string;
+    contractNumber: string;
+    createdAt: string;
+    airVolume?: number;
+    userId: string;
+}
+
+/** 
+ * @param id format of param is UUID.
+ */
+export type User = {
+    id: string;
+    name: string;
+    userName: string;
+    password: string;
+    roleId: number;
+};
+
+export type UserRole = {
+    id: number;
+    name: string;
+};
+
+/** 
+ * @param userId Format of param is UUID.
+ * @param createdAt The creation date of the inspection in the format 'YYYY-MM-DDTHH:mm:ssZ'.
+ */
+export type Inspection = {
+    id?: string;
+    barcode: string;
+    deviceTypeId: number;
+    inspectionTypeId: number;
+    facilityName: string;
+    location: string;
+    contractNumber: string;
+    createdAt: string;
+    airVolume?: number;
+    userId: string;
+}
+
+/** 
+ * @param groupTypeId The id of the group type (Physical, Constructive, Microbiological, Air germ measurement)
+ * @param titleComponentId The id of the title component (Gesamt, Anlage);
+ * @param elementId When this id present component is considered as a element state component, otherwise it is a device state component. 
+ * @param isUsingNote Represents if the component is using a input field for notes.
+ * @param displayOrder The order of the component for UI display.
+ */
+export type DeviceStateComponent = {
+    id: number;
+    name: string;
+    groupTypeId: number;
+    titleComponentId: number;
+    elementId: number | null;
+    isUsingNote: boolean;
+    displayOrder: number;
+    deviceStateValues?: DeviceStateValueDetails[];
+}
+
+
+export type InspectionDeviceComponentUpdate = {
+    id?: string;
+    inspectionId: string;
+    deviceStateId: number;
+    value?: number;
+}
+
+export type DeviceStateByInspection = {
+    id: string;
+    inspectionId: string;
+    deviceStateId: number;
+    value: number | null;
+    note: string | null;
+    name: string;
+    groupTypeId: number;
+    titleComponentId: number;
+    elementId: number | null;
+    isUsingNote: boolean;
+    displayOrder: number;
+    groupTypeName: string;
+    titleComponentName: string;
+}
+
+export type DeviceStateValueDetails = {
+    id: string;
+    deviceStateComponentId: number;
+    stateValueId: number;
+    valueName: string;
+}
+
+export type DeviceStateComponentsForInspection = {
+    groupTypeName: string;
+    titleComponents: TitleComponent[];
+}
+
+export type TitleComponent = {
+    name: string;
+    deviceStateComponents: DeviceStateComponent[];
+}
+
+

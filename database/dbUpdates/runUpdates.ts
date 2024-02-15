@@ -1,23 +1,15 @@
 // runUpdates.ts
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import fs from 'react-native-fs';
-import SQLite, { SQLiteDatabase } from 'react-native-sqlite-storage';
-
-let db = null;
-
-export async function openDatabaseConnection(): Promise<void> {
-  if (!db) {
-    db = await SQLite.openDatabase({ name: 'AC_inspector.db', location: 'default' });
-  }
-}
+import { getDatabase } from '../dbConnection/initDatabase';
+import uuid from 'react-native-uuid';
 
 
 async function getCurrentDatabaseVersion() {
+  const db = getDatabase();
   return await new Promise<number>((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql('SELECT MAX(version) AS currentVersion FROM DatabaseVersion', [], (_, result) => {
-        console.log('Inside transaction success callback'); // Log to check if this part is reached
-
         const currentVersion = result.rows.item(0).currentVersion || 0;
         resolve(currentVersion);
       }, (_, error) => {
@@ -30,15 +22,32 @@ async function getCurrentDatabaseVersion() {
 
 
 async function executeSqlScript(scriptContent: string) {
+  const db = getDatabase();
+
   return new Promise<void>((resolve, reject) => {
-    const statements = scriptContent.split(';').filter((statement) => statement.trim() !== '');
+    const statements = scriptContent?.split(';').filter((statement) => statement.trim() !== '');
+
+    const generateGuids = (script: string) => {
+      return script.replace(/<GUID>/g, () => {
+        const guid = uuid.v4();
+        return `'${guid}'`;
+      });
+    };
+
 
     db.transaction((tx) => {
+      console.log('.................Database update started.................')
       const processStatement = (index: number) => {
-        if (index < statements.length) {
-          tx.executeSql(statements[index], [], (_, result) => {
+
+        if (statements && index < statements.length) {
+          const sql = generateGuids(statements[index]);
+
+          console.log('sql', sql)
+
+          tx.executeSql(sql, [], (_, result) => {
             processStatement(index + 1);
           }, (_, error) => {
+            console.log('error-executeSqlScript', error);
             reject(error);
           });
         } else {
@@ -61,9 +70,10 @@ async function executeSqlScript(scriptContent: string) {
 
 
 async function updateDatabaseVersion(newVersion: number) {
+  const db = getDatabase();
   return new Promise<void>((resolve, reject) => {
     db.transaction((tx) => {
-      tx.executeSql('INSERT INTO database_version (version) VALUES (?)', [newVersion], (_, result) => {
+      tx.executeSql('INSERT INTO DatabaseVersion (version) VALUES (?)', [newVersion], (_, result) => {
         tx.executeSql('COMMIT', [], () => {
           resolve();
         }, (_, error) => {
@@ -77,15 +87,10 @@ async function updateDatabaseVersion(newVersion: number) {
 }
 
 export async function runDBUpdates() {
-  console.log('.................Database update started.................')
-  await openDatabaseConnection();
-
   const currentVersion = await getCurrentDatabaseVersion();
 
-  console.log('currentVersion', currentVersion);
-
   const readSqlFile = async (version: number) => {
-    const scriptPath = `updates/v${version}.sql`;
+    const scriptPath = `dbUpdates/v${version}.sql`;
     const scriptContent = await fs.readFileAssets(scriptPath);
     return scriptContent;
   };
@@ -97,14 +102,14 @@ export async function runDBUpdates() {
       await executeSqlScript(scriptContent);
 
       // Update the database_version table after each successful update
-      // await updateDatabaseVersion(version);
+      if (version > 1) await updateDatabaseVersion(version);
 
       // Process the next update
       await processUpdate(version + 1);
     } catch (error) {
       if (error?.code === 'ENOENT') {
         // File not found, nothing to update
-        console.log(`Database version v${version} is up to date.`);
+        console.log(`Database version v${version - 1} is up to date.`);
       } else {
         // Handle other errors during script execution
         console.error(`Error executing update script v${version}:`, error);

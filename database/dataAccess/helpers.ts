@@ -1,7 +1,11 @@
 
 import SQLite from 'react-native-sqlite-storage';
-import DatabaseHelper from './getAllTables';
-import { DeviceType, InspectionType } from './types';
+import DatabaseHelper from './getAllTablesClass';
+import { DatabaseVersionType, DeviceType, InspectionType } from '../types';
+import { getDatabase } from '../dbConnection/initDatabase';
+import uuid from 'react-native-uuid';
+import { executeQuery } from './Query/baseQuery';
+import { mapDatabaseVersionType } from '../dataMappers/mappers';
 
 export const insertSqlite = async () => {
     try {
@@ -180,7 +184,7 @@ export const deleteAllTables = async (): Promise<void> => {
 
 
 export const getAllTables = async () => {
-    const db = await SQLite.openDatabase({ name: 'AC_inspector.db', location: 'default' });
+    const db = getDatabase();
     return new Promise<string[]>((resolve, reject) => {
         db.transaction((tx) => {
             tx.executeSql(
@@ -198,6 +202,8 @@ export const getAllTables = async () => {
         });
     });
 };
+
+
 export const getAllTables1 = () => {
     const databaseHelper = new DatabaseHelper();
     databaseHelper.getAllTables().then((tables) => {
@@ -207,82 +213,11 @@ export const getAllTables1 = () => {
 
 
 
-export const getDeviceTypes = async (): Promise<DeviceType[]> => {
-    try {
-        const db = await SQLite.openDatabase({ name: 'AC_inspector.db', location: 'default' });
 
-        return new Promise<DeviceType[]>((resolve, reject) => {
-            db.transaction((tx) => {
-                tx.executeSql(
-                    `SELECT * FROM DeviceType`,
-                    [],
-                    (_, result) => {
-                        const rows = result.rows;
-                        const deviceTypes: DeviceType[] = [];
 
-                        if (rows.length > 0) {
-                            for (let i = 0; i < rows.length; i++) {
-                                const record = rows.item(i);
-                                deviceTypes.push({
-                                    id: record.id,
-                                    name: record.name,
-                                });
-                            }
-                            resolve(deviceTypes);
-                        } else {
-                            console.log('No records found');
-                            resolve([]);
-                        }
-                    },
-                    (_, error) => {
-                        console.log('Error selecting record: ', error);
-                        reject(error);
-                    }
-                );
-            });
-        });
-    } catch (error) {
-        console.error('Error opening database: ', error);
-        throw error;
-    }
-};
 
-export const getInspectionTypes = async (): Promise<InspectionType[]> => {
-    try {
-        const db = await SQLite.openDatabase({ name: 'AC_inspector.db', location: 'default' });
 
-        return new Promise<InspectionType[]>((resolve, reject) => {
-            db.transaction((tx) => {
-                tx.executeSql(
-                    `SELECT * FROM InspectionType`,
-                    [],
-                    (_, result) => {
-                        const rows = result.rows;
-                        const inspectionTypes: InspectionType[] = [];
 
-                        if (rows.length > 0) {
-                            for (let i = 0; i < rows.length; i++) {
-                                const record = rows.item(i);
-                                inspectionTypes.push({
-                                    id: record.id,
-                                    name: record.name,
-                                });
-                            }
-                            resolve(inspectionTypes);
-                        } else {
-                            console.log('No records found');
-                            resolve([]);
-                        }
-                    },
-                    (_, error) => {
-                        console.log('Error selecting record: ', error);
-                        reject(error);
-                    }
-                );
-            });
-        });
-    } catch (error) {
-        console.error('Error opening database: ', error);
-        throw error;
-    }
-};
+
+
+
