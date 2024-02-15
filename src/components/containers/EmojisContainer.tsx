@@ -4,6 +4,7 @@ import GreenSmiley from '../icons/GreenSmiley';
 import OrangeSmiley from '../icons/OrangeSmiley';
 import RedSmiley from '../icons/RedSmiley';
 import YellowSmiley from '../icons/YellowSmiley';
+import InputText from '../input/InputText';
 
 interface SmileyColor {
   color: string;
@@ -16,21 +17,23 @@ interface SmileyColor {
 }
 
 interface EmojisContainerProps {
-  description?: string;
+  title?: string;
   green?: boolean;
   yellow?: boolean;
   orange?: boolean;
   red?: boolean;
+  note?: string;
 }
 
 const EmojisContainer: React.FC<EmojisContainerProps> = ({
-  description = 'N/A',
+  title = 'N/A',
   green = false,
   yellow = false,
   orange = false,
   red = false,
 }) => {
   const [activeColor, setActiveColor] = useState<string | null>(null);
+  const [note, setNote] = useState<string>('');
 
   const handleColorClick = (color: string) => {
     if (activeColor === color) {
@@ -47,29 +50,21 @@ const EmojisContainer: React.FC<EmojisContainerProps> = ({
     { color: 'red', SmileyComponent: RedSmiley, isVisible: red },
   ];
 
-  const areAllGreenSmileysActive = smileyColors
-    .filter((smiley) => smiley.color === 'green')
-    .every((smiley) => activeColor === 'green');
-
   return (
     <View style={styles.container}>
-      <Text>{description}</Text>
+      <Text style={styles.title}>{title}</Text>
       <View style={styles.row}>
         {smileyColors.map(({ color, SmileyComponent, isVisible }) => (
-          <TouchableOpacity
-            key={color}
-            onPress={() => handleColorClick(color)}
-            style={{ marginRight: 8 }}
-          >
+          <TouchableOpacity key={color} style={{ marginRight: 8 }}>
             <SmileyComponent
               isActive={activeColor === color}
               isVisible={isVisible}
-              onClick={() => {}}
+              onClick={() => handleColorClick(color)}
             />
           </TouchableOpacity>
         ))}
       </View>
-      {areAllGreenSmileysActive && <Text>All GreenSmileys are active!</Text>}
+      <InputText value={note} setValue={setNote} />
     </View>
   );
 };
@@ -79,12 +74,19 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'space-between',
-    paddingHorizontal: 10,
+    alignItems: 'center',
+    paddingHorizontal: 30,
+    marginVertical: 8,
+    width: '100%',
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginVertical: 8,
+  },
+  title: {
+    fontSize: 20,
+    textAlign: 'left',
     width: '100%',
   },
 });

@@ -155,11 +155,11 @@ const NewInspectionScreen = () => {
 const styles = StyleSheet.create({
   scrollContainer: {
     alignItems: 'center',
-    width: '100%',
+    flex: 1,
     maxHeight: '85%',
   },
   scrollView: {
-    width: '100%',
+    flex: 1,
   },
   container: {
     flex: 1,
@@ -168,14 +168,14 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   rowContainer: {
-    width: '100%',
+    width: '95%',
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 20,
     gap: 10,
   },
   colContainer: {
-    width: '100%',
+    width: '95%',
     flexDirection: 'column',
     alignItems: 'center',
     marginBottom: 20,

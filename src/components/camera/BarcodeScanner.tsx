@@ -26,21 +26,25 @@ type BarcodeScannerProps = {
   setScanResult: Dispatch<SetStateAction<string>>;
 };
 
-const BarcodeScanner: FC<BarcodeScannerProps> = (
-  props: BarcodeScannerProps,
-) => {
+const BarcodeScanner: FC<BarcodeScannerProps> = ({
+  onClose,
+  width,
+  height,
+  setScanResult,
+}) => {
   const [hasPermission, setHasPermission] = useState(false);
   const device = useCameraDevice('back');
-  const [barcodes, setBarcodes] = useState<Code[]>([]);
+  const [barcode, setBarcode] = useState<Code[]>([]);
   const [scanning, setScanning] = useState(true);
 
   const codeScanner = useCodeScanner({
     codeTypes: ['ean-13', 'code-128', 'code-93', 'code-39', 'ean-8'],
     onCodeScanned: (codes) => {
       if (scanning) {
-        setBarcodes(codes);
+        setBarcode(codes);
         setScanning(false);
-        props.setScanResult(codes[0].value);
+        setScanResult(codes[0].value);
+        onClose();
       }
     },
   });
@@ -51,7 +55,6 @@ const BarcodeScanner: FC<BarcodeScannerProps> = (
 
   const requestCameraPermission = async () => {
     try {
-      console.log('Requesting camera permission...');
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.CAMERA,
         {
@@ -87,14 +90,14 @@ const BarcodeScanner: FC<BarcodeScannerProps> = (
         />
         <View
           style={{
-            width: props.width ?? 300,
-            height: props.height ?? 300,
+            width: width ?? 300,
+            height: height ?? 300,
             backgroundColor: 'transparent',
             borderColor: 'white',
             borderWidth: 2,
           }}
         />
-        <TouchableOpacity style={styles.closeButton} onPress={props.onClose}>
+        <TouchableOpacity style={styles.closeButton} onPress={onClose}>
           <Text style={styles.closeButtonText}>Close</Text>
         </TouchableOpacity>
       </>

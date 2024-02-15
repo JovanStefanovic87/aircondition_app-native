@@ -4,7 +4,7 @@ import { customColors } from '../../assets/styles/customStyles';
 
 interface TextInputProps {
   value: string;
-  placeholder: string;
+  placeholder?: string;
   setValue: (value: string) => void;
   width?: DimensionValue;
 }
@@ -13,7 +13,7 @@ const InputText: React.FC<TextInputProps> = ({
   value,
   placeholder,
   setValue,
-  width = '100%',
+  width = 'auto',
 }) => {
   const handleChange = (text: string) => {
     setValue(text);
@@ -21,6 +21,8 @@ const InputText: React.FC<TextInputProps> = ({
 
   const styles = StyleSheet.create({
     input: {
+      flex: 1,
+      minWidth: '100%',
       width: width,
       height: 40,
       borderColor: customColors.blueLight,

@@ -23,22 +23,23 @@ const EmojisColumnContainer: React.FC<EmojisColumnContainerProps> = ({
   };
 
   const styles = StyleSheet.create({
+    outerContainer: {
+      flex: 1,
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderWidth: 2,
+      borderColor: customColors.blueLight,
+      width: '100%',
+      borderTopLeftRadius: 7,
+      borderTopRightRadius: 7,
+    },
     innerContainer: {
       flex: 1,
       flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
       width: '100%',
-    },
-    outerContainer: {
-      flex: 1,
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-      width: '100%',
-      borderWidth: 2,
-      borderColor: customColors.blueLight,
-      borderRadius: 8,
     },
     toggleButton: {
       alignSelf: 'center',

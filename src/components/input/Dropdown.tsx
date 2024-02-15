@@ -49,7 +49,8 @@ const Dropdown: FC<DropdownProps> = ({
 
 const styles = StyleSheet.create({
   dropdownContainer: {
-    width: '100%',
+    flex: 1,
+    minWidth: '100%',
     borderColor: customColors.blueLight,
     borderWidth: 2,
     borderRadius: 5,
