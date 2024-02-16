@@ -4,10 +4,11 @@ import RNPickerSelect from 'react-native-picker-select';
 import { customColors } from '../../assets/styles/customStyles';
 
 interface DropdownProps {
-  selectedTab: string;
-  setSelectedTab: (value: string) => void;
-  pickerPlaceholder: string;
-  items: { label: string; value: string }[];
+  selectedTab: number;
+  setSelectedTab: (value: number) => void;
+  pickerPlaceholder: string | number;
+  items: { value: string | number; label: string }[];
+  isValid?: boolean;
 }
 
 const Dropdown: FC<DropdownProps> = ({
@@ -15,9 +16,11 @@ const Dropdown: FC<DropdownProps> = ({
   items,
   setSelectedTab,
   pickerPlaceholder,
+  isValid = true,
 }) => {
+  const borderColor = isValid ? customColors.blueLight : 'red';
   return (
-    <View style={styles.dropdownContainer}>
+    <View style={[styles.dropdownContainer, { borderColor }]}>
       <RNPickerSelect
         onValueChange={(value) => setSelectedTab(value)}
         items={items}
@@ -49,7 +52,8 @@ const Dropdown: FC<DropdownProps> = ({
 
 const styles = StyleSheet.create({
   dropdownContainer: {
-    width: '100%',
+    flex: 1,
+    minWidth: '100%',
     borderColor: customColors.blueLight,
     borderWidth: 2,
     borderRadius: 5,
