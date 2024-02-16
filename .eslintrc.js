@@ -9,12 +9,12 @@ module.exports = {
     'plugin:@typescript-eslint/recommended-requiring-type-checking',
     'plugin:prettier/recommended',
   ],
-  plugins: ['react', 'react-native', '@typescript-eslint'],
+  plugins: ['react', 'react-native', '@typescript-eslint', 'sql'],
   parserOptions: {
     project: './tsconfig.json',
-    ecmaVersion: 2022, // Set the correct ECMAScript version
+    ecmaVersion: 2022,
   },
   rules: {
-    '@typescript-eslint/no-unused-vars': 'warn',
+    'sql/format': ['error', { type: 'sql' }],
   },
 };

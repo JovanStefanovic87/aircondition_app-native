@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   View,
@@ -8,6 +8,8 @@ import {
   Platform,
   ScrollView,
 } from 'react-native';
+import moment from 'moment';
+import { InspectionUpdate, DeviceStateComponentsForInspection } from '../../database/types';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import BarcodeScanner from '../components/camera/BarcodeScanner';
@@ -15,21 +17,92 @@ import InputText from '../components/input/InputText';
 import IconButton from '../components/buttons/IconButton';
 import Dropdown from '../components/input/Dropdown';
 import PrimaryButton from '../components/buttons/PrimaryButton';
+import {
+  getInspectionDeviceState,
+  getInspections,
+  getDeviceTypes,
+  getInspectionTypes,
+  getInspectionDeviceStateDetails,
+} from '../../database/dataAccess/Query/sqlQueries';
+import { deleteAllTables } from '../../database/dataAccess/helpers';
+import { saveInspection } from '../../database/dataAccess/Query/sqlCommands';
 
 type NewInspectionScreenNavigationProp = NavigationProp<any, any>;
+type DeviceType = {
+  id: number;
+  name: string;
+};
+type InspectionType = {
+  id: number;
+  name: string;
+};
 
 const NewInspectionScreen = () => {
   const navigation = useNavigation<NewInspectionScreenNavigationProp>();
   const [isScannerOpen, setScannerOpen] = useState(false);
-  const [selectedTab, setSelectedTab] = useState<string>('');
-  const [name, setName] = useState<string>('');
-  const [location, setLocation] = useState<string>('');
   const [scanType, setScanType] = useState<string>('');
-  const [deviceBarcode, setDeviceBarcode] = useState<string>('');
-  const [contractBarcode, setContractBarcode] = useState<string>('');
+  const [deviceTypes, setDeviceTypes] = useState<DeviceType[]>([]);
+  const [inspectionTypes, setInspectionTypes] = useState<InspectionType[]>([]);
+  const [inspectionDeviceDetail, setInspectionDeviceDetail] = useState<
+    DeviceStateComponentsForInspection[]
+  >([]);
+  const [form, setForm] = useState<InspectionUpdate>({
+    barcode: '',
+    deviceTypeId: null,
+    inspectionTypeId: null,
+    facilityName: '',
+    location: '',
+    contractNumber: '',
+    createdAt: '',
+    userId: 'c1480367-7de5-4275-aa33-dde1db51c45e',
+  });
+  const [validation, setValidation] = useState<Record<string, boolean>>({
+    deviceTypeId: true,
+    facilityName: true,
+    location: true,
+    inspectionTypeId: true,
+    contractNumber: true,
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const fetchedDeviceTypes = await getDeviceTypes();
+      const fetchedInspectionTypes = await getInspectionTypes();
+      const fetchInspectionDeviceStateDetails = await getInspectionDeviceStateDetails(
+        '2f59e274-f0a5-410a-92b9-19d6fa1aa0d6',
+      );
+      setDeviceTypes(fetchedDeviceTypes);
+      setInspectionTypes(fetchedInspectionTypes);
+      setInspectionDeviceDetail(fetchInspectionDeviceStateDetails);
+    };
+
+    fetchData();
+  }, []);
 
   const handleOngoingInspectionPress = () => {
-    navigation.navigate('OngoingInspectionScreen');
+    const errors: string[] = [];
+
+    Object.entries(form).forEach(([key, value]) => {
+      if (key !== 'createdAt' && !value) {
+        errors.push(key);
+        setValidation((prevValidation) => ({
+          ...prevValidation,
+          [key]: false,
+        }));
+      }
+    });
+
+    if (errors.length > 0) {
+      return;
+    }
+
+    const formattedCreatedAt = moment().format('YYYY-MM-DDTHH:mm:ss[Z]');
+    setForm((prevForm) => ({
+      ...prevForm,
+      createdAt: formattedCreatedAt,
+    }));
+
+    saveInspection(form);
   };
 
   const openScanner = (scanType: string) => {
@@ -37,33 +110,13 @@ const NewInspectionScreen = () => {
     setScannerOpen(true);
   };
 
-  const VentilationSystemsOptions = [
-    { label: 'RLT-Anlage', value: 'RLT-Anlage' },
-    { label: 'Kühlturm', value: 'Kühlturm' },
-    { label: 'Gefahrstoffschrank', value: 'Gefahrstoffschrank' },
-    { label: 'Laborabzung', value: 'Laborabzung' },
-    { label: 'Nassabscheider', value: 'Nassabscheider' },
-  ];
-
-  const inspectionOptions = [
-    {
-      label: 'Gefährdungsbeurteilung VDI 6022',
-      value: 'Gefährdungsbeurteilung VDI 6022',
-    },
-    {
-      label: 'Hygieneerstinspektion VDI 6022',
-      value: 'Hygieneerstinspektion VDI 6022',
-    },
-    { label: 'Hygieneinspektion VDI 6022', value: 'Gefahrstoffschrank' },
-    {
-      label: 'Routineprüfung nach DIN EN 14175 von Gefahrstoffschränken',
-      value: 'Routineprüfung nach DIN EN 14175 von Gefahrstoffschränken',
-    },
-    {
-      label: 'Routineprüfung nach DIN EN 14175 von Laborabzügen',
-      value: 'Routineprüfung nach DIN EN 14175 von Laborabzügen',
-    },
-  ];
+  const renderDropdownItems = (items: DeviceType[]) => {
+    return items.map((item) => ({
+      key: item.id.toString(),
+      value: item.id,
+      label: item.name,
+    }));
+  };
 
   return (
     <KeyboardAvoidingView
@@ -73,9 +126,19 @@ const NewInspectionScreen = () => {
       {isScannerOpen ? (
         <BarcodeScanner
           onClose={() => setScannerOpen(false)}
-          setScanResult={
-            scanType === 'device' ? setDeviceBarcode : setContractBarcode
-          }
+          setScanResult={(result) => {
+            if (scanType === 'device') {
+              setForm((prevForm) => ({
+                ...prevForm,
+                barcode: result,
+              }));
+            } else if (scanType === 'contract') {
+              setForm((prevForm) => ({
+                ...prevForm,
+                contractNumber: result,
+              }));
+            }
+          }}
         />
       ) : (
         <GestureHandlerRootView style={styles.scrollContainer}>
@@ -84,15 +147,13 @@ const NewInspectionScreen = () => {
               <Text>ANLAGE-ID:</Text>
               <View style={styles.rowContainer}>
                 <InputText
-                  placeholder="Basrcode"
-                  value={deviceBarcode}
-                  setValue={setDeviceBarcode}
-                  width="84%"
+                  minWidth="78%"
+                  placeholder="Barcode"
+                  value={form.barcode}
+                  setValue={(value) => setForm({ ...form, barcode: value })}
+                  isValid={validation.deviceTypeId}
                 />
-                <IconButton
-                  icon="camera"
-                  onPress={() => openScanner('device')}
-                />
+                <IconButton icon="camera" onPress={() => openScanner('device')} />
                 <TextInput />
               </View>
             </View>
@@ -100,26 +161,30 @@ const NewInspectionScreen = () => {
               <Text>GERÄTEINFORMATION:</Text>
               <View style={styles.colContainer}>
                 <Dropdown
-                  selectedTab={selectedTab}
-                  setSelectedTab={setSelectedTab}
+                  selectedTab={form.deviceTypeId}
+                  setSelectedTab={(value) => setForm({ ...form, deviceTypeId: value })}
                   pickerPlaceholder="Lüftungssystem auswählen"
-                  items={VentilationSystemsOptions}
+                  items={renderDropdownItems(deviceTypes)}
+                  isValid={validation.deviceTypeId}
                 />
                 <InputText
                   placeholder="name der Anlage"
-                  value={name}
-                  setValue={setName}
+                  value={form.facilityName}
+                  setValue={(value) => setForm({ ...form, facilityName: value })}
+                  isValid={validation.facilityName}
                 />
                 <InputText
                   placeholder="Aufstellungsort (wo?: z.B Keller, Dach, Technikzentral..."
-                  value={location}
-                  setValue={setLocation}
+                  value={form.location}
+                  setValue={(value) => setForm({ ...form, location: value })}
+                  isValid={validation.location}
                 />
                 <Dropdown
-                  selectedTab={selectedTab}
-                  setSelectedTab={setSelectedTab}
+                  selectedTab={form.inspectionTypeId}
+                  setSelectedTab={(value) => setForm({ ...form, inspectionTypeId: value })}
                   pickerPlaceholder="Inspektionsart auswählen"
-                  items={inspectionOptions}
+                  items={renderDropdownItems(inspectionTypes)}
+                  isValid={validation.inspectionTypeId}
                 />
               </View>
             </View>
@@ -127,15 +192,13 @@ const NewInspectionScreen = () => {
               <Text>NUMMER DER LEISTUNGSNACHWEIS:</Text>
               <View style={styles.rowContainer}>
                 <InputText
-                  placeholder="Basrcode"
-                  value={contractBarcode}
-                  setValue={setContractBarcode}
-                  width="84%"
+                  minWidth="78%"
+                  placeholder="Barcode"
+                  value={form.contractNumber}
+                  setValue={(value) => setForm({ ...form, contractNumber: value })}
+                  isValid={validation.contractNumber}
                 />
-                <IconButton
-                  icon="camera"
-                  onPress={() => openScanner('contract')}
-                />
+                <IconButton icon="camera" onPress={() => openScanner('contract')} />
                 <TextInput />
               </View>
             </View>
@@ -143,10 +206,7 @@ const NewInspectionScreen = () => {
         </GestureHandlerRootView>
       )}
       <View style={styles.rightAlign}>
-        <PrimaryButton
-          title="Nächster Schritt"
-          onPress={handleOngoingInspectionPress}
-        />
+        <PrimaryButton title="Nächster Schritt" onPress={handleOngoingInspectionPress} />
       </View>
     </KeyboardAvoidingView>
   );
@@ -155,11 +215,11 @@ const NewInspectionScreen = () => {
 const styles = StyleSheet.create({
   scrollContainer: {
     alignItems: 'center',
-    width: '100%',
+    flex: 1,
     maxHeight: '85%',
   },
   scrollView: {
-    width: '100%',
+    flex: 1,
   },
   container: {
     flex: 1,
@@ -175,7 +235,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   colContainer: {
-    width: '100%',
+    width: '95%',
     flexDirection: 'column',
     alignItems: 'center',
     marginBottom: 20,
