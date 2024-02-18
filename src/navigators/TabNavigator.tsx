@@ -18,11 +18,7 @@ const TabNavigator = () => {
 
   return (
     <Stack.Navigator>
-      <Stack.Screen
-        name="NavScreen"
-        component={NavScreen}
-        options={navigationOptions}
-      />
+      <Stack.Screen name="NavScreen" component={NavScreen} options={navigationOptions} />
       <Stack.Screen
         name="NewInspectionScreen"
         component={NewInspectionScreen}

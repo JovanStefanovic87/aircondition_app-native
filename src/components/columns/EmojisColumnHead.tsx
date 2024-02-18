@@ -27,7 +27,6 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
     width: '100%',
     backgroundColor: '#2196F3',
-    borderRadius: 5,
     paddingVertical: 2,
   },
   header: {

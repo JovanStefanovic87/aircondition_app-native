@@ -24,6 +24,7 @@ const OrangeSmiley: React.FC<OrangeSmileyProps> = ({
     width: 70,
     height: 70,
     opacity: isVisible ? 1 : 0,
+    pointerEvents: isVisible ? 'auto' : 'none',
   };
 
   const handlePress = () => {

@@ -1,6 +1,7 @@
-import React, { Dispatch, FC, SetStateAction, useEffect, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, PermissionsAndroid } from 'react-native';
+import React, { FC, useEffect, useState } from 'react';
+import { StyleSheet, View, PermissionsAndroid } from 'react-native';
 import { useCameraDevice, useCodeScanner, Camera } from 'react-native-vision-camera';
+import CloseCameraButton from '../buttons/CloseCameraButton';
 
 type BarcodeScannerProps = {
   onClose: () => void;
@@ -70,38 +71,10 @@ const BarcodeScanner: FC<BarcodeScannerProps> = ({ onClose, width, height, setSc
             borderWidth: 2,
           }}
         />
-        <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-          <Text style={styles.closeButtonText}>Close</Text>
-        </TouchableOpacity>
+        <CloseCameraButton onPress={onClose} />
       </>
     )
   );
 };
-
-const styles = StyleSheet.create({
-  closeButton: {
-    position: 'absolute',
-    top: 10,
-    right: 20,
-    backgroundColor: 'white',
-    padding: 10,
-    borderRadius: 5,
-  },
-  closeButtonText: {
-    fontSize: 16,
-    color: 'black',
-  },
-  button: {
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2,
-    marginHorizontal: 20,
-    marginTop: 20,
-  },
-  container: {
-    flex: 1,
-    position: 'relative',
-  },
-});
 
 export default BarcodeScanner;

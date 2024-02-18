@@ -8,6 +8,7 @@ import {
   Platform,
   ScrollView,
 } from 'react-native';
+import { useInspectionStore } from '../store/store';
 import moment from 'moment';
 import { InspectionUpdate, DeviceStateComponentsForInspection } from '../../database/types';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -22,7 +23,6 @@ import {
   getInspections,
   getDeviceTypes,
   getInspectionTypes,
-  getInspectionDeviceStateDetails,
 } from '../../database/dataAccess/Query/sqlQueries';
 import { deleteAllTables } from '../../database/dataAccess/helpers';
 import { saveInspection } from '../../database/dataAccess/Query/sqlCommands';
@@ -68,18 +68,14 @@ const NewInspectionScreen = () => {
     const fetchData = async () => {
       const fetchedDeviceTypes = await getDeviceTypes();
       const fetchedInspectionTypes = await getInspectionTypes();
-      const fetchInspectionDeviceStateDetails = await getInspectionDeviceStateDetails(
-        '2f59e274-f0a5-410a-92b9-19d6fa1aa0d6',
-      );
       setDeviceTypes(fetchedDeviceTypes);
       setInspectionTypes(fetchedInspectionTypes);
-      setInspectionDeviceDetail(fetchInspectionDeviceStateDetails);
     };
 
     fetchData();
   }, []);
 
-  const handleOngoingInspectionPress = () => {
+  const submit = async () => {
     const errors: string[] = [];
 
     Object.entries(form).forEach(([key, value]) => {
@@ -102,7 +98,11 @@ const NewInspectionScreen = () => {
       createdAt: formattedCreatedAt,
     }));
 
-    saveInspection(form);
+    const newInspectionId = await saveInspection(form);
+    if (newInspectionId) {
+      useInspectionStore.getState().setNewInspectionId(newInspectionId);
+      navigation.navigate('OngoingInspectionScreen');
+    }
   };
 
   const openScanner = (scanType: string) => {
@@ -206,7 +206,7 @@ const NewInspectionScreen = () => {
         </GestureHandlerRootView>
       )}
       <View style={styles.rightAlign}>
-        <PrimaryButton title="Nächster Schritt" onPress={handleOngoingInspectionPress} />
+        <PrimaryButton title="Nächster Schritt" onPress={submit} />
       </View>
     </KeyboardAvoidingView>
   );

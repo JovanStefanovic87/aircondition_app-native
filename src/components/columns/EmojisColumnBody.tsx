@@ -6,22 +6,25 @@ type EmojisColumnBodyProps = {
   children: ReactNode;
 };
 
-const EmojisColumnBody: React.FC<EmojisColumnBodyProps> = ({
-  isOpen = true,
-  children,
-}) => {
+const EmojisColumnBody: React.FC<EmojisColumnBodyProps> = ({ isOpen = true, children }) => {
   const styles = StyleSheet.create({
     container: {
       flex: 1,
       flexDirection: 'column',
       justifyContent: 'center',
-      paddingVertical: isOpen ? 4 : 0,
     },
   });
 
   return (
     <View style={styles.container}>
-      {isOpen && <View style={{ height: '100%' }}>{children}</View>}
+      <View
+        style={{
+          height: isOpen ? '100%' : 0,
+          overflow: 'hidden',
+        }}
+      >
+        {children}
+      </View>
     </View>
   );
 };

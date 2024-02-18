@@ -11,7 +11,7 @@ interface YellowSmileyProps {
 
 const YellowSmiley: React.FC<YellowSmileyProps> = ({
   isVisible = false,
-  isActive = false,
+  isActive = true,
   onClick,
 }) => {
   const containerStyles: StyleProp<ViewStyle> = {
@@ -24,6 +24,7 @@ const YellowSmiley: React.FC<YellowSmileyProps> = ({
     width: 70,
     height: 70,
     opacity: isVisible ? 1 : 0,
+    pointerEvents: isVisible ? 'auto' : 'none',
   };
 
   const handlePress = () => {

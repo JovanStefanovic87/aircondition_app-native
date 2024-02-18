@@ -4,56 +4,47 @@ import GreenSmiley from '../icons/GreenSmiley';
 import OrangeSmiley from '../icons/OrangeSmiley';
 import RedSmiley from '../icons/RedSmiley';
 import YellowSmiley from '../icons/YellowSmiley';
+import InputText from '../input/InputText';
 
-interface SmileyColor {
+type SmileyColor = {
   color: string;
-  SmileyComponent: React.FC<{
-    isActive: boolean;
-    isVisible: boolean;
-    onClick: () => void;
-  }>;
+  SmileyComponent: React.FC<{ isActive: boolean; isVisible: boolean; onClick: () => void }>;
   isVisible: boolean;
-}
+};
 
 interface EmojisContainerProps {
-  description?: string;
-  green?: boolean;
-  yellow?: boolean;
-  orange?: boolean;
-  red?: boolean;
+  title?: string;
+  smileys: { name: string }[];
 }
 
-const EmojisContainer: React.FC<EmojisContainerProps> = ({
-  description = 'N/A',
-  green = false,
-  yellow = false,
-  orange = false,
-  red = false,
-}) => {
+const EmojisContainer: React.FC<EmojisContainerProps> = ({ title = 'N/A', smileys }) => {
   const [activeColor, setActiveColor] = useState<string | null>(null);
+  const [note, setNote] = useState<string>('');
+  const GREEN = 'GREEN';
+  const YELLOW = 'YELLOW';
+  const ORANGE = 'ORANGE';
+  const RED = 'RED';
 
   const handleColorClick = (color: string) => {
-    if (activeColor === color) {
-      setActiveColor(null);
-    } else {
-      setActiveColor(color);
-    }
+    setActiveColor((prevColor) => (prevColor === color ? null : color));
   };
 
+  const checkColor = (color: string) => smileys.some((smiley) => smiley.name === color);
+
   const smileyColors: SmileyColor[] = [
-    { color: 'green', SmileyComponent: GreenSmiley, isVisible: green },
-    { color: 'yellow', SmileyComponent: YellowSmiley, isVisible: yellow },
-    { color: 'orange', SmileyComponent: OrangeSmiley, isVisible: orange },
-    { color: 'red', SmileyComponent: RedSmiley, isVisible: red },
+    { color: GREEN, SmileyComponent: GreenSmiley, isVisible: checkColor(GREEN) },
+    { color: YELLOW, SmileyComponent: YellowSmiley, isVisible: checkColor(YELLOW) },
+    { color: ORANGE, SmileyComponent: OrangeSmiley, isVisible: checkColor(ORANGE) },
+    { color: RED, SmileyComponent: RedSmiley, isVisible: checkColor(RED) },
   ];
 
   const areAllGreenSmileysActive = smileyColors
-    .filter((smiley) => smiley.color === 'green')
-    .every((smiley) => activeColor === 'green');
+    .filter((smiley) => smiley.color === GREEN)
+    .every((smiley) => activeColor === GREEN);
 
   return (
     <View style={styles.container}>
-      <Text>{description}</Text>
+      <Text style={styles.title}>{title}</Text>
       <View style={styles.row}>
         {smileyColors.map(({ color, SmileyComponent, isVisible }) => (
           <TouchableOpacity
@@ -69,7 +60,7 @@ const EmojisContainer: React.FC<EmojisContainerProps> = ({
           </TouchableOpacity>
         ))}
       </View>
-      {areAllGreenSmileysActive && <Text>All GreenSmileys are active!</Text>}
+      <InputText value={note} setValue={setNote} />
     </View>
   );
 };
@@ -86,6 +77,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginVertical: 8,
     width: '100%',
+  },
+  title: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 8,
   },
 });
 

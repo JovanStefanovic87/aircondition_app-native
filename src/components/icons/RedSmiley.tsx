@@ -9,11 +9,7 @@ interface RedSmileyProps {
   onClick: () => void;
 }
 
-const RedSmiley: React.FC<RedSmileyProps> = ({
-  isVisible = false,
-  isActive = false,
-  onClick,
-}) => {
+const RedSmiley: React.FC<RedSmileyProps> = ({ isVisible = false, isActive = false, onClick }) => {
   const containerStyles: StyleProp<ViewStyle> = {
     alignItems: 'center',
     justifyContent: 'center',
@@ -24,6 +20,7 @@ const RedSmiley: React.FC<RedSmileyProps> = ({
     width: 70,
     height: 70,
     opacity: isVisible ? 1 : 0,
+    pointerEvents: isVisible ? 'auto' : 'none',
   };
 
   const handlePress = () => {
