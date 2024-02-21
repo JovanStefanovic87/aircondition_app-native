@@ -161,17 +161,17 @@ INSERT INTO TitleComponent (name, isUsingImage) VALUES ('ANLAGE', false);
 INSERT INTO TitleComponent (name, isUsingImage) VALUES ('GESAMT', true);
 INSERT INTO TitleComponent (name, isUsingImage) VALUES ('AUSSEN', true);
 
-INSERT INTO DeviceStateComponent (name, groupTypeId, titleComponentId, elementId, isUsingNote, displayOrder) VALUES ('Gehäuse-/ Türabdichtung fehlt / defekt', 2, 1, NULL, false, 1);
-INSERT INTO DeviceStateComponent (name, groupTypeId, titleComponentId, elementId, isUsingNote, displayOrder) VALUES ('Gehäuse undicht', 2, 1, NULL, false, 2);
-INSERT INTO DeviceStateComponent (name, groupTypeId, titleComponentId, elementId, isUsingNote, displayOrder) VALUES ('Bodenablauf nicht verschlossen', 2, 1, NULL, false, 3);
-INSERT INTO DeviceStateComponent (name, groupTypeId, titleComponentId, elementId, isUsingNote, displayOrder) VALUES ('Kenndaten fehlen', 2, 1, NULL, false, 4);
-INSERT INTO DeviceStateComponent (name, groupTypeId, titleComponentId, elementId, isUsingNote, displayOrder) VALUES ('Nicht einsehbar/prüfbar', 2, 1, NULL, false, 5);
-INSERT INTO DeviceStateComponent (name, groupTypeId, titleComponentId, elementId, isUsingNote, displayOrder) VALUES ('Innendämmung abgelöst / beschädigt', 2, 1, NULL, false, 6);
-INSERT INTO DeviceStateComponent (name, groupTypeId, titleComponentId, elementId, isUsingNote, displayOrder) VALUES ('Pflanzenbewuchs', 2, 1, NULL, false, 7);
-INSERT INTO DeviceStateComponent (name, groupTypeId, titleComponentId, elementId, isUsingNote, displayOrder) VALUES ('Poröse Gehäuse-/Rahmendichtung', 2, 1, NULL, false, 8);
-INSERT INTO DeviceStateComponent (name, groupTypeId, titleComponentId, elementId, isUsingNote, displayOrder) VALUES ('Poröe Innendämmung', 2, 1, NULL, false, 9);
-INSERT INTO DeviceStateComponent (name, groupTypeId, titleComponentId, elementId, isUsingNote, displayOrder) VALUES ('Element fehlt / vertauscht', 2, 1, NULL, false, 10);
-INSERT INTO DeviceStateComponent (name, groupTypeId, titleComponentId, elementId, isUsingNote, displayOrder) VALUES ('Fremdmaterial', 1, 1, NULL, false, 1);
+INSERT INTO DeviceStateComponent (name, groupTypeId, titleComponentId, elementId, isUsingNote, displayOrder) VALUES ('Gehäuse-/ Türabdichtung fehlt / defekt', 2, 1, null, true, 1);
+INSERT INTO DeviceStateComponent (name, groupTypeId, titleComponentId, elementId, isUsingNote, displayOrder) VALUES ('Gehäuse undicht', 2, 1, null, true, 2);
+INSERT INTO DeviceStateComponent (name, groupTypeId, titleComponentId, elementId, isUsingNote, displayOrder) VALUES ('Bodenablauf nicht verschlossen', 2, 1, null, false, 3);
+INSERT INTO DeviceStateComponent (name, groupTypeId, titleComponentId, elementId, isUsingNote, displayOrder) VALUES ('Kenndaten fehlen', 2, 1, null, false, 4);
+INSERT INTO DeviceStateComponent (name, groupTypeId, titleComponentId, elementId, isUsingNote, displayOrder) VALUES ('Nicht einsehbar/prüfbar', 2, 1, 1, false, 5);
+INSERT INTO DeviceStateComponent (name, groupTypeId, titleComponentId, elementId, isUsingNote, displayOrder) VALUES ('Innendämmung abgelöst / beschädigt', 2, 1, null, false, 6);
+INSERT INTO DeviceStateComponent (name, groupTypeId, titleComponentId, elementId, isUsingNote, displayOrder) VALUES ('Pflanzenbewuchs', 2, 1, null, false, 7);
+INSERT INTO DeviceStateComponent (name, groupTypeId, titleComponentId, elementId, isUsingNote, displayOrder) VALUES ('Poröse Gehäuse-/Rahmendichtung', 2, 1, null, false, 8);
+INSERT INTO DeviceStateComponent (name, groupTypeId, titleComponentId, elementId, isUsingNote, displayOrder) VALUES ('Poröe Innendämmung', 2, 1, 1, false, 9);
+INSERT INTO DeviceStateComponent (name, groupTypeId, titleComponentId, elementId, isUsingNote, displayOrder) VALUES ('Element fehlt / vertauscht', 2, 1, null, false, 10);
+INSERT INTO DeviceStateComponent (name, groupTypeId, titleComponentId, elementId, isUsingNote, displayOrder) VALUES ('Fremdmaterial', 1, 1, null, true, 1);
 
 INSERT INTO Device_StateValue (deviceStateComponentId, stateValueId) VALUES (1, 1);
 INSERT INTO Device_StateValue (deviceStateComponentId, stateValueId) VALUES (1, 2);
