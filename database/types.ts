@@ -75,7 +75,7 @@ export type DeviceStateComponent = {
     groupTypeId: number;
     titleComponentId: number;
     inspectionDeviceStateId: string;
-    elementId: number | null;
+    elementId?: number | null;
     isUsingNote: boolean;
     value: number | null;
     note: string | null;

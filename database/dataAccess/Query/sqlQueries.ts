@@ -11,7 +11,7 @@ import {
     TitleComponent,
     User,
 } from '../../types';
-import { executeQuery } from './baseQuery';
+import { executeQuery, executeQuerySingle } from './baseQuery';
 
 export const getDBVersionTable = async (): Promise<DatabaseVersionType[]> => {
     const query = `SELECT * FROM DatabaseVersion`;
@@ -36,6 +36,11 @@ export const getUser = async (): Promise<User[]> => {
 export const getInspections = async (): Promise<Inspection[]> => {
     const query = `SELECT * FROM Inspection`;
     return executeQuery<Inspection>({ query });
+};
+
+export const getInspectionById = async (inspectionId: string): Promise<Inspection> => {
+    const query = `SELECT * FROM Inspection where id = '${inspectionId}'`;
+    return executeQuerySingle<Inspection>({ query });
 };
 
 export const getDeviceStateComponents = async (): Promise<DeviceStateComponent[]> => {
@@ -110,7 +115,6 @@ export const getInspectionDeviceStateDetails = async (
                             groupTypeId: titleItem.groupTypeId,
                             titleComponentId: titleItem.titleComponentId,
                             inspectionDeviceStateId: titleItem.inspectionDeviceStateId,
-                            elementId: titleItem.elementId,
                             value: titleItem.value,
                             note: titleItem.note,
                             isUsingNote: titleItem.isUsingNote,

@@ -65,6 +65,44 @@ export const executeQuery = async <T extends object>(
     }
 };
 
+export const executeQuerySingle = async <T extends object>(
+    options: ExecuteQueryOptions<T>,
+): Promise<T | null> => {
+    try {
+        const db = getDatabase();
+
+        return new Promise<T | null>((resolve, reject) => {
+            db.transaction((tx) => {
+                tx.executeSql(
+                    options.query,
+                    [],
+                    (_, result: QueryResult<T>) => {
+                        const rows = result.rows;
+
+                        if (rows.length > 0) {
+                            const record = rows.item(0);
+                            const extracted = options.mapper
+                                ? options.mapper(record)
+                                : extractFields<T>(record);
+                            resolve(extracted);
+                        } else {
+                            console.log('No record found');
+                            resolve(null);
+                        }
+                    },
+                    (error) => {
+                        console.log('Error selecting record: ', error);
+                        reject(error);
+                    },
+                );
+            });
+        });
+    } catch (error) {
+        console.error('Error opening database: ', error);
+        throw error;
+    }
+};
+
 type DatabaseRecord = {
     id?: number | string;
     [key: string]: any;
