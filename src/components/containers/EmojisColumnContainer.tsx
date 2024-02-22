@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import EmojisColumnHead from '../columns/EmojisColumnHead';
+import EmojisColumnHead from '../lists/EmojisColumnHead';
 import { customColors } from '../../assets/styles/customStyles';
-import EmojisColumnBody from '../columns/EmojisColumnBody';
+import EmojisColumnBody from '../lists/EmojisColumnBody';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 interface EmojisColumnContainerProps {
