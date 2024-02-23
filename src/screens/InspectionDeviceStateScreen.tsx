@@ -13,7 +13,7 @@ import PrimaryButton from '../components/buttons/PrimaryButton';
 import { DeviceStateComponent, DeviceStateComponentsForInspection } from '../../database/types';
 
 const OngoingInspectionScreen = () => {
-    const newInspectionId = useInspectionStore((state) => state.newInspectionId);
+    const newInspectionId = useInspectionStore((state) => state.inspectionId);
     const [inspection, setInspection] = useState(null);
     /* const [isIspectionFormCompleted, setIspectionFormCompleted] = useState(false); */
     const [isCameraVisible, setCameraVisible] = useState(false);

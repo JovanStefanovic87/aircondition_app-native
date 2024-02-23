@@ -3,14 +3,17 @@ import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-nati
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
+import { useInspectionStore } from '../store/store';
 
 type NavScreenNavigationProp = NavigationProp<any, any>;
 
 const NavScreen: React.FC = () => {
     const navigation = useNavigation<NavScreenNavigationProp>();
+    const setInspectionId = useInspectionStore((state) => state.setInspectionId);
 
     const handleNewInspectionPress = () => {
-        navigation.navigate('NewInspectionScreen');
+        setInspectionId(null);
+        navigation.navigate('InspectionBasicDetailsScreen');
     };
 
     const handleAllInspectionsPress = () => {

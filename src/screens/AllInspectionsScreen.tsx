@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { getInspections } from '../../database/dataAccess/Query/sqlQueries';
 import InspectionItem from '../components/lists/InspectionListItem';
 import { Inspection } from '../../database/types';
+import { useInspectionStore } from '../store/store';
+
+type AllInspectionsScreenNavigationProp = NavigationProp<any, any>;
 
 const AllInspectionsScreen = () => {
+    const navigation = useNavigation<AllInspectionsScreenNavigationProp>();
     const [inspections, setInspections] = useState<any>([]); // for now
+    const setInspectionId = useInspectionStore((state) => state.setInspectionId);
 
     useEffect(() => {
         const fetchInspections = async () => {
@@ -24,18 +30,21 @@ const AllInspectionsScreen = () => {
         fetchInspections();
     }, []);
 
-    const handlePress = (inspectionId) => {
-        // Handle navigation or any other action when an inspection item is pressed
+    const handlePress = (inspectionId: string) => {
+        setInspectionId(inspectionId);
+        if (inspectionId) {
+            navigation.navigate('InspectionBasicDetailsScreen');
+        }
     };
 
     return (
         <View style={styles.container}>
             <ScrollView>
-                {inspections.map((inspection) => (
+                {inspections.map((inspection: Inspection) => (
                     <InspectionItem
                         key={inspection.id}
                         inspection={inspection}
-                        onPress={handlePress}
+                        onPress={() => handlePress(inspection.id)}
                     />
                 ))}
             </ScrollView>

@@ -23,6 +23,7 @@ import {
     getInspections,
     getDeviceTypes,
     getInspectionTypes,
+    getInspectionById,
 } from '../../database/dataAccess/Query/sqlQueries';
 import { deleteAllTables } from '../../database/dataAccess/helpers';
 import { saveInspection } from '../../database/dataAccess/Query/sqlCommands';
@@ -39,11 +40,13 @@ type InspectionType = {
 
 const NewInspectionScreen = () => {
     const navigation = useNavigation<NewInspectionScreenNavigationProp>();
+    const inspectionId = useInspectionStore((state) => state.inspectionId);
     const [isScannerOpen, setScannerOpen] = useState(false);
     const [scanType, setScanType] = useState<string>('');
     const [deviceTypes, setDeviceTypes] = useState<DeviceType[]>([]);
     const [inspectionTypes, setInspectionTypes] = useState<InspectionType[]>([]);
     const [form, setForm] = useState<InspectionUpdate>({
+        id: inspectionId ? inspectionId : null,
         barcode: '',
         deviceTypeId: null,
         inspectionTypeId: null,
@@ -72,6 +75,28 @@ const NewInspectionScreen = () => {
         fetchData();
     }, []);
 
+    useEffect(() => {
+        const fetchInspectionData = async () => {
+            if (inspectionId) {
+                const inspectionData = await getInspectionById(inspectionId);
+                if (inspectionData) {
+                    setForm((prevForm) => ({
+                        ...prevForm,
+                        barcode: inspectionData.barcode,
+                        deviceTypeId: inspectionData.deviceTypeId,
+                        inspectionTypeId: inspectionData.inspectionTypeId,
+                        facilityName: inspectionData.facilityName,
+                        location: inspectionData.location,
+                        contractNumber: inspectionData.contractNumber,
+                        createdAt: inspectionData.createdAt,
+                    }));
+                }
+            }
+        };
+
+        fetchInspectionData();
+    }, [inspectionId]);
+
     const submit = async () => {
         const errors: string[] = [];
 
@@ -95,10 +120,10 @@ const NewInspectionScreen = () => {
             createdAt: formattedCreatedAt,
         }));
 
-        const newInspectionId = await saveInspection(form);
-        if (newInspectionId) {
-            useInspectionStore.getState().setNewInspectionId(newInspectionId);
-            navigation.navigate('OngoingInspectionScreen');
+        const inspectionId = await saveInspection(form);
+        if (inspectionId) {
+            useInspectionStore.getState().setInspectionId(inspectionId);
+            navigation.navigate('InspectionDeviceStateScreen');
         }
     };
 
