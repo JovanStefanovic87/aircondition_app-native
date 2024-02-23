@@ -117,20 +117,18 @@ export const executeUpdateOrInsertWithGuid = async <T extends DatabaseRecord>(
 
         return new Promise<string | void>((resolve, reject) => {
             db.transaction((tx) => {
-                console.log('record', record);
                 if (record.id) {
                     // If record has an ID, update existing record
                     const keys = Object.keys(record).filter((key) => key !== 'id');
-                    const values = Object.values(record).filter(
+                    const allValues = Object.values(record).filter(
                         (value) => value !== undefined && value !== null,
                     );
                     const placeholders = keys.map((_, index) => `${keys[index]} = ?`).join(',');
-
-                    const [id, ...restValues] = values;
+                    const values = allValues.filter((value) => value !== record.id);
 
                     tx.executeSql(
                         `UPDATE ${tableName} SET ${placeholders} WHERE id = ?`,
-                        [...restValues, id],
+                        [...values, record.id],
                         () => {
                             console.log('Record updated successfully');
                             resolve();
@@ -141,8 +139,7 @@ export const executeUpdateOrInsertWithGuid = async <T extends DatabaseRecord>(
                         },
                     );
                 } else {
-                    console.log('Inserting new record: ', record);
-                    // If record does not have an ID, insert new record with generated UUID
+                    // Insert new record
                     const id = uuid.v4(); // Generate UUID
                     const keys = Object.keys(record);
                     const values = Object.values(record).filter(
@@ -185,16 +182,15 @@ export const executeUpdate = async <T extends DatabaseRecord>(
                 if (record.id) {
                     // If record has an ID, update existing record
                     const keys = Object.keys(record).filter((key) => key !== 'id');
-                    const values = Object.values(record).filter(
+                    const allValues = Object.values(record).filter(
                         (value) => value !== undefined && value !== null,
                     );
                     const placeholders = keys.map((_, index) => `${keys[index]} = ?`).join(',');
-
-                    const [id, ...restValues] = values;
+                    const values = allValues.filter((value) => value !== record.id);
 
                     tx.executeSql(
                         `UPDATE ${tableName} SET ${placeholders} WHERE id = ?`,
-                        [...restValues, id],
+                        [...values, record.id],
                         () => {
                             console.log('Record updated successfully');
                             resolve();
