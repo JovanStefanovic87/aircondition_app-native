@@ -8,6 +8,11 @@ export type InspectionType = {
     name: string;
 };
 
+export type InspectionStatus = {
+    id: number;
+    name: string;
+};
+
 export type DatabaseVersionType = {
     version: number;
 };
