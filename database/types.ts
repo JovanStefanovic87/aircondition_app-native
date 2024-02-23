@@ -32,6 +32,7 @@ export type InspectionUpdate = {
     createdAt: string;
     airVolume?: number;
     userId: string;
+    inspectionStatusId: number;
 };
 
 /**
