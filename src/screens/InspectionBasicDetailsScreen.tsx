@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { useInspectionStore } from '../store/store';
 import moment from 'moment';
-import { InspectionUpdate } from '../../database/types';
+import { Inspection, InspectionUpdate } from '../../database/types';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import BarcodeScanner from '../components/camera/BarcodeScanner';
@@ -19,8 +19,6 @@ import IconButton from '../components/buttons/IconButton';
 import Dropdown from '../components/input/Dropdown';
 import PrimaryButton from '../components/buttons/PrimaryButton';
 import {
-    getInspectionDeviceState,
-    getInspections,
     getDeviceTypes,
     getInspectionTypes,
     getInspectionById,
@@ -45,8 +43,7 @@ const NewInspectionScreen = () => {
     const [scanType, setScanType] = useState<string>('');
     const [deviceTypes, setDeviceTypes] = useState<DeviceType[]>([]);
     const [inspectionTypes, setInspectionTypes] = useState<InspectionType[]>([]);
-    const [form, setForm] = useState<InspectionUpdate>({
-        id: inspectionId ? inspectionId : null,
+    const [form, setForm] = useState<Inspection>({
         barcode: '',
         deviceTypeId: null,
         inspectionTypeId: null,
@@ -82,6 +79,7 @@ const NewInspectionScreen = () => {
                 if (inspectionData) {
                     setForm((prevForm) => ({
                         ...prevForm,
+                        id: inspectionId ? inspectionId : null,
                         barcode: inspectionData.barcode,
                         deviceTypeId: inspectionData.deviceTypeId,
                         inspectionTypeId: inspectionData.inspectionTypeId,
@@ -89,6 +87,9 @@ const NewInspectionScreen = () => {
                         location: inspectionData.location,
                         contractNumber: inspectionData.contractNumber,
                         createdAt: inspectionData.createdAt,
+                        inspectionStatusId: inspectionData.inspectionStatusId
+                            ? inspectionData.inspectionStatusId
+                            : 1,
                     }));
                 }
             }
@@ -111,6 +112,7 @@ const NewInspectionScreen = () => {
         });
 
         if (errors.length > 0) {
+            console.log(errors.map((error) => `${error} is required`));
             return;
         }
 

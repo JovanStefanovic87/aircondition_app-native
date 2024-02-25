@@ -9,6 +9,7 @@ import {
     InspectionDeviceComponentUpdate,
     InspectionStatus,
     InspectionType,
+    InspectionUpdate,
     TitleComponent,
     User,
 } from '../../types';
@@ -44,9 +45,9 @@ export const getInspections = async (): Promise<Inspection[]> => {
     return executeQuery<Inspection>({ query });
 };
 
-export const getInspectionById = async (inspectionId: string): Promise<Inspection> => {
+export const getInspectionById = async (inspectionId: string): Promise<InspectionUpdate> => {
     const query = `SELECT * FROM Inspection where id = '${inspectionId}'`;
-    return executeQuerySingle<Inspection>({ query });
+    return executeQuerySingle<InspectionUpdate>({ query });
 };
 
 export const getDeviceStateComponents = async (): Promise<DeviceStateComponent[]> => {
