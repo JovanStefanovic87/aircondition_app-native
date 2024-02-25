@@ -17,6 +17,7 @@ export const saveInspection = async (
     if (newInspectionId) {
         await fillDeviceStateToInspection(newInspectionId);
     }
+
     return newInspectionId;
 };
 

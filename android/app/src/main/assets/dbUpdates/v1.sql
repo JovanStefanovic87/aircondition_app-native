@@ -46,6 +46,8 @@ CREATE TABLE IF NOT EXISTS Inspection (
   contractNumber VARCHAR(100),
   createdAt DATE DEFAULT (datetime('now','localtime')),
   airVolume NUMERIC,
+  constructionYear INTEGER,
+  lastMaintenance DATE,
   userId TEXT,
   inspectionStatusId INTEGER,
   isDeleted BOOLEAN DEFAULT 0,

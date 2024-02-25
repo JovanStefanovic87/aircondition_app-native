@@ -130,7 +130,6 @@ export const executeUpdateOrInsertWithGuid = async <T extends DatabaseRecord>(
                         `UPDATE ${tableName} SET ${placeholders} WHERE id = ?`,
                         [...values, record.id],
                         () => {
-                            console.log('Record updated successfully');
                             resolve();
                         },
                         (error) => {
@@ -153,7 +152,6 @@ export const executeUpdateOrInsertWithGuid = async <T extends DatabaseRecord>(
                         )}) VALUES (?, ${placeholders})`,
                         [id, ...values],
                         () => {
-                            console.log('Record inserted successfully');
                             resolve(id as string); // Return generated UUID
                         },
                         (error) => {

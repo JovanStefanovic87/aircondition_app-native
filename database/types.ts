@@ -31,6 +31,8 @@ export type InspectionUpdate = {
     contractNumber: string;
     createdAt: string;
     airVolume?: number;
+    constructionYear?: number;
+    lastMaintenance?: string;
     userId: string;
     inspectionStatusId: number;
 };
@@ -65,6 +67,8 @@ export type Inspection = {
     contractNumber: string;
     createdAt: string;
     airVolume?: number;
+    constructionYear?: number;
+    lastMaintenance?: string;
     userId: string;
 };
 

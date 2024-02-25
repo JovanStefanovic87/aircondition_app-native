@@ -22,7 +22,8 @@ const EmojisContainer: React.FC<EmojisContainerProps> = ({
     deviceState,
     saveInspectionDeviceState,
 }) => {
-    const { inspectionDeviceStateId, isUsingNote, value, note, deviceStateValues } = deviceState;
+    const { inspectionDeviceStateId, isUsingNote, value, note, deviceStateValues, name } =
+        deviceState;
     const [activeColor, setActiveColor] = useState<number>(value);
     const [noteValue, setNoteValue] = useState<string>(note);
     const [isMounted, setIsMounted] = useState<boolean>(false);
@@ -64,7 +65,7 @@ const EmojisContainer: React.FC<EmojisContainerProps> = ({
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>{noteValue}</Text>
+            <Text style={styles.title}>{name}</Text>
             <View style={styles.row}>
                 {smileyColors.map(({ color, SmileyComponent, isVisible }) => (
                     <SmileyComponent
