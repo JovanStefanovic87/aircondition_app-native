@@ -139,3 +139,27 @@ export type TitleComponent = {
     name: string;
     deviceStateComponents: DeviceStateComponent[];
 };
+
+export type InspectionImageInsert = {
+    inspectionId: string;
+    imageId: string;
+};
+
+export type ImageStorageInsert = {
+    name: string;
+    storagePath: string;
+};
+
+export type ImageStorage = {
+    id: string;
+    name: string;
+    storagePath: string;
+};
+
+export type InspectionAndImageStorage = {
+    id: string;
+    inspectionid: string;
+    imageid: string;
+    name: string;
+    storagePath: string;
+};

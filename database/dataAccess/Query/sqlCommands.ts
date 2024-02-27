@@ -1,9 +1,12 @@
 import {
+    ImageStorage,
+    ImageStorageInsert,
     InspectionDeviceComponentUpdate,
     InspectionDeviceStateUpdate,
+    InspectionImageInsert,
     InspectionUpdate,
 } from '../../types';
-import { executeUpdate, executeUpdateOrInsertWithGuid } from './baseQuery';
+import { executeInsertWithGuid, executeUpdate, executeUpdateOrInsertWithGuid } from './baseQuery';
 import { getDeviceStateComponents } from './sqlQueries';
 
 export const saveInspection = async (
@@ -41,4 +44,20 @@ export const saveInspectionDeviceState = async (
     record: InspectionDeviceStateUpdate,
 ): Promise<void> => {
     await executeUpdate<InspectionDeviceStateUpdate>('Inspection_DeviceState', record);
+};
+
+export const saveInspectionImage = async (
+    inspectionId: string,
+    record: ImageStorageInsert,
+): Promise<void> => {
+    const imageId = await executeInsertWithGuid<ImageStorage>('ImageStorage', record);
+
+    if (!imageId) throw new Error('Error inserting image');
+
+    const inspectionImageRecord: InspectionImageInsert = {
+        inspectionId: inspectionId,
+        imageId: imageId,
+    };
+
+    await executeInsertWithGuid<InspectionImageInsert>('Inspection_Image', inspectionImageRecord);
 };

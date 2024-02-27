@@ -5,7 +5,9 @@ import {
     DeviceStateComponentsForInspection,
     DeviceStateValueDetails,
     DeviceType,
+    ImageStorage,
     Inspection,
+    InspectionAndImageStorage,
     InspectionDeviceComponentUpdate,
     InspectionStatus,
     InspectionType,
@@ -139,4 +141,18 @@ export const getInspectionDeviceStateDetails = async (
     }
 
     return finalResult;
+};
+
+export const getAllImageStorages = async (): Promise<ImageStorage[]> => {
+    const query = `SELECT * FROM ImageStorage`;
+    return executeQuery<ImageStorage>({ query });
+};
+
+export const getImageStorageByInspectionId = async (
+    inspectionId: string,
+): Promise<InspectionAndImageStorage[]> => {
+    const query = `
+        SELECT i.id, i.inspectionId, i.imageId, s.name, s.storagePath FROM Inspection_Image i
+        LEFT JOIN ImageStorage s on s.id = i.imageId WHERE i.inspectionId = '${inspectionId}'`;
+    return executeQuery<InspectionAndImageStorage>({ query });
 };

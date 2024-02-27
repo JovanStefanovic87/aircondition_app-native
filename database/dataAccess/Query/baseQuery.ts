@@ -206,3 +206,38 @@ export const executeUpdate = async <T extends DatabaseRecord>(
         throw error;
     }
 };
+
+export const executeInsertWithGuid = async <T extends DatabaseRecord>(
+    tableName: string,
+    record: Partial<T>,
+): Promise<string | void> => {
+    try {
+        const db = getDatabase();
+
+        return new Promise<string | void>((resolve, reject) => {
+            db.transaction((tx) => {
+                const id = uuid.v4(); // Generate UUID
+                const keys = Object.keys(record);
+                const values = Object.values(record).filter(
+                    (value) => value !== undefined && value !== null,
+                );
+                const placeholders = keys.map(() => '?').join(',');
+
+                tx.executeSql(
+                    `INSERT INTO ${tableName} (id, ${keys.join(',')}) VALUES (?, ${placeholders})`,
+                    [id, ...values],
+                    () => {
+                        resolve(id as string); // Return generated UUID
+                    },
+                    (error) => {
+                        console.log('Error inserting record: ', error);
+                        reject(error);
+                    },
+                );
+            });
+        });
+    } catch (error) {
+        console.error('Error opening database: ', error);
+        throw error;
+    }
+};
