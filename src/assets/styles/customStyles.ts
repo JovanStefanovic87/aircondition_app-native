@@ -11,4 +11,5 @@ export const customColors = {
     background: '#F8F9FA',
     text: '#333333',
     accent: '#FF5733',
+    black: '#000000',
 };

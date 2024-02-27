@@ -3,10 +3,9 @@ import {
     StyleSheet,
     View,
     TextInput,
-    Text,
     KeyboardAvoidingView,
-    Platform,
     ScrollView,
+    Platform,
 } from 'react-native';
 import { useInspectionStore } from '../store/store';
 import moment from 'moment';
@@ -25,6 +24,8 @@ import {
 } from '../../database/dataAccess/Query/sqlQueries';
 import { deleteAllTables } from '../../database/dataAccess/helpers';
 import { saveInspection } from '../../database/dataAccess/Query/sqlCommands';
+import TextMain from '../components/text/TextMain';
+import ErrorBoundary from '../components/errors/ErrorBoundary';
 
 type NewInspectionScreenNavigationProp = NavigationProp<any, any>;
 type DeviceType = {
@@ -143,102 +144,115 @@ const NewInspectionScreen = () => {
     };
 
     return (
-        <KeyboardAvoidingView
-            style={styles.container}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        >
+        <ErrorBoundary>
             {isScannerOpen ? (
-                <BarcodeScanner
-                    onClose={() => setScannerOpen(false)}
-                    setScanResult={(result) => {
-                        if (scanType === 'device') {
-                            setForm((prevForm) => ({
-                                ...prevForm,
-                                barcode: result,
-                            }));
-                        } else if (scanType === 'contract') {
-                            setForm((prevForm) => ({
-                                ...prevForm,
-                                contractNumber: result,
-                            }));
-                        }
-                    }}
-                />
+                <View style={styles.container}>
+                    <BarcodeScanner
+                        isScannerOpen={isScannerOpen}
+                        setScannerOpen={setScannerOpen}
+                        setScanResult={(result) => {
+                            if (scanType === 'device') {
+                                setForm((prevForm) => ({
+                                    ...prevForm,
+                                    barcode: result,
+                                }));
+                            } else if (scanType === 'contract') {
+                                setForm((prevForm) => ({
+                                    ...prevForm,
+                                    contractNumber: result,
+                                }));
+                            }
+                        }}
+                    />
+                </View>
             ) : (
-                <GestureHandlerRootView style={styles.scrollContainer}>
-                    <ScrollView style={styles.scrollView}>
-                        <View style={styles.inputGroupContainer}>
-                            <Text>ANLAGE-ID:</Text>
-                            <View style={styles.rowContainer}>
-                                <InputText
-                                    minWidth="78%"
-                                    placeholder="Barcode"
-                                    value={form.barcode}
-                                    setValue={(value) => setForm({ ...form, barcode: value })}
-                                    isValid={validation.deviceTypeId}
-                                />
-                                <IconButton icon="camera" onPress={() => openScanner('device')} />
-                                <TextInput />
+                <KeyboardAvoidingView
+                    style={styles.container}
+                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                >
+                    <GestureHandlerRootView style={styles.scrollContainer}>
+                        <ScrollView style={styles.scrollView}>
+                            <View style={styles.inputGroupContainer}>
+                                <TextMain text="ANLAGE-ID:" />
+                                <View style={styles.rowContainer}>
+                                    <InputText
+                                        minWidth="78%"
+                                        placeholder="Barcode"
+                                        value={form.barcode}
+                                        setValue={(value) => setForm({ ...form, barcode: value })}
+                                        isValid={validation.deviceTypeId}
+                                    />
+                                    <IconButton
+                                        icon="camera"
+                                        onPress={() => openScanner('device')}
+                                    />
+                                    <TextInput />
+                                </View>
                             </View>
-                        </View>
-                        <View style={styles.inputGroupContainer}>
-                            <Text>GERÄTEINFORMATION:</Text>
-                            <View style={styles.colContainer}>
-                                <Dropdown
-                                    selectedTab={form.deviceTypeId}
-                                    setSelectedTab={(value) =>
-                                        setForm({ ...form, deviceTypeId: value })
-                                    }
-                                    pickerPlaceholder="Lüftungssystem auswählen"
-                                    items={renderDropdownItems(deviceTypes)}
-                                    isValid={validation.deviceTypeId}
-                                />
-                                <InputText
-                                    placeholder="name der Anlage"
-                                    value={form.facilityName}
-                                    setValue={(value) => setForm({ ...form, facilityName: value })}
-                                    isValid={validation.facilityName}
-                                />
-                                <InputText
-                                    placeholder="Aufstellungsort (wo?: z.B Keller, Dach, Technikzentral..."
-                                    value={form.location}
-                                    setValue={(value) => setForm({ ...form, location: value })}
-                                    isValid={validation.location}
-                                />
-                                <Dropdown
-                                    selectedTab={form.inspectionTypeId}
-                                    setSelectedTab={(value) =>
-                                        setForm({ ...form, inspectionTypeId: value })
-                                    }
-                                    pickerPlaceholder="Inspektionsart auswählen"
-                                    items={renderDropdownItems(inspectionTypes)}
-                                    isValid={validation.inspectionTypeId}
-                                />
+                            <View style={styles.inputGroupContainer}>
+                                <TextMain text="GERÄTEINFORMATION:" />
+                                <View style={styles.colContainer}>
+                                    <Dropdown
+                                        selectedTab={form.deviceTypeId}
+                                        setSelectedTab={(value) =>
+                                            setForm({ ...form, deviceTypeId: value })
+                                        }
+                                        pickerPlaceholder="Lüftungssystem auswählen"
+                                        items={renderDropdownItems(deviceTypes)}
+                                        isValid={validation.deviceTypeId}
+                                    />
+                                    <InputText
+                                        placeholder="name der Anlage"
+                                        value={form.facilityName}
+                                        setValue={(value) =>
+                                            setForm({ ...form, facilityName: value })
+                                        }
+                                        isValid={validation.facilityName}
+                                    />
+                                    <InputText
+                                        placeholder="Aufstellungsort (wo?: z.B Keller, Dach, Technikzentral..."
+                                        value={form.location}
+                                        setValue={(value) => setForm({ ...form, location: value })}
+                                        isValid={validation.location}
+                                    />
+                                    <Dropdown
+                                        selectedTab={form.inspectionTypeId}
+                                        setSelectedTab={(value) =>
+                                            setForm({ ...form, inspectionTypeId: value })
+                                        }
+                                        pickerPlaceholder="Inspektionsart auswählen"
+                                        items={renderDropdownItems(inspectionTypes)}
+                                        isValid={validation.inspectionTypeId}
+                                    />
+                                </View>
                             </View>
-                        </View>
-                        <View style={styles.inputGroupContainer}>
-                            <Text>NUMMER DER LEISTUNGSNACHWEIS:</Text>
-                            <View style={styles.rowContainer}>
-                                <InputText
-                                    minWidth="78%"
-                                    placeholder="Barcode"
-                                    value={form.contractNumber}
-                                    setValue={(value) =>
-                                        setForm({ ...form, contractNumber: value })
-                                    }
-                                    isValid={validation.contractNumber}
-                                />
-                                <IconButton icon="camera" onPress={() => openScanner('contract')} />
-                                <TextInput />
+                            <View style={styles.inputGroupContainer}>
+                                <TextMain text="NUMMER DER LEISTUNGSNACHWEIS:" />
+                                <View style={styles.rowContainer}>
+                                    <InputText
+                                        minWidth="78%"
+                                        placeholder="Barcode"
+                                        value={form.contractNumber}
+                                        setValue={(value) =>
+                                            setForm({ ...form, contractNumber: value })
+                                        }
+                                        isValid={validation.contractNumber}
+                                    />
+                                    <IconButton
+                                        icon="camera"
+                                        onPress={() => openScanner('contract')}
+                                    />
+                                    <TextInput />
+                                </View>
                             </View>
-                        </View>
-                    </ScrollView>
-                </GestureHandlerRootView>
+                        </ScrollView>
+                    </GestureHandlerRootView>
+                    <View style={styles.rightAlign}>
+                        <PrimaryButton title="Nächster Schritt" onPress={submit} />
+                    </View>
+                </KeyboardAvoidingView>
             )}
-            <View style={styles.rightAlign}>
-                <PrimaryButton title="Nächster Schritt" onPress={submit} />
-            </View>
-        </KeyboardAvoidingView>
+        </ErrorBoundary>
     );
 };
 
