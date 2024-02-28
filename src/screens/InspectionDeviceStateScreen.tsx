@@ -12,7 +12,7 @@ import InspectionTitle from '../components/containers/EmojisGroupTitleContainer'
 import PrimaryButton from '../components/buttons/PrimaryButton';
 import { DeviceStateComponent, DeviceStateComponentsForInspection } from '../../database/types';
 
-const OngoingInspectionScreen = () => {
+const InspectionDeviceStateScreen = () => {
     const newInspectionId = useInspectionStore((state) => state.inspectionId);
     const [inspection, setInspection] = useState(null);
     /* const [isIspectionFormCompleted, setIspectionFormCompleted] = useState(false); */
@@ -140,7 +140,7 @@ const OngoingInspectionScreen = () => {
     );
 };
 
-export default OngoingInspectionScreen;
+export default InspectionDeviceStateScreen;
 
 const styles = StyleSheet.create({
     scrollContainer: {

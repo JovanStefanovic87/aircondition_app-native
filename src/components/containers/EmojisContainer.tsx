@@ -6,6 +6,7 @@ import RedSmiley from '../icons/RedSmiley';
 import YellowSmiley from '../icons/YellowSmiley';
 import InputText from '../input/InputText';
 import { DeviceStateComponent, InspectionDeviceStateUpdate } from '../../../database/types';
+import { customColors } from '../../assets/styles/customStyles';
 
 type SmileyColor = {
     color: number;
@@ -109,6 +110,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         marginBottom: 8,
+        color: customColors.black,
     },
 });
 

@@ -30,25 +30,29 @@ const BarcodeScanner: FC<BarcodeScannerProps> = ({
     }, []);
 
     useEffect(() => {
-        const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+        const backPressHandler = () => {
             return true;
-        });
+        };
+
+        BackHandler.addEventListener('hardwareBackPress', backPressHandler);
+
         return () => {
-            backHandler.remove();
+            BackHandler.removeEventListener('hardwareBackPress', backPressHandler);
         };
     }, []);
 
-    const onClose = () => {
-        setScanning(false);
-        setScannerOpen(false);
-    };
+    useEffect(() => {
+        if (!scanning) {
+            setScannerOpen(false);
+        }
+    }, [scanning, setScannerOpen]);
 
     const codeScanner = useCodeScanner({
         codeTypes: ['ean-13', 'code-128', 'code-93', 'code-39', 'ean-8'],
         onCodeScanned: (codes) => {
             if (scanning) {
                 setScanResult(codes[0].value);
-                onClose();
+                setScanning(false);
             }
         },
     });
@@ -99,7 +103,7 @@ const BarcodeScanner: FC<BarcodeScannerProps> = ({
                     borderWidth: 2,
                 }}
             />
-            <CloseCameraButton onPress={onClose} />
+            <CloseCameraButton onPress={() => setScanning(false)} />
         </ErrorBoundary>
     );
 };

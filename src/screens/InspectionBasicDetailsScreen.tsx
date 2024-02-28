@@ -37,7 +37,7 @@ type InspectionType = {
     name: string;
 };
 
-const NewInspectionScreen = () => {
+const InspectionBasicDetailsScreen = () => {
     const navigation = useNavigation<NewInspectionScreenNavigationProp>();
     const inspectionId = useInspectionStore((state) => state.inspectionId);
     const [isScannerOpen, setScannerOpen] = useState(false);
@@ -325,4 +325,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default NewInspectionScreen;
+export default InspectionBasicDetailsScreen;
