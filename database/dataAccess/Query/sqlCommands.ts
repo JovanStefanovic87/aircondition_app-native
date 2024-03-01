@@ -43,6 +43,7 @@ const fillDeviceStateToInspection = async (inspectonId: string): Promise<void> =
 export const saveInspectionDeviceState = async (
     record: InspectionDeviceStateUpdate,
 ): Promise<void> => {
+    console.log('Data to be saved in saveInspectionDeviceState:', record);
     await executeUpdate<InspectionDeviceStateUpdate>('Inspection_DeviceState', record);
 };
 
