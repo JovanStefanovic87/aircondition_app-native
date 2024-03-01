@@ -10,12 +10,11 @@ import { launchImageLibrary, MediaType, CameraOptions } from 'react-native-image
 import TakePicture from '../components/camera/TakePicture';
 import InspectionTitle from '../components/containers/EmojisGroupTitleContainer';
 import PrimaryButton from '../components/buttons/PrimaryButton';
-import { DeviceStateComponent, DeviceStateComponentsForInspection } from '../../database/types';
+import { DeviceStateComponent } from '../../database/types';
 
 const InspectionDeviceStateScreen = () => {
     const newInspectionId = useInspectionStore((state) => state.inspectionId);
     const [inspection, setInspection] = useState(null);
-    /* const [isIspectionFormCompleted, setIspectionFormCompleted] = useState(false); */
     const [isCameraVisible, setCameraVisible] = useState(false);
     const [avatarSource, setAvatarSource] = useState(null);
 
@@ -23,7 +22,6 @@ const InspectionDeviceStateScreen = () => {
         const fetchInspectionDetails = async () => {
             const result = await getInspectionDeviceStateDetails(newInspectionId);
             setInspection(result);
-            /* isDeviceStateComponentValueNull(result); */
         };
 
         fetchInspectionDetails();
@@ -58,28 +56,13 @@ const InspectionDeviceStateScreen = () => {
         setCameraVisible(false);
     };
 
-    /* function isDeviceStateComponentValueNull(data: DeviceStateComponentsForInspection[]) {
-        if (data) {
-            let allElementIdsNotNull = true;
-            for (const groupType of data) {
-                for (const titleComponent of groupType.titleComponents) {
-                    for (const deviceStateComponent of titleComponent.deviceStateComponents) {
-                        if (deviceStateComponent.elementId === null) {
-                            allElementIdsNotNull = false;
-                            break;
-                        }
-                    }
-                    if (!allElementIdsNotNull) {
-                        break;
-                    }
-                }
-                if (!allElementIdsNotNull) {
-                    break;
-                }
-            }
-            setIspectionFormCompleted(allElementIdsNotNull);
-        }
-    } */
+    const isIspectionFormCompleted = (titleComponents: any[]) => {
+        return titleComponents.every((title) =>
+            title.deviceStateComponents.every(
+                (deviceStateComponent: DeviceStateComponent) => deviceStateComponent.value !== null,
+            ),
+        );
+    };
 
     return (
         <KeyboardAvoidingView
@@ -96,11 +79,8 @@ const InspectionDeviceStateScreen = () => {
                                 inspection.map((group, i) => (
                                     <EmojisColumnContainer
                                         title={group.groupTypeName}
-                                        isComplited={group.titleComponents.every((title) =>
-                                            title.deviceStateComponents.every(
-                                                (deviceStateComponent: DeviceStateComponent) =>
-                                                    deviceStateComponent.value !== null,
-                                            ),
+                                        isComplited={isIspectionFormCompleted(
+                                            group.titleComponents,
                                         )}
                                         key={i}
                                     >

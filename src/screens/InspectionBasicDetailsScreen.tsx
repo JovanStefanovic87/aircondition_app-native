@@ -123,9 +123,10 @@ const InspectionBasicDetailsScreen = () => {
             createdAt: formattedCreatedAt,
         }));
 
-        const inspectionId = await saveInspection(form);
-        if (inspectionId) {
-            useInspectionStore.getState().setInspectionId(inspectionId);
+        const newId = inspectionId ? inspectionId : await saveInspection(form);
+
+        if (newId) {
+            useInspectionStore.getState().setInspectionId(newId);
             navigation.navigate('InspectionDeviceStateScreen');
         }
     };

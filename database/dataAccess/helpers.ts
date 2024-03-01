@@ -1,4 +1,3 @@
-
 import SQLite from 'react-native-sqlite-storage';
 import DatabaseHelper from './getAllTablesClass';
 import { DatabaseVersionType, DeviceType, InspectionType } from '../types';
@@ -37,12 +36,12 @@ export const insertSqlite = async () => {
                                     },
                                     (_, insertError) => {
                                         console.log('Error inserting record: ', insertError);
-                                    }
+                                    },
                                 );
                             },
                             (_, createError) => {
                                 console.log('Error creating table: ', createError);
-                            }
+                            },
                         );
                     } else {
                         // Table exists, directly insert data
@@ -54,20 +53,19 @@ export const insertSqlite = async () => {
                             },
                             (_, insertError) => {
                                 console.log('Error inserting record: ', insertError);
-                            }
+                            },
                         );
                     }
                 },
                 (_, error) => {
                     console.log('Error checking table existence: ', error);
-                }
+                },
             );
         });
     } catch (error) {
         console.error('Error opening database: ', error);
     }
 };
-
 
 export const fillDeviceTable = async () => {
     try {
@@ -85,9 +83,8 @@ export const fillDeviceTable = async () => {
                 },
                 (_, insertError) => {
                     console.log('Error inserting record: ', insertError);
-                }
+                },
             );
-
         });
     } catch (error) {
         console.error('Error opening database: ', error);
@@ -109,7 +106,7 @@ export const checkIfTableExists = async (tableName: string): Promise<boolean> =>
                     },
                     (_, error) => {
                         reject(error);
-                    }
+                    },
                 );
             });
         });
@@ -125,7 +122,7 @@ export const selectInsertedRecord = async (table: string) => {
 
         const tableExists = await checkIfTableExists(table);
 
-        console.log(`${table} Exists: `, tableExists)
+        console.log(`${table} Exists: `, tableExists);
 
         db.transaction((tx) => {
             tx.executeSql(
@@ -144,7 +141,7 @@ export const selectInsertedRecord = async (table: string) => {
                 },
                 (_, error) => {
                     console.log('Error selecting record: ', error);
-                }
+                },
             );
         });
     } catch (error) {
@@ -171,17 +168,15 @@ export const deleteAllTables = async (): Promise<void> => {
                         (_, error) => {
                             console.log(`Error deleting ${table} table: `, error);
                             reject(error);
-                        }
+                        },
                     );
                 });
             });
         }
-
     } catch (error) {
         console.error('Error opening database: ', error);
     }
 };
-
 
 export const getAllTables = async () => {
     const db = getDatabase();
@@ -197,27 +192,15 @@ export const getAllTables = async () => {
                     }
                     resolve(tables);
                 },
-                (_, error) => reject(error)
+                (_, error) => reject(error),
             );
         });
     });
 };
-
 
 export const getAllTables1 = () => {
     const databaseHelper = new DatabaseHelper();
     databaseHelper.getAllTables().then((tables) => {
         console.log('List of tables:', tables);
     });
-}
-
-
-
-
-
-
-
-
-
-
-
+};

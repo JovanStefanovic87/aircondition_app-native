@@ -3,25 +3,24 @@ import { View, ScrollView, StyleSheet } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { getInspections } from '../../database/dataAccess/Query/sqlQueries';
 import InspectionItem from '../components/lists/InspectionListItem';
-import { Inspection } from '../../database/types';
+import { InspectionUpdate } from '../../database/types';
 import { useInspectionStore } from '../store/store';
 
 type AllInspectionsScreenNavigationProp = NavigationProp<any, any>;
 
 const AllInspectionsScreen = () => {
     const navigation = useNavigation<AllInspectionsScreenNavigationProp>();
-    const [inspections, setInspections] = useState<any>([]); // for now
+    const [inspections, setInspections] = useState<InspectionUpdate[]>([]);
     const setInspectionId = useInspectionStore((state) => state.setInspectionId);
 
     useEffect(() => {
         const fetchInspections = async () => {
             try {
                 const inspectionsData = await getInspections();
-                const inspectionsWithStatus = inspectionsData.map((inspection) => ({
+                const inspections = inspectionsData.map((inspection: InspectionUpdate) => ({
                     ...inspection,
-                    status: Math.random() < 0.5,
                 }));
-                setInspections(inspectionsWithStatus);
+                setInspections(inspections);
             } catch (error) {
                 console.error('Error fetching inspections:', error);
             }
@@ -40,7 +39,7 @@ const AllInspectionsScreen = () => {
     return (
         <View style={styles.container}>
             <ScrollView>
-                {inspections.map((inspection: Inspection) => (
+                {inspections.map((inspection: InspectionUpdate) => (
                     <InspectionItem
                         key={inspection.id}
                         inspection={inspection}

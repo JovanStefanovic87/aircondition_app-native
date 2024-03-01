@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { View, ScrollView, StyleSheet } from 'react-native';
+import { vw } from 'react-native-css-vh-vw';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { useInspectionStore } from '../store/store';
+import NavButton from '../components/buttons/NavButton';
 
 type NavScreenNavigationProp = NavigationProp<any, any>;
 
@@ -28,28 +29,33 @@ const NavScreen: React.FC = () => {
         <GestureHandlerRootView style={styles.scrollContainer}>
             <ScrollView style={styles.scrollView}>
                 <View style={styles.container}>
-                    <TouchableOpacity style={styles.button} onPress={handleNewInspectionPress}>
-                        <Icon name="plus" size={30} color="yellow" />
-                        <Text style={styles.buttonText}>Neue Inspektion</Text>
-                    </TouchableOpacity>
+                    <NavButton
+                        onPress={handleNewInspectionPress}
+                        iconName="plus"
+                        iconColor="yellow"
+                        buttonText="Neue Inspektion"
+                    />
 
-                    <TouchableOpacity style={styles.button} onPress={handleAllInspectionsPress}>
-                        <Icon name="list" size={30} color="#e67e22" />
-                        <Text style={styles.buttonText}>Alle Inspektionen</Text>
-                    </TouchableOpacity>
+                    <NavButton
+                        onPress={handleAllInspectionsPress}
+                        iconName="list"
+                        iconColor="#e67e22"
+                        buttonText="Alle Inspektionen"
+                    />
 
-                    <TouchableOpacity style={styles.button} onPress={() => console.log('')}>
-                        <Icon name="user" size={30} color="#3498db" />
-                        <Text style={styles.buttonText}>Profile</Text>
-                    </TouchableOpacity>
+                    <NavButton
+                        onPress={() => console.log('')}
+                        iconName="user"
+                        iconColor="#3498db"
+                        buttonText="Profile"
+                    />
 
-                    <TouchableOpacity
-                        style={styles.button}
+                    <NavButton
                         onPress={() => console.log('Ausloggen')}
-                    >
-                        <Icon name="sign-out" size={30} color="red" />
-                        <Text style={styles.buttonText}>Logout</Text>
-                    </TouchableOpacity>
+                        iconName="sign-out"
+                        iconColor="red"
+                        buttonText="Logout"
+                    />
                 </View>
             </ScrollView>
         </GestureHandlerRootView>
@@ -66,29 +72,10 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        justifyContent: 'space-around',
-        alignItems: 'stretch',
-    },
-    button: {
-        width: '48%',
-        aspectRatio: 0.5,
-        flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        marginVertical: 10,
-        backgroundColor: 'lightblue',
-        borderRadius: 10,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.5,
-        shadowRadius: 3,
-        elevation: 5,
-    },
-    buttonText: {
-        color: '#333',
-        fontSize: 16,
-        fontWeight: 'bold',
-        marginTop: 8,
+        gap: vw(4),
+        marginTop: vw(4),
     },
 });
 

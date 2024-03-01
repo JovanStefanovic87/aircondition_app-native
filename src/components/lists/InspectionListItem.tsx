@@ -3,11 +3,10 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import CheckedIcon from '../icons/svg/Checked';
 import DangerIcon from '../icons/svg/DangerIcon';
 import { customColors } from '../../assets/styles/customStyles';
-import { Inspection } from '../../../database/types';
+import { InspectionUpdate } from '../../../database/types';
 
 interface Props {
-    /* inspection: Inspection; */
-    inspection: any; //for now
+    inspection: InspectionUpdate;
     onPress?: (id: string) => void;
 }
 
@@ -16,7 +15,7 @@ const InspectionListItem: React.FC<Props> = ({ inspection, onPress }) => {
         <TouchableOpacity style={styles.inspectionItem} onPress={() => onPress(inspection.id)}>
             <View style={styles.itemHeader}>
                 <Text style={styles.itemTitle}>{inspection.contractNumber}</Text>
-                {inspection.status ? <CheckedIcon /> : <DangerIcon />}
+                {inspection.inspectionStatusId ? <CheckedIcon /> : <DangerIcon />}
             </View>
             <Text style={styles.itemSubTitle}>{inspection.location}</Text>
         </TouchableOpacity>
