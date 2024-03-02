@@ -120,9 +120,7 @@ export const executeUpdateOrInsertWithGuid = async <T extends DatabaseRecord>(
                 if (record.id) {
                     // If record has an ID, update existing record
                     const keys = Object.keys(record).filter((key) => key !== 'id');
-                    const allValues = Object.values(record).filter(
-                        (value) => value !== undefined && value !== null,
-                    );
+                    const allValues = Object.values(record).filter((value) => value !== undefined);
                     const placeholders = keys.map((_, index) => `${keys[index]} = ?`).join(',');
                     const values = allValues.filter((value) => value !== record.id);
 
@@ -141,9 +139,7 @@ export const executeUpdateOrInsertWithGuid = async <T extends DatabaseRecord>(
                     // Insert new record
                     const id = uuid.v4(); // Generate UUID
                     const keys = Object.keys(record);
-                    const values = Object.values(record).filter(
-                        (value) => value !== undefined && value !== null,
-                    );
+                    const values = Object.values(record).filter((value) => value !== undefined);
                     const placeholders = keys.map(() => '?').join(',');
 
                     tx.executeSql(
@@ -180,9 +176,7 @@ export const executeUpdate = async <T extends DatabaseRecord>(
                 if (record.id) {
                     // If record has an ID, update existing record
                     const keys = Object.keys(record).filter((key) => key !== 'id');
-                    const allValues = Object.values(record).filter(
-                        (value) => value !== undefined && value !== null,
-                    );
+                    const allValues = Object.values(record).filter((value) => value !== undefined);
                     const placeholders = keys.map((_, index) => `${keys[index]} = ?`).join(',');
                     const values = allValues.filter((value) => value !== record.id);
 
@@ -218,10 +212,10 @@ export const executeInsertWithGuid = async <T extends DatabaseRecord>(
             db.transaction((tx) => {
                 const id = uuid.v4(); // Generate UUID
                 const keys = Object.keys(record);
-                const values = Object.values(record).filter(
-                    (value) => value !== undefined && value !== null,
-                );
+                const values = Object.values(record).filter((value) => value !== undefined);
                 const placeholders = keys.map(() => '?').join(',');
+
+                console.log('Inserting record: ', placeholders);
 
                 tx.executeSql(
                     `INSERT INTO ${tableName} (id, ${keys.join(',')}) VALUES (?, ${placeholders})`,
