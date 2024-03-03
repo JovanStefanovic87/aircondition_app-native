@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useInspectionStore } from '../store/store';
-import { StyleSheet, Text, View, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import {
+    StyleSheet,
+    View,
+    ScrollView,
+    KeyboardAvoidingView,
+    Platform,
+    Dimensions,
+} from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import EmojisContainer from '../components/containers/EmojisContainer';
 import EmojisColumnContainer from '../components/containers/EmojisColumnContainer';
@@ -17,6 +24,9 @@ const InspectionDeviceStateScreen = () => {
     const [inspection, setInspection] = useState(null);
     const [isCameraVisible, setCameraVisible] = useState(false);
     const [avatarSource, setAvatarSource] = useState(null);
+
+    const screenWidth = Dimensions.get('window').width;
+    const width = screenWidth < 600 ? '100%' : '48%';
 
     useEffect(() => {
         const fetchInspectionDetails = async () => {
@@ -74,39 +84,43 @@ const InspectionDeviceStateScreen = () => {
             ) : (
                 <GestureHandlerRootView style={styles.scrollContainer}>
                     <ScrollView style={styles.scrollView}>
-                        <View style={styles.container}>
+                        <View style={styles.rowContainer}>
                             {inspection !== null &&
                                 inspection.map((group, i) => (
-                                    <EmojisColumnContainer
-                                        title={group.groupTypeName}
-                                        isComplited={isIspectionFormCompleted(
-                                            group.titleComponents,
-                                        )}
-                                        key={i}
-                                    >
+                                    <React.Fragment key={i}>
                                         {group.titleComponents.map((title, j) => (
-                                            <React.Fragment key={j}>
-                                                <InspectionTitle
-                                                    title={title.name}
-                                                    onPressCamera={toggleCamera}
-                                                    onPressGallery={handleGalleryClick}
-                                                />
-                                                <View style={styles.iconsGroupContainer}>
-                                                    {title.deviceStateComponents.map(
-                                                        (deviceState: DeviceStateComponent) => (
-                                                            <EmojisContainer
-                                                                deviceState={deviceState}
-                                                                saveInspectionDeviceState={
-                                                                    saveInspectionDeviceState
-                                                                }
-                                                                key={deviceState.id}
-                                                            />
-                                                        ),
+                                            <View
+                                                key={j}
+                                                style={[styles.columnContainer, { width }]}
+                                            >
+                                                <EmojisColumnContainer
+                                                    title={group.groupTypeName}
+                                                    isComplited={isIspectionFormCompleted(
+                                                        group.titleComponents,
                                                     )}
-                                                </View>
-                                            </React.Fragment>
+                                                >
+                                                    <InspectionTitle
+                                                        title={title.name}
+                                                        onPressCamera={toggleCamera}
+                                                        onPressGallery={handleGalleryClick}
+                                                    />
+                                                    <View style={styles.iconsGroupContainer}>
+                                                        {title.deviceStateComponents.map(
+                                                            (deviceState: DeviceStateComponent) => (
+                                                                <EmojisContainer
+                                                                    deviceState={deviceState}
+                                                                    saveInspectionDeviceState={
+                                                                        saveInspectionDeviceState
+                                                                    }
+                                                                    key={deviceState.id}
+                                                                />
+                                                            ),
+                                                        )}
+                                                    </View>
+                                                </EmojisColumnContainer>
+                                            </View>
                                         ))}
-                                    </EmojisColumnContainer>
+                                    </React.Fragment>
                                 ))}
                         </View>
                     </ScrollView>
@@ -139,6 +153,7 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
+        flexDirection: 'row',
         justifyContent: 'flex-start',
         alignItems: 'center',
         gap: 10,
@@ -160,5 +175,17 @@ const styles = StyleSheet.create({
     },
     iconsGroupContainer: {
         gap: 10,
+    },
+    rowContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+        paddingHorizontal: 10,
+        marginBottom: 20,
+        width: '100%',
+    },
+    columnContainer: {
+        width: '100%',
+        marginBottom: 10,
     },
 });

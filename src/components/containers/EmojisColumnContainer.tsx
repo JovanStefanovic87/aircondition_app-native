@@ -37,9 +37,8 @@ const EmojisColumnContainer: React.FC<EmojisColumnContainerProps> = ({
 
 const styles = StyleSheet.create({
     outerContainer: {
-        flex: 1,
         flexDirection: 'column',
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         alignItems: 'center',
         borderWidth: 2,
         borderColor: customColors.blueLight,
@@ -48,7 +47,6 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 7,
     },
     innerContainer: {
-        flex: 1,
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
