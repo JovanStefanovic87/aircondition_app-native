@@ -46,6 +46,22 @@ const InspectionDeviceStateScreen = () => {
         presentationStyle: 'fullScreen',
     };
 
+    const saveDeviceStateAndUpdateInspection = (deviceState: any) => {
+        saveInspectionDeviceState(deviceState);
+        const updatedInspection = inspection.map((group) => ({
+            ...group,
+            titleComponents: group.titleComponents.map((title) => ({
+                ...title,
+                deviceStateComponents: title.deviceStateComponents.map((state) => {
+                    return deviceState.id === state.inspectionDeviceStateId
+                        ? { ...state, value: deviceState.value, note: deviceState.note }
+                        : state;
+                }),
+            })),
+        }));
+        setInspection(updatedInspection);
+    };
+
     const handleGalleryClick = () => {
         launchImageLibrary(options, (response) => {
             if (response.didCancel) {
@@ -64,14 +80,6 @@ const InspectionDeviceStateScreen = () => {
 
     const handleCloseCamera = () => {
         setCameraVisible(false);
-    };
-
-    const isIspectionFormCompleted = (titleComponents: any[]) => {
-        return titleComponents.every((title) =>
-            title.deviceStateComponents.every(
-                (deviceStateComponent: DeviceStateComponent) => deviceStateComponent.value !== null,
-            ),
-        );
     };
 
     return (
@@ -95,9 +103,7 @@ const InspectionDeviceStateScreen = () => {
                                             >
                                                 <EmojisColumnContainer
                                                     title={group.groupTypeName}
-                                                    isComplited={isIspectionFormCompleted(
-                                                        group.titleComponents,
-                                                    )}
+                                                    group={group}
                                                 >
                                                     <InspectionTitle
                                                         title={title.name}
@@ -110,7 +116,7 @@ const InspectionDeviceStateScreen = () => {
                                                                 <EmojisContainer
                                                                     deviceState={deviceState}
                                                                     saveInspectionDeviceState={
-                                                                        saveInspectionDeviceState
+                                                                        saveDeviceStateAndUpdateInspection
                                                                     }
                                                                     key={deviceState.id}
                                                                 />

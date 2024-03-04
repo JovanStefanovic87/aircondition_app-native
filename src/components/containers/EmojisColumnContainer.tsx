@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import EmojisColumnHead from '../lists/EmojisColumnHead';
 import { customColors } from '../../assets/styles/customStyles';
@@ -8,13 +8,13 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 interface EmojisColumnContainerProps {
     title: string;
     children: React.ReactNode;
-    isComplited?: boolean;
+    group: any;
 }
 
 const EmojisColumnContainer: React.FC<EmojisColumnContainerProps> = ({
     title,
     children,
-    isComplited,
+    group,
 }) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -22,10 +22,18 @@ const EmojisColumnContainer: React.FC<EmojisColumnContainerProps> = ({
         setIsOpen(!isOpen);
     };
 
+    const deviceState = group.titleComponents.map((title: any) =>
+        title.deviceStateComponents.map((deviceState: any) => deviceState.value),
+    );
+
+    const isCompleted = !deviceState.some((group) =>
+        group.some((deviceStateValue) => deviceStateValue === null),
+    );
+
     return (
         <View style={styles.outerContainer}>
             <View style={styles.innerContainer}>
-                <EmojisColumnHead title={title} isCompleted={isComplited} />
+                <EmojisColumnHead title={title} isCompleted={isCompleted} />
                 <EmojisColumnBody isOpen={isOpen}>{children}</EmojisColumnBody>
             </View>
             <TouchableOpacity onPress={handleToggleHeight} style={styles.toggleButton}>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import GreenSmiley from '../icons/GreenSmiley';
 import OrangeSmiley from '../icons/OrangeSmiley';
@@ -46,7 +46,7 @@ const EmojisContainer: React.FC<EmojisContainerProps> = ({
     }, [activeColor]);
 
     const handleColorClick = (color: number) => {
-        setActiveColor((prevColor) => (prevColor === color ? 0 : color));
+        setActiveColor((prevColor) => (prevColor === color ? null : color));
         saveInspectionDeviceState({
             id: inspectionDeviceStateId,
             value: activeColor,
