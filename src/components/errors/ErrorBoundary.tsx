@@ -1,5 +1,5 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { Text } from 'react-native';
+import TextMain from '../text/TextMain';
 
 interface ErrorBoundaryProps {
     children: ReactNode;
@@ -25,7 +25,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 
     render() {
         if (this.state.hasError) {
-            return <Text>Error: Something went wrong.</Text>;
+            return <TextMain text="Error: Something went wrong." />;
         }
         return this.props.children;
     }

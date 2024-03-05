@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import IconButton from '../buttons/IconButton';
 import { customColors } from '../../assets/styles/customStyles';
 
-const InspectionTitle = ({ title, onPressCamera, onPressGallery }) => {
+const DeviceStateTitle = ({ title, onPressCamera, onPressGallery }) => {
     return (
         <View style={styles.iconsContainer}>
             <View style={styles.titleContainer}>
@@ -17,7 +17,7 @@ const InspectionTitle = ({ title, onPressCamera, onPressGallery }) => {
     );
 };
 
-export default InspectionTitle;
+export default DeviceStateTitle;
 
 const styles = StyleSheet.create({
     iconsContainer: {

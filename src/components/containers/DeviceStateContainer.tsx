@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import GreenSmiley from '../icons/GreenSmiley';
 import OrangeSmiley from '../icons/OrangeSmiley';
@@ -8,21 +8,18 @@ import InputText from '../input/InputText';
 import { DeviceStateComponent, InspectionDeviceStateUpdate } from '../../../database/types';
 import { customColors } from '../../assets/styles/customStyles';
 
-type SmileyColor = {
+type SmileyColorProps = {
     color: number;
     SmileyComponent: React.FC<{ isActive: boolean; isVisible: boolean; onClick: () => void }>;
     isVisible: boolean;
 };
 
-interface EmojisContainerProps {
+interface Props {
     deviceState: DeviceStateComponent;
     saveInspectionDeviceState: (deviceState: InspectionDeviceStateUpdate) => void;
 }
 
-const EmojisContainer: React.FC<EmojisContainerProps> = ({
-    deviceState,
-    saveInspectionDeviceState,
-}) => {
+const DeviceStateContainer: React.FC<Props> = ({ deviceState, saveInspectionDeviceState }) => {
     const { inspectionDeviceStateId, isUsingNote, value, note, deviceStateValues, name } =
         deviceState;
     const [activeColor, setActiveColor] = useState<number>(value);
@@ -57,7 +54,7 @@ const EmojisContainer: React.FC<EmojisContainerProps> = ({
     const checkColor = (color: number) =>
         deviceStateValues.some((smiley) => smiley.stateValueId === color);
 
-    const smileyColors: SmileyColor[] = [
+    const smileyColors: SmileyColorProps[] = [
         { color: GREEN, SmileyComponent: GreenSmiley, isVisible: checkColor(GREEN) },
         { color: YELLOW, SmileyComponent: YellowSmiley, isVisible: checkColor(YELLOW) },
         { color: ORANGE, SmileyComponent: OrangeSmiley, isVisible: checkColor(ORANGE) },
@@ -114,4 +111,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default EmojisContainer;
+export default DeviceStateContainer;

@@ -2,13 +2,13 @@ import React from 'react';
 import { TextInput, StyleSheet } from 'react-native';
 import { customColors } from '../../assets/styles/customStyles';
 
-interface InputNumberProps {
+interface Props {
     value: number | null;
     placeholder: string;
     setValue: (value: number | null) => void;
 }
 
-const InputNumber: React.FC<InputNumberProps> = ({ value, placeholder, setValue }) => {
+const InputNumber: React.FC<Props> = ({ value, placeholder, setValue }) => {
     const handleChangeText = (text: string) => {
         const numericValue = text.replace(/[^0-9,.]/g, '');
         const normalizedValue = numericValue.replace(',', '.');

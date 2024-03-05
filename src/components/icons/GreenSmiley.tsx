@@ -3,17 +3,13 @@ import { customColors } from '../../assets/styles/customStyles';
 import { TouchableOpacity, ViewStyle, StyleProp } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-interface YellowSmileyProps {
+interface Props {
     isVisible?: boolean;
     isActive?: boolean;
     onClick: () => void;
 }
 
-const YellowSmiley: React.FC<YellowSmileyProps> = ({
-    isVisible = false,
-    isActive = true,
-    onClick,
-}) => {
+const YellowSmiley: React.FC<Props> = ({ isVisible = false, isActive = true, onClick }) => {
     const containerStyles: StyleProp<ViewStyle> = {
         alignItems: 'center',
         justifyContent: 'center',

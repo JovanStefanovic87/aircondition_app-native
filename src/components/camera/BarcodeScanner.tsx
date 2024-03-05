@@ -4,7 +4,7 @@ import { useCameraDevice, useCodeScanner, Camera } from 'react-native-vision-cam
 import CloseCameraButton from '../buttons/CloseCameraButton';
 import ErrorBoundary from '../errors/ErrorBoundary';
 
-type BarcodeScannerProps = {
+type Props = {
     width?: number;
     height?: number;
     setScanResult: (result: string) => void;
@@ -12,7 +12,7 @@ type BarcodeScannerProps = {
     setScannerOpen: Dispatch<SetStateAction<boolean>>;
 };
 
-const BarcodeScanner: FC<BarcodeScannerProps> = ({
+const BarcodeScanner: FC<Props> = ({
     width,
     height,
     setScanResult,

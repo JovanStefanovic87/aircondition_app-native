@@ -1,23 +1,24 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import CheckedIcon from '../icons/svg/Checked';
 import DangerIcon from '../icons/svg/DangerIcon';
 import { customColors } from '../../assets/styles/customStyles';
 import { InspectionUpdate } from '../../../database/types';
+import TextMain from '../text/TextMain';
 
 interface Props {
     inspection: InspectionUpdate;
     onPress?: (id: string) => void;
 }
 
-const InspectionListItem: React.FC<Props> = ({ inspection, onPress }) => {
+const InspectionItem: React.FC<Props> = ({ inspection, onPress }) => {
     return (
         <TouchableOpacity style={styles.inspectionItem} onPress={() => onPress(inspection.id)}>
             <View style={styles.itemHeader}>
-                <Text style={styles.itemTitle}>{inspection.contractNumber}</Text>
+                <TextMain text={inspection.contractNumber} />
                 {inspection.inspectionStatusId ? <CheckedIcon /> : <DangerIcon />}
             </View>
-            <Text style={styles.itemSubTitle}>{inspection.location}</Text>
+            <TextMain text={inspection.location} />
         </TouchableOpacity>
     );
 };
@@ -47,4 +48,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default InspectionListItem;
+export default InspectionItem;

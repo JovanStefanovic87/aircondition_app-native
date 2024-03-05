@@ -1,21 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import EmojisColumnHead from '../lists/EmojisColumnHead';
+import DeviceStateColumnHead from '../lists/DeviceStateColumnHead';
 import { customColors } from '../../assets/styles/customStyles';
-import EmojisColumnBody from '../lists/EmojisColumnBody';
+import DeviceStateColumnBody from '../lists/DeviceStateColumnBody';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-interface EmojisColumnContainerProps {
+interface Props {
     title: string;
     children: React.ReactNode;
     group: any;
 }
 
-const EmojisColumnContainer: React.FC<EmojisColumnContainerProps> = ({
-    title,
-    children,
-    group,
-}) => {
+const DeviceStateColumnContainer: React.FC<Props> = ({ title, children, group }) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
 
     const handleToggleHeight = () => {
@@ -33,8 +29,8 @@ const EmojisColumnContainer: React.FC<EmojisColumnContainerProps> = ({
     return (
         <View style={styles.outerContainer}>
             <View style={styles.innerContainer}>
-                <EmojisColumnHead title={title} isCompleted={isCompleted} />
-                <EmojisColumnBody isOpen={isOpen}>{children}</EmojisColumnBody>
+                <DeviceStateColumnHead title={title} isCompleted={isCompleted} />
+                <DeviceStateColumnBody isOpen={isOpen}>{children}</DeviceStateColumnBody>
             </View>
             <TouchableOpacity onPress={handleToggleHeight} style={styles.toggleButton}>
                 <Icon name={isOpen ? 'caret-up' : 'caret-down'} size={40} color="black" />
@@ -67,4 +63,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default EmojisColumnContainer;
+export default DeviceStateColumnContainer;

@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { useInspectionStore } from '../store/store';
 import moment from 'moment';
-import { Inspection, InspectionUpdate } from '../../database/types';
+import { Inspection } from '../../database/types';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import BarcodeScanner from '../components/camera/BarcodeScanner';

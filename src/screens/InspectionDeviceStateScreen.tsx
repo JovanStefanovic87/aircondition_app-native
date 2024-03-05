@@ -9,13 +9,13 @@ import {
     Dimensions,
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import EmojisContainer from '../components/containers/EmojisContainer';
-import EmojisColumnContainer from '../components/containers/EmojisColumnContainer';
+import DeviceStateContainer from '../components/containers/DeviceStateContainer';
+import DeviceStateColumnContainer from '../components/containers/DeviceStateColumnContainer';
 import { getInspectionDeviceStateDetails } from '../../database/dataAccess/Query/sqlQueries';
 import { saveInspectionDeviceState } from '../../database/dataAccess/Query/sqlCommands';
 import { launchImageLibrary, MediaType, CameraOptions } from 'react-native-image-picker';
 import TakePicture from '../components/camera/TakePicture';
-import InspectionTitle from '../components/containers/EmojisGroupTitleContainer';
+import InspectionTitle from '../components/text/DeviceStateTitle';
 import PrimaryButton from '../components/buttons/PrimaryButton';
 import { DeviceStateComponent } from '../../database/types';
 
@@ -101,7 +101,7 @@ const InspectionDeviceStateScreen = () => {
                                                 key={j}
                                                 style={[styles.columnContainer, { width }]}
                                             >
-                                                <EmojisColumnContainer
+                                                <DeviceStateColumnContainer
                                                     title={group.groupTypeName}
                                                     group={group}
                                                 >
@@ -113,7 +113,7 @@ const InspectionDeviceStateScreen = () => {
                                                     <View style={styles.iconsGroupContainer}>
                                                         {title.deviceStateComponents.map(
                                                             (deviceState: DeviceStateComponent) => (
-                                                                <EmojisContainer
+                                                                <DeviceStateContainer
                                                                     deviceState={deviceState}
                                                                     saveInspectionDeviceState={
                                                                         saveDeviceStateAndUpdateInspection
@@ -123,7 +123,7 @@ const InspectionDeviceStateScreen = () => {
                                                             ),
                                                         )}
                                                     </View>
-                                                </EmojisColumnContainer>
+                                                </DeviceStateColumnContainer>
                                             </View>
                                         ))}
                                     </React.Fragment>

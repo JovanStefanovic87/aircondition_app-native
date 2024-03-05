@@ -2,7 +2,7 @@ import React from 'react';
 import { TextInput, StyleSheet, DimensionValue } from 'react-native';
 import { customColors } from '../../assets/styles/customStyles';
 
-interface TextInputProps {
+interface Props {
     value: string;
     placeholder?: string;
     setValue: (value: string) => void;
@@ -13,7 +13,7 @@ interface TextInputProps {
     isVisible?: boolean;
 }
 
-const InputText: React.FC<TextInputProps> = ({
+const InputText: React.FC<Props> = ({
     value,
     placeholder,
     setValue,

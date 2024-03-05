@@ -4,14 +4,14 @@ import ImageSlider from '../sliders/ImageSlider';
 import Dropdown from '../input/Dropdown';
 import { customColors } from '../../assets/styles/customStyles';
 
-interface AssemblyPartsSourceContainerProps {
+interface Props {
     selectedTab: number;
     setSelectedTab: React.Dispatch<React.SetStateAction<number>>;
     pickerPlaceholder: string;
     images: string[];
 }
 
-const AssemblyPartsSourceContainer: React.FC<AssemblyPartsSourceContainerProps> = ({
+const AssemblyPartsSourceContainer: React.FC<Props> = ({
     selectedTab,
     setSelectedTab,
     pickerPlaceholder,
