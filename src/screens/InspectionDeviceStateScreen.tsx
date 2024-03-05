@@ -11,17 +11,31 @@ import {
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import DeviceStateContainer from '../components/containers/DeviceStateContainer';
 import DeviceStateColumnContainer from '../components/containers/DeviceStateColumnContainer';
-import { getInspectionDeviceStateDetails } from '../../database/dataAccess/Query/sqlQueries';
+import {
+    getInspectionDeviceStateDetails,
+    getInspectionById,
+} from '../../database/dataAccess/Query/sqlQueries';
 import { saveInspectionDeviceState } from '../../database/dataAccess/Query/sqlCommands';
+import { saveInspection } from '../../database/dataAccess/Query/sqlCommands';
 import { launchImageLibrary, MediaType, CameraOptions } from 'react-native-image-picker';
 import TakePicture from '../components/camera/TakePicture';
 import InspectionTitle from '../components/text/DeviceStateTitle';
 import PrimaryButton from '../components/buttons/PrimaryButton';
-import { DeviceStateComponent } from '../../database/types';
+import {
+    DeviceStateComponent,
+    DeviceStateComponentsForInspection,
+    InspectionDeviceStateUpdate,
+    TitleComponent,
+    Inspection,
+} from '../../database/types';
+import TextMain from '../components/text/TextMain';
+import DeviceParametersContainer from '../components/containers/DeviceParametersContainer';
 
 const InspectionDeviceStateScreen = () => {
     const newInspectionId = useInspectionStore((state) => state.inspectionId);
-    const [inspection, setInspection] = useState(null);
+    const [inspection, setInspection] = useState<Inspection>(null);
+    const [inspectionDeviceStateDetails, setInspectionDeviceStateDetails] =
+        useState<DeviceStateComponentsForInspection[]>(null);
     const [isCameraVisible, setCameraVisible] = useState(false);
     const [avatarSource, setAvatarSource] = useState(null);
 
@@ -30,8 +44,12 @@ const InspectionDeviceStateScreen = () => {
 
     useEffect(() => {
         const fetchInspectionDetails = async () => {
-            const result = await getInspectionDeviceStateDetails(newInspectionId);
-            setInspection(result);
+            const inspectionDeviceStateDetailsResult = await getInspectionDeviceStateDetails(
+                newInspectionId,
+            );
+            setInspectionDeviceStateDetails(inspectionDeviceStateDetailsResult);
+            const inspectionResult = await getInspectionById(newInspectionId);
+            setInspection(inspectionResult);
         };
 
         fetchInspectionDetails();
@@ -46,20 +64,22 @@ const InspectionDeviceStateScreen = () => {
         presentationStyle: 'fullScreen',
     };
 
-    const saveDeviceStateAndUpdateInspection = (deviceState: any) => {
+    const saveDeviceStateAndUpdateInspection = (deviceState: InspectionDeviceStateUpdate) => {
         saveInspectionDeviceState(deviceState);
-        const updatedInspection = inspection.map((group) => ({
-            ...group,
-            titleComponents: group.titleComponents.map((title) => ({
-                ...title,
-                deviceStateComponents: title.deviceStateComponents.map((state) => {
-                    return deviceState.id === state.inspectionDeviceStateId
-                        ? { ...state, value: deviceState.value, note: deviceState.note }
-                        : state;
-                }),
-            })),
-        }));
-        setInspection(updatedInspection);
+        const updatedInspection = inspectionDeviceStateDetails.map(
+            (group: DeviceStateComponentsForInspection) => ({
+                ...group,
+                titleComponents: group.titleComponents.map((title) => ({
+                    ...title,
+                    deviceStateComponents: title.deviceStateComponents.map((state) => {
+                        return deviceState.id === state.inspectionDeviceStateId
+                            ? { ...state, value: deviceState.value, note: deviceState.note }
+                            : state;
+                    }),
+                })),
+            }),
+        );
+        setInspectionDeviceStateDetails(updatedInspection);
     };
 
     const handleGalleryClick = () => {
@@ -93,41 +113,58 @@ const InspectionDeviceStateScreen = () => {
                 <GestureHandlerRootView style={styles.scrollContainer}>
                     <ScrollView style={styles.scrollView}>
                         <View style={styles.rowContainer}>
-                            {inspection !== null &&
-                                inspection.map((group, i) => (
-                                    <React.Fragment key={i}>
-                                        {group.titleComponents.map((title, j) => (
-                                            <View
-                                                key={j}
-                                                style={[styles.columnContainer, { width }]}
-                                            >
-                                                <DeviceStateColumnContainer
-                                                    title={group.groupTypeName}
-                                                    group={group}
-                                                >
-                                                    <InspectionTitle
-                                                        title={title.name}
-                                                        onPressCamera={toggleCamera}
-                                                        onPressGallery={handleGalleryClick}
-                                                    />
-                                                    <View style={styles.iconsGroupContainer}>
-                                                        {title.deviceStateComponents.map(
-                                                            (deviceState: DeviceStateComponent) => (
-                                                                <DeviceStateContainer
-                                                                    deviceState={deviceState}
-                                                                    saveInspectionDeviceState={
-                                                                        saveDeviceStateAndUpdateInspection
-                                                                    }
-                                                                    key={deviceState.id}
-                                                                />
-                                                            ),
-                                                        )}
+                            {inspection !== null && (
+                                <DeviceParametersContainer parameters={inspection}>
+                                    <TextMain text={'id'} />
+                                </DeviceParametersContainer>
+                            )}
+                        </View>
+                        <View style={styles.rowContainer}>
+                            {inspectionDeviceStateDetails !== null &&
+                                inspectionDeviceStateDetails.map(
+                                    (group: DeviceStateComponentsForInspection, i: number) => (
+                                        <React.Fragment key={i}>
+                                            {group.titleComponents.map(
+                                                (title: TitleComponent, j) => (
+                                                    <View
+                                                        key={j}
+                                                        style={[styles.columnContainer, { width }]}
+                                                    >
+                                                        <DeviceStateColumnContainer
+                                                            title={group.groupTypeName}
+                                                            group={group}
+                                                        >
+                                                            <InspectionTitle
+                                                                title={title.name}
+                                                                onPressCamera={toggleCamera}
+                                                                onPressGallery={handleGalleryClick}
+                                                            />
+                                                            <View
+                                                                style={styles.iconsGroupContainer}
+                                                            >
+                                                                {title.deviceStateComponents.map(
+                                                                    (
+                                                                        deviceState: DeviceStateComponent,
+                                                                    ) => (
+                                                                        <DeviceStateContainer
+                                                                            deviceState={
+                                                                                deviceState
+                                                                            }
+                                                                            saveInspectionDeviceState={
+                                                                                saveDeviceStateAndUpdateInspection
+                                                                            }
+                                                                            key={deviceState.id}
+                                                                        />
+                                                                    ),
+                                                                )}
+                                                            </View>
+                                                        </DeviceStateColumnContainer>
                                                     </View>
-                                                </DeviceStateColumnContainer>
-                                            </View>
-                                        ))}
-                                    </React.Fragment>
-                                ))}
+                                                ),
+                                            )}
+                                        </React.Fragment>
+                                    ),
+                                )}
                         </View>
                     </ScrollView>
                     <View style={styles.horizontalLine}></View>
@@ -187,11 +224,12 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap',
         justifyContent: 'space-between',
         paddingHorizontal: 10,
-        marginBottom: 20,
+        marginBottom: 10,
         width: '100%',
     },
     columnContainer: {
         width: '100%',
         marginBottom: 10,
+        gap: 10,
     },
 });

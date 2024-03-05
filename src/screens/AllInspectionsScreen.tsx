@@ -6,7 +6,7 @@ import InspectionItem from '../components/lists/InspectionItem';
 import { InspectionUpdate } from '../../database/types';
 import { useInspectionStore } from '../store/store';
 
-type AllInspectionsScreenNavigationProp = NavigationProp<any, any>;
+type AllInspectionsScreenNavigationProp = NavigationProp<Record<string, object>, string>;
 
 const AllInspectionsScreen = () => {
     const navigation = useNavigation<AllInspectionsScreenNavigationProp>();

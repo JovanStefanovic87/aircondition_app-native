@@ -27,7 +27,7 @@ import { saveInspection } from '../../database/dataAccess/Query/sqlCommands';
 import TextMain from '../components/text/TextMain';
 import ErrorBoundary from '../components/errors/ErrorBoundary';
 
-type NewInspectionScreenNavigationProp = NavigationProp<any, any>;
+type NewInspectionScreenNavigationProp = NavigationProp<Record<string, object>, string>;
 type DeviceType = {
     id: number;
     name: string;

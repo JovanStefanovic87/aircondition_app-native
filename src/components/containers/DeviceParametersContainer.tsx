@@ -8,28 +8,34 @@ import {
     DeviceStateComponentsForInspection,
     TitleComponent,
     DeviceStateComponent,
+    Inspection,
 } from '../../../database/types';
 
 interface Props {
     title?: string;
     children: React.ReactNode;
-    group: DeviceStateComponentsForInspection;
+    parameters: Inspection;
 }
 
-const DeviceStateColumnContainer: React.FC<Props> = ({ title = 'ANLAGE', children, group }) => {
+const DeviceParametersContainer: React.FC<Props> = ({ title = 'ANLAGE', children, parameters }) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
 
     const handleToggleHeight = () => {
         setIsOpen(!isOpen);
     };
 
-    const deviceState = group.titleComponents.map((title: TitleComponent) =>
+    /*  const deviceState = parameters.titleComponents.map((title: TitleComponent) =>
         title.deviceStateComponents.map((deviceState: DeviceStateComponent) => deviceState.value),
     );
 
-    const isCompleted = !deviceState.some((group) =>
-        group.some((deviceStateValue) => deviceStateValue === null),
-    );
+    ); */
+
+    const isCompleted =
+        parameters.airVolume !== null &&
+        parameters.constructionYear !== null &&
+        parameters.lastMaintenance !== null;
+
+    console.log(parameters);
 
     return (
         <View style={styles.outerContainer}>
@@ -68,4 +74,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default DeviceStateColumnContainer;
+export default DeviceParametersContainer;
