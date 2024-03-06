@@ -26,6 +26,8 @@ import { deleteAllTables } from '../../database/dataAccess/helpers';
 import { saveInspection } from '../../database/dataAccess/Query/sqlCommands';
 import TextMain from '../components/text/TextMain';
 import ErrorBoundary from '../components/errors/ErrorBoundary';
+import ColumnContainer from '../components/containers/ColumnContainer';
+import RowContainer from '../components/containers/RowContainer';
 
 type NewInspectionScreenNavigationProp = NavigationProp<Record<string, object>, string>;
 type DeviceType = {
@@ -175,7 +177,7 @@ const InspectionBasicDetailsScreen = () => {
                         <ScrollView style={styles.scrollView}>
                             <View style={styles.inputGroupContainer}>
                                 <TextMain text="ANLAGE-ID:" />
-                                <View style={styles.rowContainer}>
+                                <RowContainer>
                                     <InputText
                                         minWidth="78%"
                                         placeholder="Barcode"
@@ -188,11 +190,11 @@ const InspectionBasicDetailsScreen = () => {
                                         onPress={() => openScanner('device')}
                                     />
                                     <TextInput />
-                                </View>
+                                </RowContainer>
                             </View>
                             <View style={styles.inputGroupContainer}>
                                 <TextMain text="GERÄTEINFORMATION:" />
-                                <View style={styles.colContainer}>
+                                <ColumnContainer>
                                     <Dropdown
                                         selectedTab={form.deviceTypeId}
                                         setSelectedTab={(value) =>
@@ -225,11 +227,11 @@ const InspectionBasicDetailsScreen = () => {
                                         items={renderDropdownItems(inspectionTypes)}
                                         isValid={validation.inspectionTypeId}
                                     />
-                                </View>
+                                </ColumnContainer>
                             </View>
                             <View style={styles.inputGroupContainer}>
                                 <TextMain text="NUMMER DER LEISTUNGSNACHWEIS:" />
-                                <View style={styles.rowContainer}>
+                                <RowContainer>
                                     <InputText
                                         minWidth="78%"
                                         placeholder="Barcode"
@@ -244,7 +246,7 @@ const InspectionBasicDetailsScreen = () => {
                                         onPress={() => openScanner('contract')}
                                     />
                                     <TextInput />
-                                </View>
+                                </RowContainer>
                             </View>
                         </ScrollView>
                     </GestureHandlerRootView>
@@ -271,21 +273,6 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
         alignItems: 'center',
         padding: 10,
-    },
-    rowContainer: {
-        width: '100%',
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 20,
-        gap: 10,
-    },
-    colContainer: {
-        width: '95%',
-        flexDirection: 'column',
-        alignItems: 'center',
-        marginBottom: 20,
-        gap: 10,
-        paddingTop: 5,
     },
     input: {
         flex: 1,

@@ -3,9 +3,9 @@ import { TextInput, StyleSheet, DimensionValue } from 'react-native';
 import { customColors } from '../../assets/styles/customStyles';
 
 interface Props {
-    value: string;
+    value: number | null;
     placeholder?: string;
-    setValue: (value: string) => void;
+    setValue: (value: number) => void;
     onBlur?: () => void;
     width?: DimensionValue;
     minWidth?: DimensionValue;
@@ -13,7 +13,7 @@ interface Props {
     isVisible?: boolean;
 }
 
-const InputText: React.FC<Props> = ({
+const InputNumeric: React.FC<Props> = ({
     value,
     placeholder,
     setValue,
@@ -26,12 +26,13 @@ const InputText: React.FC<Props> = ({
     const [inputText, setInputText] = useState<string>(value !== null ? value.toString() : '');
 
     useEffect(() => {
-        setInputText(value !== null ? value.toString() : '');
+        setInputText(value !== null ? value.toString() : null);
     }, [value]);
 
     const handleChange = (text: string) => {
-        setInputText(text);
-        setValue(text);
+        const formattedText = text.replace(/[^0-9.,]/g, '');
+        setInputText(formattedText);
+        setValue(Number(formattedText.replace(/,/g, '')));
     };
 
     const inputStyles = [styles.input, { width, minWidth }, !isValid && styles.inputInvalid];
@@ -44,6 +45,7 @@ const InputText: React.FC<Props> = ({
             onChangeText={handleChange}
             onBlur={onBlur}
             placeholderTextColor={customColors.placeholder}
+            keyboardType={'numeric'}
         />
     ) : null;
 };
@@ -63,4 +65,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default InputText;
+export default InputNumeric;

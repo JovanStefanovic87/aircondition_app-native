@@ -19,7 +19,7 @@ interface Props {
     saveInspectionDeviceState: (deviceState: InspectionDeviceStateUpdate) => void;
 }
 
-const DeviceStateContainer: React.FC<Props> = ({ deviceState, saveInspectionDeviceState }) => {
+const DeviceStateItem: React.FC<Props> = ({ deviceState, saveInspectionDeviceState }) => {
     const { inspectionDeviceStateId, isUsingNote, value, note, deviceStateValues, name } =
         deviceState;
     const [activeColor, setActiveColor] = useState<number>(value);
@@ -111,4 +111,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default DeviceStateContainer;
+export default DeviceStateItem;

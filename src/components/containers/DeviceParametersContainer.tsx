@@ -1,15 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import DeviceStateColumnHead from '../lists/DeviceStateColumnHead';
 import { customColors } from '../../assets/styles/customStyles';
 import DeviceStateColumnBody from '../lists/DeviceStateColumnBody';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {
-    DeviceStateComponentsForInspection,
-    TitleComponent,
-    DeviceStateComponent,
-    Inspection,
-} from '../../../database/types';
+import { Inspection } from '../../../database/types';
 
 interface Props {
     title?: string;
@@ -19,29 +14,31 @@ interface Props {
 
 const DeviceParametersContainer: React.FC<Props> = ({ title = 'ANLAGE', children, parameters }) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
+    const [isCompleted, setIsCompleted] = useState<boolean>(false);
 
     const handleToggleHeight = () => {
         setIsOpen(!isOpen);
     };
 
-    /*  const deviceState = parameters.titleComponents.map((title: TitleComponent) =>
-        title.deviceStateComponents.map((deviceState: DeviceStateComponent) => deviceState.value),
-    );
+    useEffect(() => {
+        const checkCompletion = () => {
+            setIsCompleted(
+                parameters.airVolume !== null &&
+                    parameters.constructionYear !== null &&
+                    parameters.lastMaintenance !== (null || ''),
+            );
+        };
 
-    ); */
-
-    const isCompleted =
-        parameters.airVolume !== null &&
-        parameters.constructionYear !== null &&
-        parameters.lastMaintenance !== null;
-
-    console.log(parameters);
+        checkCompletion();
+    }, [parameters]);
 
     return (
         <View style={styles.outerContainer}>
             <View style={styles.innerContainer}>
                 <DeviceStateColumnHead title={title} isCompleted={isCompleted} />
-                <DeviceStateColumnBody isOpen={isOpen}>{children}</DeviceStateColumnBody>
+                <DeviceStateColumnBody isOpen={isOpen} marginTop={isOpen ? 10 : 0}>
+                    {children}
+                </DeviceStateColumnBody>
             </View>
             <TouchableOpacity onPress={handleToggleHeight} style={styles.toggleButton}>
                 <Icon name={isOpen ? 'caret-up' : 'caret-down'} size={40} color="black" />

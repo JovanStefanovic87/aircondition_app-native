@@ -1,15 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useInspectionStore } from '../store/store';
-import {
-    StyleSheet,
-    View,
-    ScrollView,
-    KeyboardAvoidingView,
-    Platform,
-    Dimensions,
-} from 'react-native';
+import { StyleSheet, View, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { calculateMinColumnWidth } from '../helpers/universalFunctions';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import DeviceStateContainer from '../components/containers/DeviceStateContainer';
+import DeviceState from '../components/lists/DeviceStateItem';
 import DeviceStateColumnContainer from '../components/containers/DeviceStateColumnContainer';
 import {
     getInspectionDeviceStateDetails,
@@ -28,8 +22,10 @@ import {
     TitleComponent,
     Inspection,
 } from '../../database/types';
-import TextMain from '../components/text/TextMain';
 import DeviceParametersContainer from '../components/containers/DeviceParametersContainer';
+import DeviceParameters from '../components/lists/DeviceParameters';
+import RowContainerFlex from '../components/containers/RowContainerFlex';
+import AutoColumnContainer from '../components/containers/AutoColumnContainer';
 
 const InspectionDeviceStateScreen = () => {
     const newInspectionId = useInspectionStore((state) => state.inspectionId);
@@ -38,9 +34,6 @@ const InspectionDeviceStateScreen = () => {
         useState<DeviceStateComponentsForInspection[]>(null);
     const [isCameraVisible, setCameraVisible] = useState(false);
     const [avatarSource, setAvatarSource] = useState(null);
-
-    const screenWidth = Dimensions.get('window').width;
-    const width = screenWidth < 600 ? '100%' : '48%';
 
     useEffect(() => {
         const fetchInspectionDetails = async () => {
@@ -112,23 +105,27 @@ const InspectionDeviceStateScreen = () => {
             ) : (
                 <GestureHandlerRootView style={styles.scrollContainer}>
                     <ScrollView style={styles.scrollView}>
-                        <View style={styles.rowContainer}>
+                        <RowContainerFlex>
                             {inspection !== null && (
                                 <DeviceParametersContainer parameters={inspection}>
-                                    <TextMain text={'id'} />
+                                    <DeviceParameters
+                                        inspection={inspection}
+                                        setInspection={setInspection}
+                                        saveInspection={saveInspection}
+                                    />
                                 </DeviceParametersContainer>
                             )}
-                        </View>
-                        <View style={styles.rowContainer}>
+                        </RowContainerFlex>
+                        <RowContainerFlex>
                             {inspectionDeviceStateDetails !== null &&
                                 inspectionDeviceStateDetails.map(
                                     (group: DeviceStateComponentsForInspection, i: number) => (
                                         <React.Fragment key={i}>
                                             {group.titleComponents.map(
                                                 (title: TitleComponent, j) => (
-                                                    <View
+                                                    <AutoColumnContainer
                                                         key={j}
-                                                        style={[styles.columnContainer, { width }]}
+                                                        minColumnWidth={calculateMinColumnWidth(49)}
                                                     >
                                                         <DeviceStateColumnContainer
                                                             title={group.groupTypeName}
@@ -146,7 +143,7 @@ const InspectionDeviceStateScreen = () => {
                                                                     (
                                                                         deviceState: DeviceStateComponent,
                                                                     ) => (
-                                                                        <DeviceStateContainer
+                                                                        <DeviceState
                                                                             deviceState={
                                                                                 deviceState
                                                                             }
@@ -159,13 +156,13 @@ const InspectionDeviceStateScreen = () => {
                                                                 )}
                                                             </View>
                                                         </DeviceStateColumnContainer>
-                                                    </View>
+                                                    </AutoColumnContainer>
                                                 ),
                                             )}
                                         </React.Fragment>
                                     ),
                                 )}
-                        </View>
+                        </RowContainerFlex>
                     </ScrollView>
                     <View style={styles.horizontalLine}></View>
                 </GestureHandlerRootView>
@@ -217,19 +214,6 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     iconsGroupContainer: {
-        gap: 10,
-    },
-    rowContainer: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'space-between',
-        paddingHorizontal: 10,
-        marginBottom: 10,
-        width: '100%',
-    },
-    columnContainer: {
-        width: '100%',
-        marginBottom: 10,
         gap: 10,
     },
 });

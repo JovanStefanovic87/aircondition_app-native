@@ -3,10 +3,10 @@ import { StyleSheet, Text, View, ScrollView } from 'react-native';
 import PrimaryButton from '../components/buttons/PrimaryButton';
 import SubmitButton from '../components/buttons/SubmitButton';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import EmojisContainer from '../components/containers/DeviceStateContainer';
+import EmojisContainer from '../components/lists/DeviceStateItem';
 import EmojisColumnContainer from '../components/containers/DeviceStateColumnContainer';
 import InputText from '../components/input/InputText';
-import InputNumber from '../components/input/InputNumber';
+import InputNumber from '../components/input/InputNumeric';
 import AssemblyPartsSourceContainer from '../components/containers/AssemblyPartsSourceContainer';
 import ZoneButton from '../components/buttons/ZoneButton';
 
