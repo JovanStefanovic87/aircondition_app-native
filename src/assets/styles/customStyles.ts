@@ -13,4 +13,5 @@ export const customColors = {
     accent: '#FF5733',
     black: '#000000',
     white: '#fff',
+    grayLight: '#d1d1d1',
 };

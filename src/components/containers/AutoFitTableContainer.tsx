@@ -9,7 +9,7 @@ interface Props {
     marginBottom?: number;
 }
 
-const AutoColumnContainer: React.FC<Props> = ({
+const AutoFitTableContainer: React.FC<Props> = ({
     children,
     minColumnWidth = Dimensions.get('window').width,
     gap = 0,
@@ -20,4 +20,4 @@ const AutoColumnContainer: React.FC<Props> = ({
     return <View style={{ width: width as DimensionValue, gap, marginBottom }}>{children}</View>;
 };
 
-export default AutoColumnContainer;
+export default AutoFitTableContainer;

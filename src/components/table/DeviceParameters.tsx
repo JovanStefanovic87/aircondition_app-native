@@ -5,7 +5,7 @@ import InputText from '../input/InputText';
 import { Inspection } from '../../../database/types';
 import { customColors } from '../../assets/styles/customStyles';
 import InputNumber from '../input/InputNumeric';
-import AutoColumnContainer from '../containers/AutoColumnContainer';
+import AutoFitTableContainer from '../containers/AutoFitTableContainer';
 import RowContainerFlex from '../containers/RowContainerFlex';
 
 interface Props {
@@ -26,7 +26,7 @@ const DeviceParameters: React.FC<Props> = ({ inspection, saveInspection, setInsp
     return (
         <View style={styles.container}>
             <RowContainerFlex>
-                <AutoColumnContainer minColumnWidth={minColWidth}>
+                <AutoFitTableContainer minColumnWidth={minColWidth}>
                     <Text style={styles.title}>{'Buajahr'}</Text>
                     <InputNumber
                         value={constructionYear}
@@ -35,8 +35,8 @@ const DeviceParameters: React.FC<Props> = ({ inspection, saveInspection, setInsp
                         }
                         onBlur={handleSaveInspection}
                     />
-                </AutoColumnContainer>
-                <AutoColumnContainer minColumnWidth={minColWidth}>
+                </AutoFitTableContainer>
+                <AutoFitTableContainer minColumnWidth={minColWidth}>
                     <Text style={styles.title}>{'Letzte Wartung'}</Text>
                     <InputText
                         value={lastMaintenance}
@@ -45,15 +45,15 @@ const DeviceParameters: React.FC<Props> = ({ inspection, saveInspection, setInsp
                         }
                         onBlur={handleSaveInspection}
                     />
-                </AutoColumnContainer>
-                <AutoColumnContainer minColumnWidth={minColWidth}>
+                </AutoFitTableContainer>
+                <AutoFitTableContainer minColumnWidth={minColWidth}>
                     <Text style={styles.title}>{'Volumentstrom (m3/h)'}</Text>
                     <InputNumber
                         value={airVolume}
                         setValue={(value) => setInspection({ ...inspection, airVolume: value })}
                         onBlur={handleSaveInspection}
                     />
-                </AutoColumnContainer>
+                </AutoFitTableContainer>
             </RowContainerFlex>
         </View>
     );

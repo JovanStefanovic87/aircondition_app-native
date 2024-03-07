@@ -47,14 +47,14 @@ const NavScreen: React.FC = () => {
                         onPress={() => console.log('')}
                         iconName="user"
                         iconColor="#3498db"
-                        buttonText="Profile"
+                        buttonText="Profil"
                     />
 
                     <NavButton
                         onPress={() => console.log('Ausloggen')}
                         iconName="sign-out"
                         iconColor="red"
-                        buttonText="Logout"
+                        buttonText="Ausloggen"
                     />
                 </View>
             </ScrollView>

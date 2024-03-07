@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { getInspections } from '../../database/dataAccess/Query/sqlQueries';
-import InspectionItem from '../components/lists/InspectionItem';
+import InspectionItem from '../components/table/InspectionItem';
 import { InspectionUpdate } from '../../database/types';
 import { useInspectionStore } from '../store/store';
 

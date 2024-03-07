@@ -7,7 +7,7 @@ type Props = {
     marginTop?: number;
 };
 
-const DeviceStateColumnBody: React.FC<Props> = ({ isOpen = true, children, marginTop = 0 }) => {
+const CollapsibleTableBody: React.FC<Props> = ({ isOpen = true, children, marginTop = 0 }) => {
     const styles = StyleSheet.create({
         container: {
             flex: 1,
@@ -32,4 +32,4 @@ const DeviceStateColumnBody: React.FC<Props> = ({ isOpen = true, children, margi
     );
 };
 
-export default DeviceStateColumnBody;
+export default CollapsibleTableBody;

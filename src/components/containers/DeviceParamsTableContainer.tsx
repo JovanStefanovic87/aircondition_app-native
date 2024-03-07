@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import DeviceStateColumnHead from '../lists/DeviceStateColumnHead';
-import { customColors } from '../../assets/styles/customStyles';
-import DeviceStateColumnBody from '../lists/DeviceStateColumnBody';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import CollapsibleTableHead from '../table/CollapsibleTableHead';
+import CollapsibleTableBody from '../table/CollapsibleTableBody';
 import { Inspection } from '../../../database/types';
+import { customColors } from '../../assets/styles/customStyles';
 
 interface Props {
     title?: string;
@@ -12,7 +12,11 @@ interface Props {
     parameters: Inspection;
 }
 
-const DeviceParametersContainer: React.FC<Props> = ({ title = 'ANLAGE', children, parameters }) => {
+const DeviceParamsTableContainer: React.FC<Props> = ({
+    title = 'ANLAGE',
+    children,
+    parameters,
+}) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [isCompleted, setIsCompleted] = useState<boolean>(false);
 
@@ -35,10 +39,10 @@ const DeviceParametersContainer: React.FC<Props> = ({ title = 'ANLAGE', children
     return (
         <View style={styles.outerContainer}>
             <View style={styles.innerContainer}>
-                <DeviceStateColumnHead title={title} isCompleted={isCompleted} />
-                <DeviceStateColumnBody isOpen={isOpen} marginTop={isOpen ? 10 : 0}>
+                <CollapsibleTableHead title={title} isCompleted={isCompleted} />
+                <CollapsibleTableBody isOpen={isOpen} marginTop={isOpen ? 10 : 0}>
                     {children}
-                </DeviceStateColumnBody>
+                </CollapsibleTableBody>
             </View>
             <TouchableOpacity onPress={handleToggleHeight} style={styles.toggleButton}>
                 <Icon name={isOpen ? 'caret-up' : 'caret-down'} size={40} color="black" />
@@ -71,4 +75,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default DeviceParametersContainer;
+export default DeviceParamsTableContainer;

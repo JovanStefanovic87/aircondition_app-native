@@ -3,8 +3,8 @@ import { useInspectionStore } from '../store/store';
 import { StyleSheet, View, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { calculateMinColumnWidth } from '../helpers/universalFunctions';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import DeviceState from '../components/lists/DeviceStateItem';
-import DeviceStateColumnContainer from '../components/containers/DeviceStateColumnContainer';
+import DeviceState from '../components/table/DeviceStateItem';
+import DeviceStateColumnContainer from '../components/containers/DeviceStateTableContainer';
 import {
     getInspectionDeviceStateDetails,
     getInspectionById,
@@ -22,10 +22,11 @@ import {
     TitleComponent,
     Inspection,
 } from '../../database/types';
-import DeviceParametersContainer from '../components/containers/DeviceParametersContainer';
-import DeviceParameters from '../components/lists/DeviceParameters';
+import DeviceParamsTableContainer from '../components/containers/DeviceParamsTableContainer';
+import DeviceParameters from '../components/table/DeviceParameters';
 import RowContainerFlex from '../components/containers/RowContainerFlex';
-import AutoColumnContainer from '../components/containers/AutoColumnContainer';
+import AutoFitTableContainer from '../components/containers/AutoFitTableContainer';
+import { customColors } from '../assets/styles/customStyles';
 
 const InspectionDeviceStateScreen = () => {
     const newInspectionId = useInspectionStore((state) => state.inspectionId);
@@ -107,13 +108,13 @@ const InspectionDeviceStateScreen = () => {
                     <ScrollView style={styles.scrollView}>
                         <RowContainerFlex>
                             {inspection !== null && (
-                                <DeviceParametersContainer parameters={inspection}>
+                                <DeviceParamsTableContainer parameters={inspection}>
                                     <DeviceParameters
                                         inspection={inspection}
                                         setInspection={setInspection}
                                         saveInspection={saveInspection}
                                     />
-                                </DeviceParametersContainer>
+                                </DeviceParamsTableContainer>
                             )}
                         </RowContainerFlex>
                         <RowContainerFlex>
@@ -123,7 +124,7 @@ const InspectionDeviceStateScreen = () => {
                                         <React.Fragment key={i}>
                                             {group.titleComponents.map(
                                                 (title: TitleComponent, j) => (
-                                                    <AutoColumnContainer
+                                                    <AutoFitTableContainer
                                                         key={j}
                                                         minColumnWidth={calculateMinColumnWidth(49)}
                                                     >
@@ -156,7 +157,7 @@ const InspectionDeviceStateScreen = () => {
                                                                 )}
                                                             </View>
                                                         </DeviceStateColumnContainer>
-                                                    </AutoColumnContainer>
+                                                    </AutoFitTableContainer>
                                                 ),
                                             )}
                                         </React.Fragment>
@@ -180,12 +181,12 @@ const styles = StyleSheet.create({
     scrollContainer: {
         alignItems: 'center',
         width: '100%',
-        maxHeight: '90%',
+        maxHeight: '92%',
     },
     scrollView: {
         width: '100%',
         height: '100%',
-        borderColor: 'gray',
+        borderColor: customColors.grayLight,
         borderWidth: 2,
         borderStyle: 'solid',
         borderBottomColor: 'transparent',
@@ -201,8 +202,8 @@ const styles = StyleSheet.create({
         paddingBottom: 30,
     },
     horizontalLine: {
-        borderBottomColor: 'gray',
-        borderBottomWidth: 1,
+        borderBottomColor: customColors.grayLight,
+        borderBottomWidth: 0.5,
         width: '100%',
     },
     rightAlign: {

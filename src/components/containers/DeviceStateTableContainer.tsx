@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import DeviceStateColumnHead from '../lists/DeviceStateColumnHead';
-import { customColors } from '../../assets/styles/customStyles';
-import DeviceStateColumnBody from '../lists/DeviceStateColumnBody';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import CollapsibleTableHead from '../table/CollapsibleTableHead';
+import CollapsibleTableBody from '../table/CollapsibleTableBody';
 import {
     DeviceStateComponentsForInspection,
     TitleComponent,
     DeviceStateComponent,
 } from '../../../database/types';
+import { customColors } from '../../assets/styles/customStyles';
 
 interface Props {
     title?: string;
@@ -16,7 +16,7 @@ interface Props {
     group: DeviceStateComponentsForInspection;
 }
 
-const DeviceStateColumnContainer: React.FC<Props> = ({ title = 'ANLAGE', children, group }) => {
+const DeviceStateTableContainer: React.FC<Props> = ({ title = 'ANLAGE', children, group }) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
 
     const handleToggleHeight = () => {
@@ -34,8 +34,8 @@ const DeviceStateColumnContainer: React.FC<Props> = ({ title = 'ANLAGE', childre
     return (
         <View style={styles.outerContainer}>
             <View style={styles.innerContainer}>
-                <DeviceStateColumnHead title={title} isCompleted={isCompleted} />
-                <DeviceStateColumnBody isOpen={isOpen}>{children}</DeviceStateColumnBody>
+                <CollapsibleTableHead title={title} isCompleted={isCompleted} />
+                <CollapsibleTableBody isOpen={isOpen}>{children}</CollapsibleTableBody>
             </View>
             <TouchableOpacity onPress={handleToggleHeight} style={styles.toggleButton}>
                 <Icon name={isOpen ? 'caret-up' : 'caret-down'} size={40} color="black" />
@@ -68,4 +68,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default DeviceStateColumnContainer;
+export default DeviceStateTableContainer;

@@ -26,7 +26,7 @@ import { deleteAllTables } from '../../database/dataAccess/helpers';
 import { saveInspection } from '../../database/dataAccess/Query/sqlCommands';
 import TextMain from '../components/text/TextMain';
 import ErrorBoundary from '../components/errors/ErrorBoundary';
-import ColumnContainer from '../components/containers/ColumnContainer';
+import TableContainer from '../components/containers/TableContainer';
 import RowContainer from '../components/containers/RowContainer';
 
 type NewInspectionScreenNavigationProp = NavigationProp<Record<string, object>, string>;
@@ -194,7 +194,7 @@ const InspectionBasicDetailsScreen = () => {
                             </View>
                             <View style={styles.inputGroupContainer}>
                                 <TextMain text="GERÄTEINFORMATION:" />
-                                <ColumnContainer>
+                                <TableContainer>
                                     <Dropdown
                                         selectedTab={form.deviceTypeId}
                                         setSelectedTab={(value) =>
@@ -227,7 +227,7 @@ const InspectionBasicDetailsScreen = () => {
                                         items={renderDropdownItems(inspectionTypes)}
                                         isValid={validation.inspectionTypeId}
                                     />
-                                </ColumnContainer>
+                                </TableContainer>
                             </View>
                             <View style={styles.inputGroupContainer}>
                                 <TextMain text="NUMMER DER LEISTUNGSNACHWEIS:" />

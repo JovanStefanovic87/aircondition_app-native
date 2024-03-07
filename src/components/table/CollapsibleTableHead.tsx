@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import CheckedIcon from '../icons/svg/Checked';
 import DangerIcon from '../icons/svg/DangerIcon';
 
-const DeviceStateColumnHead = ({ title = 'Anlage', isCompleted = false }) => {
+const CollapsibleTableBody = ({ title = 'Anlage', isCompleted = false }) => {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -62,4 +62,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default DeviceStateColumnHead;
+export default CollapsibleTableBody;
