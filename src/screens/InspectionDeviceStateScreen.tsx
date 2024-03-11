@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useInspectionStore } from '../store/store';
 import { StyleSheet, View, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { calculateMinColumnWidth } from '../helpers/universalFunctions';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import DeviceState from '../components/table/DeviceStateItem';
@@ -28,7 +29,10 @@ import RowContainerFlex from '../components/containers/RowContainerFlex';
 import AutoFitTableContainer from '../components/containers/AutoFitTableContainer';
 import { customColors } from '../assets/styles/customStyles';
 
+type NewInspectionScreenNavigationProp = NavigationProp<Record<string, object>, string>;
+
 const InspectionDeviceStateScreen = () => {
+    const navigation = useNavigation<NewInspectionScreenNavigationProp>();
     const newInspectionId = useInspectionStore((state) => state.inspectionId);
     const [inspection, setInspection] = useState<Inspection>(null);
     const [inspectionDeviceStateDetails, setInspectionDeviceStateDetails] =
@@ -94,6 +98,10 @@ const InspectionDeviceStateScreen = () => {
 
     const handleCloseCamera = () => {
         setCameraVisible(false);
+    };
+
+    const submit = async () => {
+        navigation.navigate('AllInspectionsScreen');
     };
 
     return (
@@ -169,7 +177,7 @@ const InspectionDeviceStateScreen = () => {
                 </GestureHandlerRootView>
             )}
             <View style={styles.rightAlign}>
-                <PrimaryButton title="Nächster Schritt" onPress={() => {}} />
+                <PrimaryButton title="Nächster Schritt" onPress={submit} />
             </View>
         </KeyboardAvoidingView>
     );
