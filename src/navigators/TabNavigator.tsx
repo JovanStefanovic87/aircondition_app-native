@@ -13,8 +13,20 @@ const TabNavigator = () => {
         headerShown: false,
     };
 
+    const headerStyleOptions = {
+        backgroundColor: 'gray',
+    };
+
+    const headerTitleStyleOptions = {
+        fontSize: 20,
+        fontWeight: 'bold' as 'bold',
+        color: 'white',
+    };
+
     const tabNameOptions = (customTitle: string) => ({
         title: customTitle,
+        headerStyle: headerStyleOptions,
+        headerTitleStyle: headerTitleStyleOptions,
     });
 
     return (

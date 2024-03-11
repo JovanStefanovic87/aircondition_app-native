@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { useInspectionStore } from '../store/store';
 import moment from 'moment';
-import { Inspection } from '../../database/types';
+import { InspectionUpdate, Inspection } from '../../database/types';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import BarcodeScanner from '../components/camera/BarcodeScanner';
@@ -46,7 +46,7 @@ const InspectionBasicDetailsScreen = () => {
     const [scanType, setScanType] = useState<string>('');
     const [deviceTypes, setDeviceTypes] = useState<DeviceType[]>([]);
     const [inspectionTypes, setInspectionTypes] = useState<InspectionType[]>([]);
-    const [form, setForm] = useState<Inspection>({
+    const [form, setForm] = useState<InspectionUpdate>({
         barcode: '',
         deviceTypeId: null,
         inspectionTypeId: null,
@@ -55,8 +55,10 @@ const InspectionBasicDetailsScreen = () => {
         contractNumber: '',
         createdAt: '',
         userId: 'c1480367-7de5-4275-aa33-dde1db51c45e',
+        inspectionStatusId: 0,
     });
     const [validation, setValidation] = useState<Record<string, boolean>>({
+        barcode: true,
         deviceTypeId: true,
         facilityName: true,
         location: true,
@@ -92,7 +94,7 @@ const InspectionBasicDetailsScreen = () => {
                         createdAt: inspectionData.createdAt,
                         inspectionStatusId: inspectionData.inspectionStatusId
                             ? inspectionData.inspectionStatusId
-                            : 1,
+                            : 0,
                     }));
                 }
             }
@@ -102,35 +104,51 @@ const InspectionBasicDetailsScreen = () => {
     }, [inspectionId]);
 
     const submit = async () => {
+        // Revalidate all fields on every submit
         const errors: string[] = [];
+        const newValidation: Record<string, boolean> = {
+            barcode: true,
+            deviceTypeId: true,
+            facilityName: true,
+            location: true,
+            inspectionTypeId: true,
+            contractNumber: true,
+        };
 
         Object.entries(form).forEach(([key, value]) => {
-            if (key !== 'createdAt' && !value) {
+            if (key !== 'createdAt' && key !== 'inspectionStatusId' && !value) {
                 errors.push(key);
-                setValidation((prevValidation) => ({
-                    ...prevValidation,
-                    [key]: false,
-                }));
+                newValidation[key] = false;
             }
         });
+
+        if (form.barcode.length !== 13) {
+            errors.push('barcode');
+            newValidation.barcode = false;
+        }
+
+        // Update validation state
+        setValidation(newValidation);
 
         if (errors.length > 0) {
             console.log(errors.map((error) => `${error} is required`));
             return;
         }
 
+        // Proceed with submission if all validations pass
         const formattedCreatedAt = moment().format('YYYY-MM-DDTHH:mm:ss[Z]');
         setForm((prevForm) => ({
             ...prevForm,
             createdAt: formattedCreatedAt,
         }));
 
-        const newId = inspectionId ? inspectionId : await saveInspection(form);
+        const newId = await saveInspection(form);
 
         if (newId) {
             useInspectionStore.getState().setInspectionId(newId);
             navigation.navigate('InspectionDeviceStateScreen');
         }
+        navigation.navigate('InspectionDeviceStateScreen');
     };
 
     const openScanner = (scanType: string) => {
@@ -183,7 +201,7 @@ const InspectionBasicDetailsScreen = () => {
                                         placeholder="Barcode"
                                         value={form.barcode}
                                         setValue={(value) => setForm({ ...form, barcode: value })}
-                                        isValid={validation.deviceTypeId}
+                                        isValid={validation.barcode}
                                     />
                                     <IconButton
                                         icon="camera"
@@ -196,13 +214,14 @@ const InspectionBasicDetailsScreen = () => {
                                 <TextMain text="GERÄTEINFORMATION:" />
                                 <TableContainer>
                                     <Dropdown
-                                        selectedTab={form.deviceTypeId}
-                                        setSelectedTab={(value) =>
+                                        selectedValue={form.deviceTypeId}
+                                        setSelectedValue={(value) =>
                                             setForm({ ...form, deviceTypeId: value })
                                         }
                                         pickerPlaceholder="Lüftungssystem auswählen"
                                         items={renderDropdownItems(deviceTypes)}
                                         isValid={validation.deviceTypeId}
+                                        maxWidth="100%"
                                     />
                                     <InputText
                                         placeholder="name der Anlage"
@@ -219,13 +238,14 @@ const InspectionBasicDetailsScreen = () => {
                                         isValid={validation.location}
                                     />
                                     <Dropdown
-                                        selectedTab={form.inspectionTypeId}
-                                        setSelectedTab={(value) =>
+                                        selectedValue={form.inspectionTypeId}
+                                        setSelectedValue={(value) =>
                                             setForm({ ...form, inspectionTypeId: value })
                                         }
                                         pickerPlaceholder="Inspektionsart auswählen"
                                         items={renderDropdownItems(inspectionTypes)}
                                         isValid={validation.inspectionTypeId}
+                                        maxWidth="100%"
                                     />
                                 </TableContainer>
                             </View>
@@ -261,12 +281,14 @@ const InspectionBasicDetailsScreen = () => {
 
 const styles = StyleSheet.create({
     scrollContainer: {
-        alignItems: 'center',
         flex: 1,
+        width: '100%',
         maxHeight: '85%',
+        alignItems: 'center',
     },
     scrollView: {
         flex: 1,
+        width: '100%',
     },
     container: {
         flex: 1,

@@ -1,31 +1,46 @@
 import React, { FC } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, DimensionValue } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import { customColors } from '../../assets/styles/customStyles';
 
 interface Props {
-    selectedTab: number;
-    setSelectedTab: (value: number) => void;
-    pickerPlaceholder: string | number;
+    selectedValue: number;
+    setSelectedValue: (value: number) => void;
+    pickerPlaceholder?: string | number;
     items: { value: string | number; label: string }[];
     isValid?: boolean;
+    maxWidth?: DimensionValue;
 }
 
 const Dropdown: FC<Props> = ({
-    selectedTab,
+    selectedValue,
+    setSelectedValue,
     items,
-    setSelectedTab,
     pickerPlaceholder,
     isValid = true,
+    maxWidth = 400,
 }) => {
     const borderColor = isValid ? customColors.blueLight : 'red';
+    const placeholder = pickerPlaceholder ? { label: pickerPlaceholder, value: null } : {};
+
+    const styles = StyleSheet.create({
+        dropdownContainer: {
+            flex: 1,
+            width: '100%',
+            maxWidth: maxWidth,
+            borderColor: customColors.blueLight,
+            borderWidth: 2,
+            borderRadius: 5,
+        },
+    });
+
     return (
         <View style={[styles.dropdownContainer, { borderColor }]}>
             <RNPickerSelect
-                onValueChange={(value) => setSelectedTab(value)}
+                onValueChange={(value) => setSelectedValue(value)}
                 items={items}
-                value={selectedTab}
-                placeholder={{ label: pickerPlaceholder, value: null }}
+                value={selectedValue}
+                placeholder={placeholder}
                 useNativeAndroidPickerStyle={true}
                 style={{
                     inputAndroid: {
@@ -49,15 +64,5 @@ const Dropdown: FC<Props> = ({
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    dropdownContainer: {
-        flex: 1,
-        minWidth: '100%',
-        borderColor: customColors.blueLight,
-        borderWidth: 2,
-        borderRadius: 5,
-    },
-});
 
 export default Dropdown;
