@@ -5,6 +5,8 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { useInspectionStore } from '../store/store';
 import NavButton from '../components/buttons/NavButton';
+import { getDeviceElements } from '../../database/dataAccess/Query/sqlQueries';
+import { deleteAllTables } from '../../database/dataAccess/helpers';
 
 type NavScreenNavigationProp = NavigationProp<any, any>;
 
@@ -23,6 +25,15 @@ const NavScreen: React.FC = () => {
 
     const handleHomePress = () => {
         navigation.navigate('HomeScreen');
+    };
+
+    const handleDeviceElements = async () => {
+        const test = await getDeviceElements();
+        console.log('images: ', test);
+    };
+
+    const deleteAllTabless = async () => {
+        await deleteAllTables();
     };
 
     return (
@@ -44,17 +55,17 @@ const NavScreen: React.FC = () => {
                     />
 
                     <NavButton
-                        onPress={() => console.log('')}
+                        onPress={() => deleteAllTabless()}
                         iconName="user"
                         iconColor="#3498db"
-                        buttonText="Profil"
+                        buttonText="Profil - deleteAllTables"
                     />
 
                     <NavButton
-                        onPress={() => console.log('Ausloggen')}
+                        onPress={() => handleDeviceElements()}
                         iconName="sign-out"
                         iconColor="red"
-                        buttonText="Ausloggen"
+                        buttonText="Ausloggen-handleDeviceElements"
                     />
                 </View>
             </ScrollView>

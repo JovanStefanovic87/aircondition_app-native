@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS DeviceElementType (
 CREATE TABLE IF NOT EXISTS DeviceElement (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT,
-  deviceImage BLOB,
+  deviceImagePath TEXT,
   deviceElementTypeId INTEGER,
   FOREIGN KEY (deviceElementTypeId) REFERENCES DeviceElementType(id)
 );
@@ -165,11 +165,11 @@ INSERT INTO DeviceStateComponent (name, groupTypeId, titleComponentId, elementId
 INSERT INTO DeviceStateComponent (name, groupTypeId, titleComponentId, elementId, isUsingNote, displayOrder) VALUES ('Gehäuse undicht', 2, 1, null, true, 2);
 INSERT INTO DeviceStateComponent (name, groupTypeId, titleComponentId, elementId, isUsingNote, displayOrder) VALUES ('Bodenablauf nicht verschlossen', 2, 1, null, false, 3);
 INSERT INTO DeviceStateComponent (name, groupTypeId, titleComponentId, elementId, isUsingNote, displayOrder) VALUES ('Kenndaten fehlen', 2, 1, null, false, 4);
-INSERT INTO DeviceStateComponent (name, groupTypeId, titleComponentId, elementId, isUsingNote, displayOrder) VALUES ('Nicht einsehbar/prüfbar', 2, 1, 1, false, 5);
+INSERT INTO DeviceStateComponent (name, groupTypeId, titleComponentId, elementId, isUsingNote, displayOrder) VALUES ('Nicht einsehbar/prüfbar', 2, 1, null, false, 5);
 INSERT INTO DeviceStateComponent (name, groupTypeId, titleComponentId, elementId, isUsingNote, displayOrder) VALUES ('Innendämmung abgelöst / beschädigt', 2, 1, null, false, 6);
 INSERT INTO DeviceStateComponent (name, groupTypeId, titleComponentId, elementId, isUsingNote, displayOrder) VALUES ('Pflanzenbewuchs', 2, 1, null, false, 7);
 INSERT INTO DeviceStateComponent (name, groupTypeId, titleComponentId, elementId, isUsingNote, displayOrder) VALUES ('Poröse Gehäuse-/Rahmendichtung', 2, 1, null, false, 8);
-INSERT INTO DeviceStateComponent (name, groupTypeId, titleComponentId, elementId, isUsingNote, displayOrder) VALUES ('Poröe Innendämmung', 2, 1, 1, false, 9);
+INSERT INTO DeviceStateComponent (name, groupTypeId, titleComponentId, elementId, isUsingNote, displayOrder) VALUES ('Poröe Innendämmung', 2, 1, null, false, 9);
 INSERT INTO DeviceStateComponent (name, groupTypeId, titleComponentId, elementId, isUsingNote, displayOrder) VALUES ('Element fehlt / vertauscht', 2, 1, null, false, 10);
 INSERT INTO DeviceStateComponent (name, groupTypeId, titleComponentId, elementId, isUsingNote, displayOrder) VALUES ('Fremdmaterial', 1, 1, null, true, 1);
 
