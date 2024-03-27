@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
 import { vw } from 'react-native-css-vh-vw';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -7,12 +7,16 @@ import { useInspectionStore } from '../store/store';
 import NavButton from '../components/buttons/NavButton';
 import { getDeviceElements } from '../../database/dataAccess/Query/sqlQueries';
 import { deleteAllTables } from '../../database/dataAccess/helpers';
+import { Image, Text } from 'react-native';
+import { DeviceElement } from '../../database/types';
+import { DeviceElementImage } from '../resources/deviceElementImages';
 
 type NavScreenNavigationProp = NavigationProp<any, any>;
 
 const NavScreen: React.FC = () => {
     const navigation = useNavigation<NavScreenNavigationProp>();
     const setInspectionId = useInspectionStore((state) => state.setInspectionId);
+    const [deviceElements, setDeviceElements] = useState<DeviceElement[]>([]);
 
     const handleNewInspectionPress = () => {
         setInspectionId(null);
@@ -27,14 +31,18 @@ const NavScreen: React.FC = () => {
         navigation.navigate('HomeScreen');
     };
 
-    const handleDeviceElements = async () => {
-        const test = await getDeviceElements();
-        console.log('images: ', test);
-    };
-
     const deleteAllTabless = async () => {
         await deleteAllTables();
     };
+
+    const handleDeviceElements = async () => {
+        const elements = await getDeviceElements();
+        setDeviceElements(elements);
+    };
+
+    useEffect(() => {
+        handleDeviceElements();
+    }, []);
 
     return (
         <GestureHandlerRootView style={styles.scrollContainer}>
@@ -55,19 +63,45 @@ const NavScreen: React.FC = () => {
                     />
 
                     <NavButton
-                        onPress={() => deleteAllTabless()}
+                        onPress={() => console.log('profile')}
                         iconName="user"
                         iconColor="#3498db"
-                        buttonText="Profil - deleteAllTables"
+                        buttonText="Profil"
+                    />
+
+                    <NavButton
+                        onPress={() => console.log('sign-out')}
+                        iconName="sign-out"
+                        iconColor="red"
+                        buttonText="Ausloggen"
+                    />
+
+                    <NavButton
+                        onPress={() => deleteAllTabless()}
+                        iconName="database"
+                        iconColor="red"
+                        buttonText="Delete All Tables"
                     />
 
                     <NavButton
                         onPress={() => handleDeviceElements()}
-                        iconName="sign-out"
+                        iconName="database"
                         iconColor="red"
-                        buttonText="Ausloggen-handleDeviceElements"
+                        buttonText="Get Device Elements"
                     />
                 </View>
+
+                {deviceElements.map((deviceElement) => (
+                    <View key={deviceElement.id}>
+                        <Text>{deviceElement.name}</Text>
+                        {deviceElement.imageFileName && (
+                            <Image
+                                style={styles.image}
+                                source={DeviceElementImage.GetImage(deviceElement.imageFileName)}
+                            />
+                        )}
+                    </View>
+                ))}
             </ScrollView>
         </GestureHandlerRootView>
     );
@@ -87,6 +121,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         gap: vw(4),
         marginTop: vw(4),
+    },
+    image: {
+        width: 100,
+        height: 100,
     },
 });
 

@@ -8,8 +8,10 @@ CREATE TABLE IF NOT EXISTS DeviceElementType (
 CREATE TABLE IF NOT EXISTS DeviceElement (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT,
-  deviceImagePath TEXT,
+  imageFileName TEXT,
+  imagePath TEXT,
   deviceElementTypeId INTEGER,
+  isDeleted BOOL DEFAULT false,
   FOREIGN KEY (deviceElementTypeId) REFERENCES DeviceElementType(id)
 );
 
