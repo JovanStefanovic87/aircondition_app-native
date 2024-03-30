@@ -1,6 +1,7 @@
 import {
     DatabaseVersionType,
     DeviceElement,
+    DeviceElementType,
     DeviceStateByInspection,
     DeviceStateComponent,
     DeviceStateComponentsForInspection,
@@ -161,4 +162,9 @@ export const getImageStorageByInspectionId = async (
 export const getDeviceElements = async (): Promise<DeviceElement[]> => {
     const query = `SELECT * FROM DeviceElement`;
     return executeQuery<DeviceElement>({ query });
+};
+
+export const getDeviceElementTypes = async (): Promise<DeviceElementType[]> => {
+    const query = `SELECT * FROM DeviceElementType`;
+    return executeQuery<DeviceElementType>({ query });
 };

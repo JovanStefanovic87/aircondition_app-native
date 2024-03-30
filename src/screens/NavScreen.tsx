@@ -5,7 +5,10 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { useInspectionStore } from '../store/store';
 import NavButton from '../components/buttons/NavButton';
-import { getDeviceElements } from '../../database/dataAccess/Query/sqlQueries';
+import {
+    getDeviceElementTypes,
+    getDeviceElements,
+} from '../../database/dataAccess/Query/sqlQueries';
 import { deleteAllTables } from '../../database/dataAccess/helpers';
 import { Image, Text } from 'react-native';
 import { DeviceElement } from '../../database/types';
@@ -37,7 +40,15 @@ const NavScreen: React.FC = () => {
 
     const handleDeviceElements = async () => {
         const elements = await getDeviceElements();
+        console.log('----------------------------------------------------');
+        console.log('elements: ', elements);
         setDeviceElements(elements);
+    };
+
+    const handleDeviceElementTypes = async () => {
+        const elementTypes = await getDeviceElementTypes();
+        console.log('----------------------------------------------------');
+        console.log('elementTypes: ', elementTypes);
     };
 
     useEffect(() => {
@@ -84,10 +95,17 @@ const NavScreen: React.FC = () => {
                     />
 
                     <NavButton
+                        onPress={() => handleDeviceElementTypes()}
+                        iconName="database"
+                        iconColor="red"
+                        buttonText="Console log Device Element Types"
+                    />
+
+                    <NavButton
                         onPress={() => handleDeviceElements()}
                         iconName="database"
                         iconColor="red"
-                        buttonText="Get Device Elements"
+                        buttonText="Get And Display Device Elements"
                     />
                 </View>
 

@@ -171,3 +171,8 @@ export type DeviceElement = {
     imageFileName: string;
     imagePath: string;
 };
+
+export type DeviceElementType = {
+    id: number;
+    name: string;
+};
