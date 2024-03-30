@@ -1,5 +1,6 @@
 import {
     DatabaseVersionType,
+    DeviceElement,
     DeviceStateByInspection,
     DeviceStateComponent,
     DeviceStateComponentsForInspection,
@@ -155,4 +156,9 @@ export const getImageStorageByInspectionId = async (
         SELECT i.id, i.inspectionId, i.imageId, s.name, s.storagePath FROM Inspection_Image i
         LEFT JOIN ImageStorage s on s.id = i.imageId WHERE i.inspectionId = '${inspectionId}'`;
     return executeQuery<InspectionAndImageStorage>({ query });
+};
+
+export const getDeviceElements = async (): Promise<DeviceElement[]> => {
+    const query = `SELECT * FROM DeviceElement`;
+    return executeQuery<DeviceElement>({ query });
 };

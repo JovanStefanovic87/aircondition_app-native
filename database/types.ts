@@ -163,3 +163,11 @@ export type InspectionAndImageStorage = {
     name: string;
     storagePath: string;
 };
+
+export type DeviceElement = {
+    id: number;
+    name: string;
+    deviceElementTypeId: number;
+    imageFileName: string;
+    imagePath: string;
+};
