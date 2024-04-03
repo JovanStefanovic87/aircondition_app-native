@@ -10,9 +10,9 @@ import {
     getDeviceElements,
 } from '../../database/dataAccess/Query/sqlQueries';
 import { deleteAllTables } from '../../database/dataAccess/helpers';
-import { Image, Text } from 'react-native';
-import { DeviceElement } from '../../database/types';
-import { DeviceElementImage } from '../resources/deviceElementImages';
+import { DeviceElement, DeviceElementType } from '../../database/types';
+import Carousel from '../components/image/Carousel';
+import Dropdown from '../components/input/Dropdown';
 
 type NavScreenNavigationProp = NavigationProp<any, any>;
 
@@ -20,6 +20,8 @@ const NavScreen: React.FC = () => {
     const navigation = useNavigation<NavScreenNavigationProp>();
     const setInspectionId = useInspectionStore((state) => state.setInspectionId);
     const [deviceElements, setDeviceElements] = useState<DeviceElement[]>([]);
+    const [selectedTypeId, setSelectedTypeId] = useState<number | null>(null);
+    const [deviceElementTypes, setDeviceElementTypes] = useState<DeviceElementType[]>([]);
 
     const handleNewInspectionPress = () => {
         setInspectionId(null);
@@ -33,6 +35,20 @@ const NavScreen: React.FC = () => {
     const handleHomePress = () => {
         navigation.navigate('HomeScreen');
     };
+
+    useEffect(() => {
+        const fetchDeviceElementTypes = async () => {
+            try {
+                const elementTypes = await getDeviceElementTypes();
+
+                setDeviceElementTypes(elementTypes);
+            } catch (error) {
+                console.error('Error fetching device element types:', error);
+            }
+        };
+
+        fetchDeviceElementTypes();
+    }, []);
 
     const deleteAllTabless = async () => {
         await deleteAllTables();
@@ -50,10 +66,6 @@ const NavScreen: React.FC = () => {
         console.log('----------------------------------------------------');
         console.log('elementTypes: ', elementTypes);
     };
-
-    useEffect(() => {
-        handleDeviceElements();
-    }, []);
 
     return (
         <GestureHandlerRootView style={styles.scrollContainer}>
@@ -107,19 +119,17 @@ const NavScreen: React.FC = () => {
                         iconColor="red"
                         buttonText="Get And Display Device Elements"
                     />
+                    <Dropdown
+                        selectedValue={selectedTypeId}
+                        setSelectedValue={setSelectedTypeId}
+                        items={deviceElementTypes.map((type) => ({
+                            label: type.name,
+                            value: type.id,
+                        }))} // Convert to number
+                        pickerPlaceholder="Select Type"
+                    />
                 </View>
-
-                {deviceElements.map((deviceElement) => (
-                    <View key={deviceElement.id}>
-                        <Text>{deviceElement.name}</Text>
-                        {deviceElement.imageFileName && (
-                            <Image
-                                style={styles.image}
-                                source={DeviceElementImage.GetImage(deviceElement.imageFileName)}
-                            />
-                        )}
-                    </View>
-                ))}
+                <Carousel deviceElements={deviceElements} selectedTypeId={selectedTypeId} />
             </ScrollView>
         </GestureHandlerRootView>
     );
@@ -143,6 +153,17 @@ const styles = StyleSheet.create({
     image: {
         width: 100,
         height: 100,
+    },
+    imagesContainer: {
+        display: 'flex',
+        width: '100%',
+        paddingHorizontal: 10,
+        flexDirection: 'column',
+        gap: 20,
+    },
+    picker: {
+        height: 50,
+        width: '100%',
     },
 });
 
