@@ -23,83 +23,94 @@ type ExecuteQueryOptions<T> = {
     mapper?: (record: T) => T;
 };
 
+const maxRetries = 3;
+const retryDelay = 500;
+
 export const executeQuery = async <T extends object>(
     options: ExecuteQueryOptions<T>,
 ): Promise<T[]> => {
-    try {
-        const db = getDatabase();
+    let attempt = 1;
 
-        return new Promise<T[]>((resolve, reject) => {
-            db.transaction((tx) => {
-                tx.executeSql(
-                    options.query,
-                    [],
-                    (_, result: QueryResult<T>) => {
-                        const rows = result.rows;
-                        const records: T[] = [];
+    while (attempt <= maxRetries) {
+        try {
+            const db = getDatabase();
 
-                        if (rows.length > 0) {
-                            for (let i = 0; i < rows.length; i++) {
-                                const record = rows.item(i);
-                                const extracted = options.mapper
-                                    ? options.mapper(record)
-                                    : extractFields<T>(record);
-                                records.push(extracted);
+            return new Promise<T[]>((resolve, reject) => {
+                db.transaction((tx) => {
+                    tx.executeSql(
+                        options.query,
+                        [],
+                        (_, result: QueryResult<T>) => {
+                            const rows = result.rows;
+                            const records: T[] = [];
+
+                            if (rows.length > 0) {
+                                for (let i = 0; i < rows.length; i++) {
+                                    const record = rows.item(i);
+                                    const extracted = options.mapper
+                                        ? options.mapper(record)
+                                        : extractFields<T>(record);
+                                    records.push(extracted);
+                                }
+                                resolve(records);
+                            } else {
+                                console.log('No records found');
+                                resolve([]);
                             }
-                            resolve(records);
-                        } else {
-                            console.log('No records found');
-                            resolve([]);
-                        }
-                    },
-                    (error) => {
-                        console.log('Error selecting record: ', error);
-                        reject(error);
-                    },
-                );
+                        },
+                        (error) => {
+                            console.log('Error selecting record: ', error);
+                            reject(error);
+                        },
+                    );
+                });
             });
-        });
-    } catch (error) {
-        console.error('Error opening database: ', error);
-        throw error;
+        } catch (error) {
+            await new Promise((resolve) => setTimeout(resolve, retryDelay));
+        }
+        attempt++;
     }
 };
 
 export const executeQuerySingle = async <T extends object>(
     options: ExecuteQueryOptions<T>,
 ): Promise<T | null> => {
-    try {
-        const db = getDatabase();
+    let attempt = 1;
 
-        return new Promise<T | null>((resolve, reject) => {
-            db.transaction((tx) => {
-                tx.executeSql(
-                    options.query,
-                    [],
-                    (_, result: QueryResult<T>) => {
-                        const rows = result.rows;
+    while (attempt <= maxRetries) {
+        try {
+            const db = getDatabase();
 
-                        if (rows.length > 0) {
-                            const record = rows.item(0);
-                            const extracted = options.mapper
-                                ? options.mapper(record)
-                                : extractFields<T>(record);
-                            resolve(extracted);
-                        } else {
-                            console.log('No record found');
-                            resolve(null);
-                        }
-                    },
-                    (error) => {
-                        console.log('Error selecting record: ', error);
-                        reject(error);
-                    },
-                );
+            return new Promise<T | null>((resolve, reject) => {
+                db.transaction((tx) => {
+                    tx.executeSql(
+                        options.query,
+                        [],
+                        (_, result: QueryResult<T>) => {
+                            const rows = result.rows;
+
+                            if (rows.length > 0) {
+                                const record = rows.item(0);
+                                const extracted = options.mapper
+                                    ? options.mapper(record)
+                                    : extractFields<T>(record);
+                                resolve(extracted);
+                            } else {
+                                console.log('No record found');
+                                resolve(null);+
+                            }
+                        },
+                        (error) => {
+                            console.log('Error selecting record: ', error);
+                            reject(error);
+                        },
+                    );
+                });
             });
-        });
-    } catch (error) {
-        console.error('Error opening database: ', error);
-        throw error;
+        } catch (error) {
+            await new Promise((resolve) => setTimeout(resolve, retryDelay));
+        }
+        attempt++;
     }
 };
 
@@ -160,7 +171,8 @@ export const executeUpdateOrInsertWithGuid = async <T extends DatabaseRecord>(
         });
     } catch (error) {
         console.error('Error opening database: ', error);
-        throw error;
+        // TODO: LOG ERROR
+        // throw error;
     }
 };
 
@@ -197,7 +209,8 @@ export const executeUpdate = async <T extends DatabaseRecord>(
         });
     } catch (error) {
         console.error('Error opening database: ', error);
-        throw error;
+        // TODO: LOG ERROR
+        // throw error;
     }
 };
 
@@ -232,6 +245,7 @@ export const executeInsertWithGuid = async <T extends DatabaseRecord>(
         });
     } catch (error) {
         console.error('Error opening database: ', error);
-        throw error;
+        // TODO: LOG ERROR
+        // throw error;
     }
 };

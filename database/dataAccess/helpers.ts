@@ -1,10 +1,6 @@
 import SQLite from 'react-native-sqlite-storage';
 import DatabaseHelper from './getAllTablesClass';
-import { DatabaseVersionType, DeviceType, InspectionType } from '../types';
 import { getDatabase } from '../dbConnection/initDatabase';
-import uuid from 'react-native-uuid';
-import { executeQuery } from './Query/baseQuery';
-import { mapDatabaseVersionType } from '../dataMappers/mappers';
 
 export const insertSqlite = async () => {
     try {
