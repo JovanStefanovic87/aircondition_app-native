@@ -4,8 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import TabNavigator from './src/navigators/TabNavigator';
 import { runDBUpdates } from './database/dbUpdates/runUpdates';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getDatabase, initDatabase } from './database/dbConnection/initDatabase';
-import ErrorBoundary from './src/components/errors/ErrorBoundary';
+import { dbConnectionExist, initDatabase } from './database/dbConnection/initDatabase';
 
 const Stack = createNativeStackNavigator();
 
@@ -14,33 +13,19 @@ const App = () => {
         const initializeApp = async () => {
             try {
                 await initDatabase();
-                // Check if initialization has been done
-                //const dbUpdateDone = await AsyncStorage.getItem('dbUpdateDone');
+                const migrationRunning = await AsyncStorage.getItem('dbMigrationStatus');
 
-                //if (dbUpdateDone !== 'true') {
-                // Perform initialization
-                await runDBUpdates();
-
-                // Set the flag to indicate initialization is done
-                //await AsyncStorage.setItem('dbUpdateDone', 'true');
-                //}
+                if (migrationRunning !== 'started') {
+                    await AsyncStorage.setItem('dbMigrationStatus', 'started');
+                    await runDBUpdates();
+                    await AsyncStorage.setItem('dbMigrationStatus', 'done');
+                }
             } catch (error) {
                 console.error('Error during app database update: ', error);
             }
         };
 
-        const dbConnectionExist = () => {
-            try {
-                const db = getDatabase();
-            } catch (error) {
-                return false;
-            }
-            return true;
-        };
-        console.log('dbConnectionExist', dbConnectionExist());
-
-        // if (!dbConnectionExist()) initializeApp();
-        initializeApp();
+        if (!dbConnectionExist()) initializeApp();
     }, []);
     return (
         <NavigationContainer>

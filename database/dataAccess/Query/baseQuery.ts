@@ -97,7 +97,7 @@ export const executeQuerySingle = async <T extends object>(
                                 resolve(extracted);
                             } else {
                                 console.log('No record found');
-                                resolve(null);+
+                                resolve(null);
                             }
                         },
                         (error) => {

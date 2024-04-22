@@ -19,3 +19,12 @@ export const getDatabase = () => {
     }
     return database;
 };
+
+export const dbConnectionExist = () => {
+    try {
+        getDatabase();
+    } catch (error) {
+        return false;
+    }
+    return true;
+};
