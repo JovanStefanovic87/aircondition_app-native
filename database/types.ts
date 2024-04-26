@@ -176,3 +176,19 @@ export type DeviceElementType = {
     id: number;
     name: string;
 };
+
+export type InspectionDeviceElement = {
+    id: string;
+    inspectionId: string;
+    deviceElementId: number;
+    deviceOrder: number;
+    imageFileName: string;
+    imagePath: string;
+};
+
+export type InspectionDeviceElementUpdate = {
+    id?: string;
+    inspectionId: string;
+    deviceElementId: number;
+    deviceOrder: number;
+};

@@ -23,7 +23,7 @@ import {
     getInspectionById,
 } from '../../database/dataAccess/Query/sqlQueries';
 import { deleteAllTables } from '../../database/dataAccess/helpers';
-import { saveInspection } from '../../database/dataAccess/Query/sqlCommands';
+import { saveInspection } from '../../database/dataAccess/Command/sqlCommands';
 import TextMain from '../components/text/TextMain';
 import ErrorBoundary from '../components/errors/ErrorBoundary';
 import TableContainer from '../components/containers/TableContainer';

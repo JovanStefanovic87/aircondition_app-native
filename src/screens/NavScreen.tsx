@@ -8,11 +8,21 @@ import NavButton from '../components/buttons/NavButton';
 import {
     getDeviceElementTypes,
     getDeviceElements,
+    getInspectionDeviceElements,
+    getInspections,
 } from '../../database/dataAccess/Query/sqlQueries';
 import { deleteAllTables } from '../../database/dataAccess/helpers';
-import { DeviceElement, DeviceElementType } from '../../database/types';
+import {
+    DeviceElement,
+    DeviceElementType,
+    InspectionDeviceElementUpdate,
+} from '../../database/types';
 import Carousel from '../components/image/Carousel';
 import Dropdown from '../components/input/Dropdown';
+import {
+    deleteInspectionDeviceElement,
+    saveInspectionDeviceElement,
+} from '../../database/dataAccess/Command/sqlCommands';
 
 type NavScreenNavigationProp = NavigationProp<any, any>;
 
@@ -67,6 +77,31 @@ const NavScreen: React.FC = () => {
         console.log('elementTypes: ', elementTypes);
     };
 
+    const handleGetInspectionElements = async (inspectionId: string) => {
+        const inspectionDeviceElements = await getInspectionDeviceElements(inspectionId);
+        console.log('----------------------------------------------------');
+        console.log('inspectionDeviceElements: ', inspectionDeviceElements);
+    };
+
+    const handleGetAllInspections = async () => {
+        const inspections = await getInspections();
+        console.log('----------------------------------------------------');
+        console.log('inspections: ', inspections);
+    };
+
+    const handleSaveInspectionElements = async () => {
+        const record: InspectionDeviceElementUpdate = {
+            inspectionId: '674bfb70-bc98-40c8-9b54-0156080648c5',
+            deviceElementId: 1,
+            deviceOrder: 1,
+        };
+        await saveInspectionDeviceElement(record);
+    };
+
+    const handleDeleteInspectionElements = async (inspectionId: string) => {
+        await deleteInspectionDeviceElement(inspectionId);
+    };
+
     return (
         <GestureHandlerRootView style={styles.scrollContainer}>
             <ScrollView style={styles.scrollView}>
@@ -77,42 +112,71 @@ const NavScreen: React.FC = () => {
                         iconColor="yellow"
                         buttonText="Neue Inspektion"
                     />
-
                     <NavButton
                         onPress={handleAllInspectionsPress}
                         iconName="list"
                         iconColor="#e67e22"
                         buttonText="Alle Inspektionen"
                     />
-
                     <NavButton
                         onPress={() => console.log('profile')}
                         iconName="user"
                         iconColor="#3498db"
                         buttonText="Profil"
                     />
-
                     <NavButton
                         onPress={() => console.log('sign-out')}
                         iconName="sign-out"
                         iconColor="red"
                         buttonText="Ausloggen"
                     />
-
                     <NavButton
                         onPress={() => deleteAllTabless()}
                         iconName="database"
                         iconColor="red"
                         buttonText="Delete All Tables"
                     />
-
                     <NavButton
-                        onPress={() => handleDeviceElementTypes()}
+                        onPress={() => handleGetAllInspections()}
                         iconName="database"
                         iconColor="red"
-                        buttonText="Console log Device Element Types"
+                        buttonText="Get All Inspections"
+                    />
+                    <NavButton
+                        onPress={() =>
+                            handleGetInspectionElements('674bfb70-bc98-40c8-9b54-0156080648c5')
+                        }
+                        iconName="database"
+                        iconColor="red"
+                        buttonText="Get Inspection Elements"
                     />
 
+                    <NavButton
+                        onPress={() =>
+                            handleDeleteInspectionElements('da3ae5e2-e8f8-42e6-87d2-2ae8d834b3f6')
+                        }
+                        iconName="database"
+                        iconColor="red"
+                        buttonText="Delete Inspection Elements"
+                    />
+                    <NavButton
+                        onPress={() => handleSaveInspectionElements()}
+                        iconName="database"
+                        iconColor="red"
+                        buttonText="Save Inspection Elements"
+                    />
+                    <NavButton
+                        onPress={() => handleDeviceElements()}
+                        iconName="database"
+                        iconColor="red"
+                        buttonText="Get Display Elements"
+                    />
+                    <NavButton
+                        onPress={() => handleDeviceElements()}
+                        iconName="database"
+                        iconColor="red"
+                        buttonText="Get And Display Device Elements"
+                    />
                     <NavButton
                         onPress={() => handleDeviceElements()}
                         iconName="database"

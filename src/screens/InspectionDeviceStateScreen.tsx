@@ -10,8 +10,8 @@ import {
     getInspectionDeviceStateDetails,
     getInspectionById,
 } from '../../database/dataAccess/Query/sqlQueries';
-import { saveInspectionDeviceState } from '../../database/dataAccess/Query/sqlCommands';
-import { saveInspection } from '../../database/dataAccess/Query/sqlCommands';
+import { saveInspectionDeviceState } from '../../database/dataAccess/Command/sqlCommands';
+import { saveInspection } from '../../database/dataAccess/Command/sqlCommands';
 import { launchImageLibrary, MediaType, CameraOptions } from 'react-native-image-picker';
 import TakePicture from '../components/camera/TakePicture';
 import InspectionTitle from '../components/text/DeviceStateTitle';

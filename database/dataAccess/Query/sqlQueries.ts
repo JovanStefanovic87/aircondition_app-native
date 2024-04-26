@@ -11,6 +11,7 @@ import {
     Inspection,
     InspectionAndImageStorage,
     InspectionDeviceComponentUpdate,
+    InspectionDeviceElement,
     InspectionStatus,
     InspectionType,
     InspectionUpdate,
@@ -167,4 +168,14 @@ export const getDeviceElements = async (): Promise<DeviceElement[]> => {
 export const getDeviceElementTypes = async (): Promise<DeviceElementType[]> => {
     const query = `SELECT * FROM DeviceElementType`;
     return executeQuery<DeviceElementType>({ query });
+};
+
+export const getInspectionDeviceElements = async (
+    inspectionId: string,
+): Promise<InspectionDeviceElement[]> => {
+    const query = `
+        SELECT ide.*, de.imageFileName, de.imagePath FROM Inspection_DeviceElement ide
+        LEFT JOIN DeviceElement de ON de.id = ide.deviceElementId
+        WHERE ide.inspectionId = '${inspectionId}'`;
+    return executeQuery<InspectionDeviceElement>({ query });
 };

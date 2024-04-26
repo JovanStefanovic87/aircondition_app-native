@@ -2,12 +2,18 @@ import {
     ImageStorage,
     ImageStorageInsert,
     InspectionDeviceComponentUpdate,
+    InspectionDeviceElementUpdate,
     InspectionDeviceStateUpdate,
     InspectionImageInsert,
     InspectionUpdate,
 } from '../../types';
-import { executeInsertWithGuid, executeUpdate, executeUpdateOrInsertWithGuid } from './baseQuery';
-import { getDeviceStateComponents } from './sqlQueries';
+import {
+    executeDeleteById,
+    executeInsertWithGuid,
+    executeUpdate,
+    executeUpdateOrInsertWithGuid,
+} from '../Command/baseCommand';
+import { getDeviceStateComponents } from '../Query/sqlQueries';
 
 export const saveInspection = async (
     inspecton: Partial<InspectionUpdate>,
@@ -43,7 +49,6 @@ const fillDeviceStateToInspection = async (inspectonId: string): Promise<void> =
 export const saveInspectionDeviceState = async (
     record: InspectionDeviceStateUpdate,
 ): Promise<void> => {
-    console.log('Data to be saved in saveInspectionDeviceState:', record);
     await executeUpdate<InspectionDeviceStateUpdate>('Inspection_DeviceState', record);
 };
 
@@ -61,4 +66,19 @@ export const saveInspectionImage = async (
     };
 
     await executeInsertWithGuid<InspectionImageInsert>('Inspection_Image', inspectionImageRecord);
+};
+
+export const saveInspectionDeviceElement = async (
+    record: InspectionDeviceElementUpdate,
+): Promise<void> => {
+    await executeUpdateOrInsertWithGuid<InspectionDeviceElementUpdate>(
+        'Inspection_DeviceElement',
+        record,
+    );
+};
+
+export const deleteInspectionDeviceElement = async (
+    inspectionDeviceElementId: string,
+): Promise<void> => {
+    await executeDeleteById('Inspection_DeviceElement', inspectionDeviceElementId);
 };
