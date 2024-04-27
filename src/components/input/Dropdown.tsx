@@ -25,12 +25,12 @@ const Dropdown: FC<Props> = ({
 
     const styles = StyleSheet.create({
         dropdownContainer: {
-            flex: 1,
-            width: '100%',
+            width: '95%',
             maxWidth: maxWidth,
             borderColor: customColors.blueLight,
             borderWidth: 2,
             borderRadius: 5,
+            justifyContent: 'center',
         },
     });
 
@@ -45,6 +45,7 @@ const Dropdown: FC<Props> = ({
                 style={{
                     inputAndroid: {
                         color: customColors.blueLight,
+                        backgroundColor: 'white',
                         fontSize: 16,
                         fontWeight: 'bold',
                         textAlign: 'center',
@@ -54,10 +55,6 @@ const Dropdown: FC<Props> = ({
                         fontSize: 16,
                         fontWeight: 'bold',
                         textAlign: 'center',
-                    },
-                    iconContainer: {
-                        top: 10,
-                        right: 12,
                     },
                 }}
             />

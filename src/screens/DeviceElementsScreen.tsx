@@ -23,10 +23,12 @@ import {
     deleteInspectionDeviceElement,
     saveInspectionDeviceElement,
 } from '../../database/dataAccess/Command/sqlCommands';
+import { customColors } from '../assets/styles/customStyles';
+import TextTitle from '../components/text/TextTitle';
 
 type NavScreenNavigationProp = NavigationProp<any, any>;
 
-const NavScreen: React.FC = () => {
+const DeviceElementsScreen: React.FC = () => {
     const navigation = useNavigation<NavScreenNavigationProp>();
     const setInspectionId = useInspectionStore((state) => state.setInspectionId);
     const [deviceElements, setDeviceElements] = useState<DeviceElement[]>([]);
@@ -40,10 +42,6 @@ const NavScreen: React.FC = () => {
 
     const handleAllInspectionsPress = () => {
         navigation.navigate('AllInspectionsScreen');
-    };
-
-    const handleDevicElementsPress = () => {
-        navigation.navigate('DeviceElementsScreen');
     };
 
     const handleHomePress = () => {
@@ -111,36 +109,6 @@ const NavScreen: React.FC = () => {
             <ScrollView style={styles.scrollView}>
                 <View style={styles.container}>
                     <NavButton
-                        onPress={handleNewInspectionPress}
-                        iconName="plus"
-                        iconColor="yellow"
-                        buttonText="Neue Inspektion"
-                    />
-                    <NavButton
-                        onPress={handleAllInspectionsPress}
-                        iconName="list"
-                        iconColor="#e67e22"
-                        buttonText="Alle Inspektionen"
-                    />
-                    <NavButton
-                        onPress={() => console.log('profile')}
-                        iconName="user"
-                        iconColor="#3498db"
-                        buttonText="Profil"
-                    />
-                    <NavButton
-                        onPress={() => console.log('sign-out')}
-                        iconName="sign-out"
-                        iconColor="red"
-                        buttonText="Ausloggen"
-                    />
-                    <NavButton
-                        onPress={handleDevicElementsPress}
-                        iconName="microchip"
-                        iconColor="red"
-                        buttonText="DeviceElements"
-                    />
-                    <NavButton
                         onPress={() => deleteAllTabless()}
                         iconName="database"
                         iconColor="red"
@@ -193,17 +161,20 @@ const NavScreen: React.FC = () => {
                         iconColor="red"
                         buttonText="Get And Display Device Elements"
                     />
-                    <Dropdown
-                        selectedValue={selectedTypeId}
-                        setSelectedValue={setSelectedTypeId}
-                        items={deviceElementTypes.map((type) => ({
-                            label: type.name,
-                            value: type.id,
-                        }))}
-                        pickerPlaceholder="Select Type"
-                    />
+                    <View style={styles.deviceElement}>
+                        <TextTitle text="All Device Elements" />
+                        <Dropdown
+                            selectedValue={selectedTypeId}
+                            setSelectedValue={setSelectedTypeId}
+                            items={deviceElementTypes.map((type) => ({
+                                label: type.name,
+                                value: type.id,
+                            }))}
+                            pickerPlaceholder="Select Type"
+                        />
+                        <Carousel deviceElements={deviceElements} selectedTypeId={selectedTypeId} />
+                    </View>
                 </View>
-                <Carousel deviceElements={deviceElements} selectedTypeId={selectedTypeId} />
             </ScrollView>
         </GestureHandlerRootView>
     );
@@ -224,21 +195,17 @@ const styles = StyleSheet.create({
         gap: vw(4),
         marginTop: vw(4),
     },
-    image: {
-        width: 100,
-        height: 100,
-    },
-    imagesContainer: {
-        display: 'flex',
+    deviceElement: {
+        gap: 10,
         width: '100%',
-        paddingHorizontal: 10,
-        flexDirection: 'column',
-        gap: 20,
-    },
-    picker: {
-        height: 50,
-        width: '100%',
+        minHeight: 200,
+        backgroundColor: 'white',
+        borderWidth: 2,
+        borderColor: customColors.blueDark,
+        borderRadius: 10,
+        paddingTop: 10,
+        alignItems: 'center',
     },
 });
 
-export default NavScreen;
+export default DeviceElementsScreen;

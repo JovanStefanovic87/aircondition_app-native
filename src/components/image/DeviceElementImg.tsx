@@ -104,11 +104,11 @@ const styles = StyleSheet.create({
         elevation: 5,
         padding: 20,
         marginBottom: 20,
-        width: windowWidth, // Set width to the width of the screen
+        width: windowWidth * 0.4, // Set width to the width of the screen
     },
     image: {
-        width: windowWidth * 0.8,
-        height: windowWidth * 0.8,
+        width: windowWidth * 0.3,
+        height: windowWidth * 0.3,
         aspectRatio: 1, // Maintain aspect ratio
         marginBottom: 10,
     },

@@ -5,6 +5,7 @@ import NavScreen from '../screens/NavScreen';
 import InspectionBasicDetailsScreen from '../screens/InspectionBasicDetailsScreen';
 import InspectionDeviceStateScreen from '../screens/InspectionDeviceStateScreen';
 import AllInspectionsScreen from '../screens/AllInspectionsScreen';
+import DeviceElementsScreen from '../screens/DeviceElementsScreen';
 
 const Stack = createStackNavigator();
 
@@ -46,6 +47,11 @@ const TabNavigator = () => {
                 name="AllInspectionsScreen"
                 component={AllInspectionsScreen}
                 options={tabNameOptions('ALLE INSPEKTIONEN')}
+            />
+            <Stack.Screen
+                name="DeviceElementsScreen"
+                component={DeviceElementsScreen}
+                options={tabNameOptions('Device Ellements')}
             />
             <Stack.Screen name="HomeScreen" component={HomeScreen} />
         </Stack.Navigator>
