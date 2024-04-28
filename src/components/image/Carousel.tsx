@@ -29,22 +29,24 @@ const Carousel: FC<Props> = ({ deviceElements, selectedTypeId }) => {
         setCurrentIndex(0);
         setTimeout(() => {
             flatListRef.current?.scrollToIndex({ animated: true, index: 0 });
-        }, 50); // Adjust the delay as needed
+        }, 50);
     }, [deviceElements, selectedTypeId]);
 
-    const itemWidth = windowWidth;
+    console.log(currentIndex);
 
     const handleScrollRight = () => {
-        if (flatListRef.current && currentIndex < filteredElements.length - 1) {
-            setCurrentIndex(currentIndex + 1);
-            flatListRef.current.scrollToIndex({ animated: true, index: currentIndex + 1 });
+        if (currentIndex < filteredElements.length - 1) {
+            const newIndex = currentIndex + 1;
+            setCurrentIndex(newIndex);
+            flatListRef.current.scrollToIndex({ animated: true, index: newIndex });
         }
     };
 
     const handleScrollLeft = () => {
-        if (flatListRef.current && currentIndex > 0) {
-            setCurrentIndex(currentIndex - 1);
-            flatListRef.current.scrollToIndex({ animated: true, index: currentIndex - 1 });
+        if (currentIndex > 0) {
+            const newIndex = currentIndex - 1;
+            setCurrentIndex(newIndex);
+            flatListRef.current.scrollToIndex({ animated: true, index: newIndex });
         }
     };
 
@@ -59,11 +61,14 @@ const Carousel: FC<Props> = ({ deviceElements, selectedTypeId }) => {
                         renderItem={renderItem}
                         keyExtractor={(item) => item.id.toString()}
                         showsHorizontalScrollIndicator={false}
-                        snapToInterval={itemWidth}
+                        snapToInterval={windowWidth}
                         snapToAlignment="center"
                         decelerationRate="normal"
                         onMomentumScrollEnd={(event) => {
-                            const index = Math.round(event.nativeEvent.contentOffset.x / itemWidth);
+                            const index = Math.round(
+                                event.nativeEvent.contentOffset.x / windowWidth,
+                            );
+
                             setCurrentIndex(index);
                         }}
                         ItemSeparatorComponent={() => <View style={{ width: 10 }} />}
@@ -71,7 +76,7 @@ const Carousel: FC<Props> = ({ deviceElements, selectedTypeId }) => {
                 )}
             </View>
             <View style={styles.arrowsContainer}>
-                {filteredElements.length > 0 && ( // Conditionally render arrow container
+                {filteredElements.length > 0 && (
                     <View style={styles.arrows}>
                         <TouchableOpacity style={styles.arrowButton} onPress={handleScrollLeft}>
                             <Text style={styles.arrowText}>{'◀'}</Text>
@@ -97,17 +102,18 @@ const styles = StyleSheet.create({
         paddingTop: 10,
         paddingHorizontal: 5,
         backgroundColor: customColors.blueLighter,
+        minHeight: 300,
     },
     arrowsContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        width: '100%', // Full width of the screen
+        width: '100%',
         zIndex: 2,
     },
     arrows: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        width: '100%', // Full width of the screen
+        width: '100%',
         zIndex: 2,
         alignItems: 'center',
         borderTopWidth: 2,

@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
         elevation: 5,
         padding: 20,
         marginBottom: 20,
-        width: windowWidth * 0.4, // Set width to the width of the screen
+        width: windowWidth * 0.9, // Set width to the width of the screen
     },
     image: {
         width: windowWidth * 0.3,
