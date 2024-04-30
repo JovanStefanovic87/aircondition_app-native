@@ -71,7 +71,6 @@ const Carousel: FC<Props> = ({ deviceElements, selectedTypeId }) => {
 
                             setCurrentIndex(index);
                         }}
-                        ItemSeparatorComponent={() => <View style={{ width: 10 }} />}
                     />
                 )}
             </View>
@@ -100,7 +99,6 @@ const styles = StyleSheet.create({
     },
     containerImages: {
         paddingTop: 10,
-        paddingHorizontal: 5,
         backgroundColor: customColors.blueLighter,
         minHeight: 300,
     },

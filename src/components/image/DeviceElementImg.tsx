@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { DeviceElementImage } from '../../resources/deviceElementImages';
 import Icon from 'react-native-vector-icons/Feather';
+import { customColors } from '../../assets/styles/customStyles';
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -31,9 +32,7 @@ const DeviceElementImg: FC<Props> = ({ deviceElement }) => {
     };
 
     const handleOptionSelect = (option: string) => {
-        // Handle the selected option here
         console.log('Selected option:', option);
-        // Close the modal
         hideModal();
     };
 
@@ -41,17 +40,15 @@ const DeviceElementImg: FC<Props> = ({ deviceElement }) => {
         <View key={deviceElement.id} style={styles.container}>
             {deviceElement.imageFileName && (
                 <Image
-                    style={[styles.image, { width: windowWidth }]} // Set width to the width of the screen
+                    style={[styles.image, { width: windowWidth }]}
                     source={DeviceElementImage.GetImage(deviceElement.imageFileName)}
                     resizeMode="contain"
                 />
             )}
             <Text style={styles.name}>{deviceElement.name}</Text>
-            {/* Add TouchableOpacity for the plus icon */}
             <TouchableOpacity style={styles.plusContainer} onPress={showModal}>
                 <Icon name="plus" size={24} color="white" />
             </TouchableOpacity>
-            {/* Modal for options */}
             <Modal
                 animationType="slide"
                 transparent={true}
@@ -89,7 +86,7 @@ export default DeviceElementImg;
 
 const styles = StyleSheet.create({
     container: {
-        position: 'relative', // Make sure container is relative
+        position: 'relative',
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: 'white',
@@ -104,12 +101,17 @@ const styles = StyleSheet.create({
         elevation: 5,
         padding: 20,
         marginBottom: 20,
-        width: windowWidth * 0.9, // Set width to the width of the screen
+        width: windowWidth,
+        borderTopWidth: 2,
+        borderBottomWidth: 2,
+        borderLeftWidth: 6,
+        borderRightWidth: 6,
+        borderColor: customColors.blueLight,
     },
     image: {
         width: windowWidth * 0.3,
         height: windowWidth * 0.3,
-        aspectRatio: 1, // Maintain aspect ratio
+        aspectRatio: 1,
         marginBottom: 10,
     },
     name: {
@@ -120,7 +122,7 @@ const styles = StyleSheet.create({
     plusContainer: {
         position: 'absolute',
         top: 10,
-        right: 10,
+        right: 20,
         width: 40,
         height: 40,
         borderRadius: 20,
