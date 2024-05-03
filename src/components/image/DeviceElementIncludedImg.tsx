@@ -21,9 +21,16 @@ const tabletThreshold = 600;
 type Props = {
     deviceElement: DeviceElement;
     options: string[];
+    onFocusChange: (deviceId: string, focused: boolean) => void;
+    isFocused: boolean;
 };
 
-const DeviceElementImg: FC<Props> = ({ deviceElement, options }) => {
+const DeviceElementIncludedImg: FC<Props> = ({
+    deviceElement,
+    options,
+    onFocusChange,
+    isFocused,
+}) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [isTablet, setIsTablet] = useState(false);
 
@@ -45,6 +52,14 @@ const DeviceElementImg: FC<Props> = ({ deviceElement, options }) => {
         hideModal();
     };
 
+    const handlePressIn = () => {
+        onFocusChange(deviceElement.id.toString(), true);
+    };
+
+    const handlePressOut = () => {
+        onFocusChange(deviceElement.id.toString(), false);
+    };
+
     return (
         <TouchableOpacity
             key={deviceElement.id}
@@ -53,21 +68,38 @@ const DeviceElementImg: FC<Props> = ({ deviceElement, options }) => {
                 {
                     width: isTablet ? windowWidth * 0.33 : windowWidth,
                 },
+                isFocused && styles.imageFocused,
             ]}
+            onPress={handlePressIn}
+            onBlur={handlePressOut}
+            activeOpacity={1}
         >
             <View style={styles.imageContainer}>
                 {deviceElement.imageFileName && (
                     <Image
-                        style={styles.image}
+                        style={[styles.image, isFocused && styles.imageFocused]}
                         source={DeviceElementImage.GetImage(deviceElement.imageFileName)}
                         resizeMode="contain"
                     />
                 )}
             </View>
+            {isFocused && (
+                <View style={styles.arrowContainer}>
+                    <TouchableOpacity style={styles.arrowButton}>
+                        <Icon name="arrow-left" size={24} color="white" />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.arrowButton}>
+                        <Icon name="arrow-right" size={24} color="white" />
+                    </TouchableOpacity>
+                </View>
+            )}
             <Text style={styles.name}>{deviceElement.name}</Text>
-            <TouchableOpacity style={styles.plusContainer} onPress={showModal}>
-                <Icon name="plus" size={24} color="white" />
-            </TouchableOpacity>
+            {isFocused && (
+                <TouchableOpacity style={styles.xContainer} onPress={showModal}>
+                    <Icon name="x" size={24} color="white" />
+                </TouchableOpacity>
+            )}
+
             <Modal
                 animationType="slide"
                 transparent={true}
@@ -92,7 +124,7 @@ const DeviceElementImg: FC<Props> = ({ deviceElement, options }) => {
     );
 };
 
-export default DeviceElementImg;
+export default DeviceElementIncludedImg;
 
 const styles = StyleSheet.create({
     container: {
@@ -133,14 +165,14 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: 'black',
     },
-    plusContainer: {
+    xContainer: {
         position: 'absolute',
         top: 10,
         right: 20,
         width: 40,
         height: 40,
         borderRadius: 20,
-        backgroundColor: customColors.blue,
+        backgroundColor: 'red',
         alignItems: 'center',
         justifyContent: 'center',
     },

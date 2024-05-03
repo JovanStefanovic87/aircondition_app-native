@@ -25,6 +25,7 @@ import {
 } from '../../database/dataAccess/Command/sqlCommands';
 import { customColors } from '../assets/styles/customStyles';
 import TextTitle from '../components/text/TextTitle';
+import CarouselIncluded from '../components/image/CarouselIncluded';
 
 type NavScreenNavigationProp = NavigationProp<any, any>;
 
@@ -155,12 +156,6 @@ const DeviceElementsScreen: React.FC = () => {
                         iconColor="red"
                         buttonText="Get And Display Device Elements"
                     />
-                    <NavButton
-                        onPress={() => handleDeviceElements()}
-                        iconName="database"
-                        iconColor="red"
-                        buttonText="Get And Display Device Elements"
-                    />
                     <View style={styles.deviceElement}>
                         <TextTitle text="All Device Elements" />
                         <Dropdown
@@ -173,6 +168,54 @@ const DeviceElementsScreen: React.FC = () => {
                             pickerPlaceholder="Select Type"
                         />
                         <Carousel deviceElements={deviceElements} selectedTypeId={selectedTypeId} />
+                    </View>
+                    <View style={styles.deviceElement}>
+                        <TextTitle text="Zonen Davor" />
+                        <Dropdown
+                            selectedValue={selectedTypeId}
+                            setSelectedValue={setSelectedTypeId}
+                            items={deviceElementTypes.map((type) => ({
+                                label: type.name,
+                                value: type.id,
+                            }))}
+                            pickerPlaceholder="Select Type"
+                        />
+                        <CarouselIncluded
+                            deviceElements={deviceElements}
+                            selectedTypeId={selectedTypeId}
+                        />
+                    </View>
+                    <View style={styles.deviceElement}>
+                        <TextTitle text="Anlage" />
+                        <Dropdown
+                            selectedValue={selectedTypeId}
+                            setSelectedValue={setSelectedTypeId}
+                            items={deviceElementTypes.map((type) => ({
+                                label: type.name,
+                                value: type.id,
+                            }))}
+                            pickerPlaceholder="Select Type"
+                        />
+                        <CarouselIncluded
+                            deviceElements={deviceElements}
+                            selectedTypeId={selectedTypeId}
+                        />
+                    </View>
+                    <View style={styles.deviceElement}>
+                        <TextTitle text="Zonen" />
+                        <Dropdown
+                            selectedValue={selectedTypeId}
+                            setSelectedValue={setSelectedTypeId}
+                            items={deviceElementTypes.map((type) => ({
+                                label: type.name,
+                                value: type.id,
+                            }))}
+                            pickerPlaceholder="Select Type"
+                        />
+                        <CarouselIncluded
+                            deviceElements={deviceElements}
+                            selectedTypeId={selectedTypeId}
+                        />
                     </View>
                 </View>
             </ScrollView>
@@ -192,19 +235,20 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap',
         justifyContent: 'center',
         alignItems: 'center',
-        gap: vw(4),
-        marginTop: vw(4),
+        gap: 40,
+        marginTop: vw(2),
+        backgroundColor: customColors.background,
     },
     deviceElement: {
         gap: 10,
         width: '100%',
         minHeight: 200,
-        backgroundColor: 'white',
         borderWidth: 2,
         borderColor: customColors.blueDark,
         borderRadius: 10,
         paddingTop: 10,
         alignItems: 'center',
+        backgroundColor: customColors.blueLighter,
     },
 });
 

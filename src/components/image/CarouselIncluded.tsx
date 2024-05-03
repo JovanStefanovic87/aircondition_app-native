@@ -1,8 +1,8 @@
 import React, { FC, useRef, useState, useEffect } from 'react';
 import { View, FlatList, StyleSheet, Dimensions, TouchableOpacity, Text } from 'react-native';
-import DeviceElementImg from './DeviceElementImg';
 import { DeviceElement } from '../../../database/types';
 import { customColors } from '../../assets/styles/customStyles';
+import DeviceElementIncludedImg from './DeviceElementIncludedImg';
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -11,12 +11,21 @@ type Props = {
     selectedTypeId: number | null;
 };
 
-const Carousel: FC<Props> = ({ deviceElements, selectedTypeId }) => {
+const CarouselIncluded: FC<Props> = ({ deviceElements, selectedTypeId }) => {
     const flatListRef = useRef<FlatList>(null);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [filteredElements, setFilteredElements] = useState<DeviceElement[]>(deviceElements);
     const [isTablet, setIsTablet] = useState(false);
+    const [focusedDeviceId, setFocusedDeviceId] = useState<string | null>(null);
     const tabletThreshold = 600;
+
+    const handleFocusChange = (deviceId: string, focused: boolean) => {
+        if (focused) {
+            setFocusedDeviceId(deviceId);
+        } else {
+            setFocusedDeviceId(null);
+        }
+    };
 
     useEffect(() => {
         const isTabletDevice = windowWidth >= tabletThreshold;
@@ -24,9 +33,11 @@ const Carousel: FC<Props> = ({ deviceElements, selectedTypeId }) => {
     }, []);
 
     const renderItem = ({ item }: { item: DeviceElement }) => (
-        <DeviceElementImg
+        <DeviceElementIncludedImg
             deviceElement={item}
             options={['Zonen Davor', 'Anlage', 'Zonen Danach']}
+            onFocusChange={handleFocusChange}
+            isFocused={item.id.toString() === focusedDeviceId}
         />
     );
 
@@ -99,7 +110,7 @@ const Carousel: FC<Props> = ({ deviceElements, selectedTypeId }) => {
     );
 };
 
-export default Carousel;
+export default CarouselIncluded;
 
 const styles = StyleSheet.create({
     container: {
