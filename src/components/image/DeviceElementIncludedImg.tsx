@@ -201,7 +201,9 @@ const styles = StyleSheet.create({
         borderTopWidth: 2,
     },
     imageFocused: {
-        shadowColor: 'blue',
+        backgroundColor: customColors.blueLightest,
+        borderWidth: 2,
+        borderColor: 'black',
     },
     arrowContainer: {
         position: 'absolute',

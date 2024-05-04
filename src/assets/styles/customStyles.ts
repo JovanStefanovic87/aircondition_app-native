@@ -4,6 +4,7 @@ export const customColors = {
     blueLight: '#2dabde',
     blueDark: '#1D8DBB',
     blueDarker: '#0d3646',
+    blueLightest: '#c0e9fc',
     greenLight: '#a3d071',
     orangeLight: 'rgb(251 146 60)',
     yellowLight: 'background-color: rgb(250 204 21)',

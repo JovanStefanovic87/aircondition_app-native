@@ -1,4 +1,4 @@
-import React, { FC, useRef, useState, useEffect } from 'react';
+import React, { FC, useRef, useState, useEffect, memo } from 'react';
 import { View, FlatList, StyleSheet, Dimensions, TouchableOpacity, Text } from 'react-native';
 import { DeviceElement } from '../../../database/types';
 import { customColors } from '../../assets/styles/customStyles';
@@ -69,6 +69,10 @@ const CarouselIncluded: FC<Props> = ({ deviceElements, selectedTypeId }) => {
         }
     };
 
+    const totalItemsWidth = filteredElements.length * (isTablet ? windowWidth * 0.33 : windowWidth);
+    const remainingSpace = totalItemsWidth - windowWidth;
+    const snapInterval = remainingSpace < filteredElements.length ? remainingSpace : windowWidth;
+
     return (
         <View style={styles.container}>
             <View style={styles.containerImages}>
@@ -80,7 +84,7 @@ const CarouselIncluded: FC<Props> = ({ deviceElements, selectedTypeId }) => {
                         renderItem={renderItem}
                         keyExtractor={(item) => item.id.toString()}
                         showsHorizontalScrollIndicator={false}
-                        snapToInterval={isTablet ? windowWidth * 0.33 : windowWidth}
+                        snapToInterval={snapInterval}
                         snapToAlignment="center"
                         decelerationRate="normal"
                         onScroll={(event) => {
@@ -91,6 +95,11 @@ const CarouselIncluded: FC<Props> = ({ deviceElements, selectedTypeId }) => {
                                 : Math.round(event.nativeEvent.contentOffset.x / windowWidth);
                             setCurrentIndex(index);
                         }}
+                        removeClippedSubviews={true}
+                        maxToRenderPerBatch={15}
+                        updateCellsBatchingPeriod={15}
+                        initialNumToRender={15}
+                        windowSize={10}
                     />
                 )}
             </View>
@@ -110,7 +119,7 @@ const CarouselIncluded: FC<Props> = ({ deviceElements, selectedTypeId }) => {
     );
 };
 
-export default CarouselIncluded;
+export default memo(CarouselIncluded);
 
 const styles = StyleSheet.create({
     container: {

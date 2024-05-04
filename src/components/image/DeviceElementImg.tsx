@@ -46,7 +46,7 @@ const DeviceElementImg: FC<Props> = ({ deviceElement, options }) => {
     };
 
     return (
-        <TouchableOpacity
+        <View
             key={deviceElement.id}
             style={[
                 styles.container,
@@ -88,7 +88,7 @@ const DeviceElementImg: FC<Props> = ({ deviceElement, options }) => {
                     </View>
                 </Pressable>
             </Modal>
-        </TouchableOpacity>
+        </View>
     );
 };
 
@@ -167,9 +167,6 @@ const styles = StyleSheet.create({
     },
     firstOptionSeparator: {
         borderTopWidth: 2,
-    },
-    imageFocused: {
-        shadowColor: 'blue',
     },
     arrowContainer: {
         position: 'absolute',

@@ -165,7 +165,6 @@ const DeviceElementsScreen: React.FC = () => {
                                 label: type.name,
                                 value: type.id,
                             }))}
-                            pickerPlaceholder="Select Type"
                         />
                         <Carousel deviceElements={deviceElements} selectedTypeId={selectedTypeId} />
                     </View>
@@ -178,7 +177,6 @@ const DeviceElementsScreen: React.FC = () => {
                                 label: type.name,
                                 value: type.id,
                             }))}
-                            pickerPlaceholder="Select Type"
                         />
                         <CarouselIncluded
                             deviceElements={deviceElements}
@@ -194,7 +192,6 @@ const DeviceElementsScreen: React.FC = () => {
                                 label: type.name,
                                 value: type.id,
                             }))}
-                            pickerPlaceholder="Select Type"
                         />
                         <CarouselIncluded
                             deviceElements={deviceElements}
@@ -210,7 +207,6 @@ const DeviceElementsScreen: React.FC = () => {
                                 label: type.name,
                                 value: type.id,
                             }))}
-                            pickerPlaceholder="Select Type"
                         />
                         <CarouselIncluded
                             deviceElements={deviceElements}

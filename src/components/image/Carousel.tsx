@@ -1,4 +1,4 @@
-import React, { FC, useRef, useState, useEffect } from 'react';
+import React, { memo, FC, useRef, useState, useEffect } from 'react';
 import { View, FlatList, StyleSheet, Dimensions, TouchableOpacity, Text } from 'react-native';
 import DeviceElementImg from './DeviceElementImg';
 import { DeviceElement } from '../../../database/types';
@@ -58,6 +58,9 @@ const Carousel: FC<Props> = ({ deviceElements, selectedTypeId }) => {
         }
     };
 
+    const totalItemsWidth = filteredElements.length * (isTablet ? windowWidth * 0.33 : windowWidth);
+    const remainingSpace = totalItemsWidth - windowWidth;
+    const snapInterval = remainingSpace < filteredElements.length ? remainingSpace : windowWidth;
     return (
         <View style={styles.container}>
             <View style={styles.containerImages}>
@@ -69,12 +72,12 @@ const Carousel: FC<Props> = ({ deviceElements, selectedTypeId }) => {
                         renderItem={renderItem}
                         keyExtractor={(item) => item.id.toString()}
                         showsHorizontalScrollIndicator={false}
-                        snapToInterval={isTablet ? windowWidth * 0.33 : windowWidth}
+                        snapToInterval={snapInterval}
                         snapToAlignment="center"
                         decelerationRate="normal"
                         onScroll={(event) => {
                             const index = isTablet
-                                ? Math.round(
+                                ? Math.floor(
                                       event.nativeEvent.contentOffset.x / (windowWidth * 0.33),
                                   )
                                 : Math.round(event.nativeEvent.contentOffset.x / windowWidth);
@@ -99,7 +102,7 @@ const Carousel: FC<Props> = ({ deviceElements, selectedTypeId }) => {
     );
 };
 
-export default Carousel;
+export default memo(Carousel);
 
 const styles = StyleSheet.create({
     container: {
