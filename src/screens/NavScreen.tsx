@@ -6,6 +6,7 @@ import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { useInspectionStore } from '../store/store';
 import NavButton from '../components/buttons/NavButton';
 import {
+    getDeviceElementPositions,
     getDeviceElementTypes,
     getDeviceElements,
     getInspectionDeviceElements,
@@ -14,6 +15,7 @@ import {
 import { deleteAllTables } from '../../database/dataAccess/helpers';
 import {
     DeviceElement,
+    DeviceElementSortUpdate,
     DeviceElementType,
     InspectionDeviceElementUpdate,
 } from '../../database/types';
@@ -21,6 +23,7 @@ import Carousel from '../components/image/Carousel';
 import Dropdown from '../components/input/Dropdown';
 import {
     deleteInspectionDeviceElement,
+    saveDeviceElementsSortOrder,
     saveInspectionDeviceElement,
 } from '../../database/dataAccess/Command/sqlCommands';
 
@@ -68,7 +71,7 @@ const NavScreen: React.FC = () => {
         await deleteAllTables();
     };
 
-    const handleDeviceElements = async () => {
+    const handleGetDeviceElements = async () => {
         const elements = await getDeviceElements();
         console.log('----------------------------------------------------');
         console.log('elements: ', elements);
@@ -95,15 +98,36 @@ const NavScreen: React.FC = () => {
 
     const handleSaveInspectionElements = async () => {
         const record: InspectionDeviceElementUpdate = {
-            inspectionId: '674bfb70-bc98-40c8-9b54-0156080648c5',
-            deviceElementId: 1,
-            deviceOrder: 1,
+            inspectionId: 'a844e533-042e-4a9f-b6b2-a6aee757e2a5',
+            deviceElementId: 2,
+            deviceOrder: 2,
+            elementPositionId: 1,
         };
         await saveInspectionDeviceElement(record);
     };
 
     const handleDeleteInspectionElements = async (inspectionId: string) => {
         await deleteInspectionDeviceElement(inspectionId);
+    };
+
+    const handleDeviceElementsSortUpdate = async () => {
+        const record: DeviceElementSortUpdate[] = [
+            {
+                id: '0ed46f80-b11b-471c-8296-b34d0b3cb16a',
+                deviceOrder: 3,
+            },
+            {
+                id: '81879a7c-24fc-4900-817d-ba703446d08d',
+                deviceOrder: 4,
+            },
+        ];
+        await saveDeviceElementsSortOrder(record);
+    };
+
+    const handleGetDeviceElementPositions = async () => {
+        const deviceElementPositions = await getDeviceElementPositions();
+        console.log('----------------------------------------------------');
+        console.log('deviceElementPositions: ', deviceElementPositions);
     };
 
     return (
@@ -154,13 +178,12 @@ const NavScreen: React.FC = () => {
                     />
                     <NavButton
                         onPress={() =>
-                            handleGetInspectionElements('674bfb70-bc98-40c8-9b54-0156080648c5')
+                            handleGetInspectionElements('a844e533-042e-4a9f-b6b2-a6aee757e2a5')
                         }
                         iconName="database"
                         iconColor="red"
                         buttonText="Get Inspection Elements"
                     />
-
                     <NavButton
                         onPress={() =>
                             handleDeleteInspectionElements('da3ae5e2-e8f8-42e6-87d2-2ae8d834b3f6')
@@ -176,23 +199,24 @@ const NavScreen: React.FC = () => {
                         buttonText="Save Inspection Elements"
                     />
                     <NavButton
-                        onPress={() => handleDeviceElements()}
+                        onPress={() => handleGetDeviceElements()}
                         iconName="database"
                         iconColor="red"
-                        buttonText="Get Display Elements"
+                        buttonText="Get All Elements"
                     />
                     <NavButton
-                        onPress={() => handleDeviceElements()}
+                        onPress={() => handleDeviceElementsSortUpdate()}
                         iconName="database"
                         iconColor="red"
-                        buttonText="Get And Display Device Elements"
+                        buttonText="Update Elements Sort Order"
                     />
                     <NavButton
-                        onPress={() => handleDeviceElements()}
+                        onPress={() => handleGetDeviceElementPositions()}
                         iconName="database"
                         iconColor="red"
-                        buttonText="Get And Display Device Elements"
+                        buttonText="Element Positions"
                     />
+
                     <Dropdown
                         selectedValue={selectedTypeId}
                         setSelectedValue={setSelectedTypeId}

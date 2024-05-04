@@ -191,4 +191,15 @@ export type InspectionDeviceElementUpdate = {
     inspectionId: string;
     deviceElementId: number;
     deviceOrder: number;
+    elementPositionId: number;
+};
+
+export type DeviceElementSortUpdate = {
+    id?: string;
+    deviceOrder: number;
+};
+
+export type DeviceElementPosition = {
+    id: number;
+    name: string;
 };

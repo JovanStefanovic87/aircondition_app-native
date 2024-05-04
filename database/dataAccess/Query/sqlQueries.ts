@@ -1,6 +1,7 @@
 import {
     DatabaseVersionType,
     DeviceElement,
+    DeviceElementPosition,
     DeviceElementType,
     DeviceStateByInspection,
     DeviceStateComponent,
@@ -178,4 +179,9 @@ export const getInspectionDeviceElements = async (
         LEFT JOIN DeviceElement de ON de.id = ide.deviceElementId
         WHERE ide.inspectionId = '${inspectionId}'`;
     return executeQuery<InspectionDeviceElement>({ query });
+};
+
+export const getDeviceElementPositions = async (): Promise<DeviceElementPosition[]> => {
+    const query = `SELECT * FROM DeviceElementPosition`;
+    return executeQuery<DeviceElementPosition>({ query });
 };
