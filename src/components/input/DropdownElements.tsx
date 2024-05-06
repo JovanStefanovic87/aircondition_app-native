@@ -6,31 +6,28 @@ import { customColors } from '../../assets/styles/customStyles';
 interface Props {
     selectedValue: number;
     setSelectedValue: (value: number) => void;
-    pickerPlaceholder?: string | number;
     items: { value: string | number; label: string }[];
     isValid?: boolean;
     maxWidth?: DimensionValue;
 }
 
-const Dropdown: FC<Props> = ({
+const DropdownElements: FC<Props> = ({
     selectedValue,
     setSelectedValue,
     items,
-    pickerPlaceholder,
     isValid = true,
     maxWidth = 400,
 }) => {
     const borderColor = isValid ? customColors.blueLight : 'red';
-    const placeholder = pickerPlaceholder ? { label: pickerPlaceholder, value: null } : {};
 
     const styles = StyleSheet.create({
         dropdownContainer: {
-            flex: 1,
-            width: '100%',
+            width: '95%',
             maxWidth: maxWidth,
             borderColor: customColors.blueLight,
             borderWidth: 2,
             borderRadius: 5,
+            justifyContent: 'center',
         },
     });
 
@@ -40,11 +37,12 @@ const Dropdown: FC<Props> = ({
                 onValueChange={(value) => setSelectedValue(value)}
                 items={items}
                 value={selectedValue}
-                placeholder={placeholder}
                 useNativeAndroidPickerStyle={true}
+                placeholder={{ label: 'Select an option', value: items[0]?.value }}
                 style={{
                     inputAndroid: {
                         color: customColors.blueLight,
+                        backgroundColor: 'white',
                         fontSize: 16,
                         fontWeight: 'bold',
                         textAlign: 'center',
@@ -55,14 +53,10 @@ const Dropdown: FC<Props> = ({
                         fontWeight: 'bold',
                         textAlign: 'center',
                     },
-                    iconContainer: {
-                        top: 10,
-                        right: 12,
-                    },
                 }}
             />
         </View>
     );
 };
 
-export default Dropdown;
+export default DropdownElements;

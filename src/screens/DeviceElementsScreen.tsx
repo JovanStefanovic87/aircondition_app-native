@@ -18,7 +18,7 @@ import {
     InspectionDeviceElementUpdate,
 } from '../../database/types';
 import Carousel from '../components/image/Carousel';
-import Dropdown from '../components/input/Dropdown';
+import DropdownElements from '../components/input/DropdownElements';
 import {
     deleteInspectionDeviceElement,
     saveInspectionDeviceElement,
@@ -35,6 +35,7 @@ const DeviceElementsScreen: React.FC = () => {
     const [deviceElements, setDeviceElements] = useState<DeviceElement[]>([]);
     const [selectedTypeId, setSelectedTypeId] = useState<number | null>(null);
     const [deviceElementTypes, setDeviceElementTypes] = useState<DeviceElementType[]>([]);
+    const [elementPositionId, setElementPositionId] = useState<number | null>(null);
 
     const handleNewInspectionPress = () => {
         setInspectionId(null);
@@ -69,8 +70,6 @@ const DeviceElementsScreen: React.FC = () => {
 
     const handleDeviceElements = async () => {
         const elements = await getDeviceElements();
-        console.log('----------------------------------------------------');
-        console.log('elements: ', elements);
         setDeviceElements(elements);
     };
 
@@ -97,6 +96,7 @@ const DeviceElementsScreen: React.FC = () => {
             inspectionId: '674bfb70-bc98-40c8-9b54-0156080648c5',
             deviceElementId: 1,
             deviceOrder: 1,
+            elementPositionId: elementPositionId,
         };
         await saveInspectionDeviceElement(record);
     };
@@ -158,7 +158,7 @@ const DeviceElementsScreen: React.FC = () => {
                     />
                     <View style={styles.deviceElement}>
                         <TextTitle text="All Device Elements" />
-                        <Dropdown
+                        <DropdownElements
                             selectedValue={selectedTypeId}
                             setSelectedValue={setSelectedTypeId}
                             items={deviceElementTypes.map((type) => ({
@@ -170,14 +170,6 @@ const DeviceElementsScreen: React.FC = () => {
                     </View>
                     <View style={styles.deviceElement}>
                         <TextTitle text="Zonen Davor" />
-                        <Dropdown
-                            selectedValue={selectedTypeId}
-                            setSelectedValue={setSelectedTypeId}
-                            items={deviceElementTypes.map((type) => ({
-                                label: type.name,
-                                value: type.id,
-                            }))}
-                        />
                         <CarouselIncluded
                             deviceElements={deviceElements}
                             selectedTypeId={selectedTypeId}
@@ -185,14 +177,6 @@ const DeviceElementsScreen: React.FC = () => {
                     </View>
                     <View style={styles.deviceElement}>
                         <TextTitle text="Anlage" />
-                        <Dropdown
-                            selectedValue={selectedTypeId}
-                            setSelectedValue={setSelectedTypeId}
-                            items={deviceElementTypes.map((type) => ({
-                                label: type.name,
-                                value: type.id,
-                            }))}
-                        />
                         <CarouselIncluded
                             deviceElements={deviceElements}
                             selectedTypeId={selectedTypeId}
@@ -200,14 +184,6 @@ const DeviceElementsScreen: React.FC = () => {
                     </View>
                     <View style={styles.deviceElement}>
                         <TextTitle text="Zonen" />
-                        <Dropdown
-                            selectedValue={selectedTypeId}
-                            setSelectedValue={setSelectedTypeId}
-                            items={deviceElementTypes.map((type) => ({
-                                label: type.name,
-                                value: type.id,
-                            }))}
-                        />
                         <CarouselIncluded
                             deviceElements={deviceElements}
                             selectedTypeId={selectedTypeId}
