@@ -5,6 +5,12 @@ CREATE TABLE IF NOT EXISTS DeviceElementType (
   name TEXT
 );
 
+CREATE TABLE IF NOT EXISTS DeviceElementPosition (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT
+);
+
+
 CREATE TABLE IF NOT EXISTS DeviceElement (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT,
@@ -136,8 +142,10 @@ CREATE TABLE IF NOT EXISTS Inspection_DeviceElement (
   inspectionId TEXT,
   deviceElementId INTEGER,
   deviceOrder INTEGER,
+  elementPositionId INTEGER,
   FOREIGN KEY (inspectionId) REFERENCES Inspection(id),
-  FOREIGN KEY (deviceElementId) REFERENCES DeviceElement(id)
+  FOREIGN KEY (deviceElementId) REFERENCES DeviceElement(id),
+  FOREIGN KEY (elementPositionId) REFERENCES DeviceElementPosition(id)
 );
 
 CREATE TABLE IF NOT EXISTS Device_StateValue (
@@ -147,6 +155,11 @@ CREATE TABLE IF NOT EXISTS Device_StateValue (
   FOREIGN KEY (deviceStateComponentId) REFERENCES DeviceStateComponent(id),
   FOREIGN KEY (stateValueId) REFERENCES StateValue(id)
 );
+
+INSERT INTO DeviceElementPosition (id, name) VALUES (1, 'BEFORE');
+INSERT INTO DeviceElementPosition (id, name) VALUES (2, 'BETWEEN');
+INSERT INTO DeviceElementPosition (id, name) VALUES (3, 'AFTER');
+
 
 INSERT INTO StateValue (name) VALUES ('GREEN');
 INSERT INTO StateValue (name) VALUES ('YELLOW');

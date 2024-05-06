@@ -1,4 +1,5 @@
 import {
+    DeviceElementSortUpdate,
     ImageStorage,
     ImageStorageInsert,
     InspectionDeviceComponentUpdate,
@@ -11,6 +12,7 @@ import {
     executeDeleteById,
     executeInsertWithGuid,
     executeUpdate,
+    executeUpdateArray,
     executeUpdateOrInsertWithGuid,
 } from '../Command/baseCommand';
 import { getDeviceStateComponents } from '../Query/sqlQueries';
@@ -81,4 +83,10 @@ export const deleteInspectionDeviceElement = async (
     inspectionDeviceElementId: string,
 ): Promise<void> => {
     await executeDeleteById('Inspection_DeviceElement', inspectionDeviceElementId);
+};
+
+export const saveDeviceElementsSortOrder = async (
+    records: DeviceElementSortUpdate[],
+): Promise<void> => {
+    await executeUpdateArray<DeviceElementSortUpdate[]>('Inspection_DeviceElement', records);
 };

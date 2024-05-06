@@ -165,3 +165,40 @@ export const executeDeleteById = async (tableName: string, id: number | string) 
         // throw error;
     }
 };
+
+export const executeUpdateArray = async <T extends DatabaseRecord>(
+    tableName: string,
+    records: Partial<T>,
+): Promise<string | void> => {
+    try {
+        const db = getDatabase();
+
+        return new Promise<string | void>((resolve, reject) => {
+            db.transaction((tx) => {
+                records.forEach((record) => {
+                    if (record.id) {
+                        const { id, ...rest } = record;
+                        const keys = Object.keys(rest);
+                        const allValues = Object.values(rest);
+                        const placeholders = keys.map((key) => `${key} = ?`).join(',');
+                        const values = allValues;
+
+                        tx.executeSql(
+                            `UPDATE ${tableName} SET ${placeholders} WHERE id = ?`,
+                            [...values, id],
+                            () => {},
+                            (error) => {
+                                console.log('Error updating record: ', error);
+                                reject(error);
+                            },
+                        );
+                    }
+                });
+            });
+        });
+    } catch (error) {
+        console.error('Error opening database: ', error);
+        // TODO: LOG ERROR
+        // throw error;
+    }
+};
