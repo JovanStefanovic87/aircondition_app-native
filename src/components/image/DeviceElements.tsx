@@ -1,8 +1,8 @@
-import React, { FC, useRef, useState, useEffect, memo } from 'react';
+import React, { memo, FC, useRef, useState, useEffect } from 'react';
 import { View, FlatList, StyleSheet, Dimensions, TouchableOpacity, Text } from 'react-native';
+import DeviceElementImg from './DeviceElementImg';
 import { DeviceElement } from '../../../database/types';
 import { customColors } from '../../assets/styles/customStyles';
-import DeviceElementIncludedImg from './DeviceElementIncludedImg';
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -11,35 +11,26 @@ type Props = {
     selectedTypeId: number | null;
 };
 
-const CarouselIncluded: FC<Props> = ({ deviceElements, selectedTypeId }) => {
+const DeviceElements: FC<Props> = ({ deviceElements, selectedTypeId }) => {
     const flatListRef = useRef<FlatList>(null);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [filteredElements, setFilteredElements] = useState<DeviceElement[]>(deviceElements);
     const [isTablet, setIsTablet] = useState(false);
-    const [focusedDeviceId, setFocusedDeviceId] = useState<string | null>(null);
     const tabletThreshold = 600;
-
-    const handleFocusChange = (deviceId: string, focused: boolean) => {
-        if (focused) {
-            setFocusedDeviceId(deviceId);
-        } else {
-            setFocusedDeviceId(null);
-        }
-    };
 
     useEffect(() => {
         const isTabletDevice = windowWidth >= tabletThreshold;
         setIsTablet(isTabletDevice);
     }, []);
 
-    const renderItem = ({ item }: { item: DeviceElement }) => (
-        <DeviceElementIncludedImg
-            deviceElement={item}
-            options={['Zonen Davor', 'Anlage', 'Zonen Danach']}
-            onFocusChange={handleFocusChange}
-            isFocused={item.id.toString() === focusedDeviceId}
-        />
-    );
+    const renderItem = ({ item }: { item: DeviceElement }) => {
+        return (
+            <DeviceElementImg
+                deviceElement={item}
+                options={['Zonen Davor', 'Anlage', 'Zonen Danach']}
+            />
+        );
+    };
 
     useEffect(() => {
         const filtered = selectedTypeId
@@ -72,7 +63,6 @@ const CarouselIncluded: FC<Props> = ({ deviceElements, selectedTypeId }) => {
     const totalItemsWidth = filteredElements.length * (isTablet ? windowWidth * 0.33 : windowWidth);
     const remainingSpace = totalItemsWidth - windowWidth;
     const snapInterval = remainingSpace < filteredElements.length ? remainingSpace : windowWidth;
-
     return (
         <View style={styles.container}>
             <View style={styles.containerImages}>
@@ -89,17 +79,12 @@ const CarouselIncluded: FC<Props> = ({ deviceElements, selectedTypeId }) => {
                         decelerationRate="normal"
                         onScroll={(event) => {
                             const index = isTablet
-                                ? Math.round(
+                                ? Math.floor(
                                       event.nativeEvent.contentOffset.x / (windowWidth * 0.33),
                                   )
                                 : Math.round(event.nativeEvent.contentOffset.x / windowWidth);
                             setCurrentIndex(index);
                         }}
-                        removeClippedSubviews={true}
-                        maxToRenderPerBatch={15}
-                        updateCellsBatchingPeriod={15}
-                        initialNumToRender={15}
-                        windowSize={10}
                     />
                 )}
             </View>
@@ -119,7 +104,7 @@ const CarouselIncluded: FC<Props> = ({ deviceElements, selectedTypeId }) => {
     );
 };
 
-export default memo(CarouselIncluded);
+export default memo(DeviceElements);
 
 const styles = StyleSheet.create({
     container: {

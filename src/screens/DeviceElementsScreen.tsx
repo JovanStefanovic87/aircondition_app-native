@@ -15,9 +15,11 @@ import { deleteAllTables } from '../../database/dataAccess/helpers';
 import {
     DeviceElement,
     DeviceElementType,
+    InspectionDeviceElement,
     InspectionDeviceElementUpdate,
 } from '../../database/types';
-import Carousel from '../components/image/Carousel';
+import DeviceElements from '../components/image/DeviceElements';
+import InspectionDeviceElements from '../components/image/InspectionDeviceElements';
 import DropdownElements from '../components/input/DropdownElements';
 import {
     deleteInspectionDeviceElement,
@@ -25,7 +27,6 @@ import {
 } from '../../database/dataAccess/Command/sqlCommands';
 import { customColors } from '../assets/styles/customStyles';
 import TextTitle from '../components/text/TextTitle';
-import CarouselIncluded from '../components/image/CarouselIncluded';
 
 type NavScreenNavigationProp = NavigationProp<any, any>;
 
@@ -33,9 +34,12 @@ const DeviceElementsScreen: React.FC = () => {
     const navigation = useNavigation<NavScreenNavigationProp>();
     const setInspectionId = useInspectionStore((state) => state.setInspectionId);
     const [deviceElements, setDeviceElements] = useState<DeviceElement[]>([]);
+    const [inspectionDeviceElements, setInspectionDeviceElements] = useState<
+        InspectionDeviceElement[]
+    >([]);
     const [selectedTypeId, setSelectedTypeId] = useState<number | null>(null);
     const [deviceElementTypes, setDeviceElementTypes] = useState<DeviceElementType[]>([]);
-    const [elementPositionId, setElementPositionId] = useState<number | null>(null);
+    const inspectionDeviceElementsPositions = [1, 2, 3];
 
     const handleNewInspectionPress = () => {
         setInspectionId(null);
@@ -61,7 +65,20 @@ const DeviceElementsScreen: React.FC = () => {
             }
         };
 
+        const fetchInspectionDeviceElements = async () => {
+            try {
+                const elements = await getInspectionDeviceElements(
+                    '674bfb70-bc98-40c8-9b54-0156080648c5',
+                );
+                setInspectionDeviceElements(elements);
+                console.log(elements);
+            } catch (error) {
+                console.error('Error fetching inspection device elements:', error);
+            }
+        };
+
         fetchDeviceElementTypes();
+        fetchInspectionDeviceElements();
     }, []);
 
     const deleteAllTabless = async () => {
@@ -71,6 +88,8 @@ const DeviceElementsScreen: React.FC = () => {
     const handleDeviceElements = async () => {
         const elements = await getDeviceElements();
         setDeviceElements(elements);
+        console.log('----------------------------------------------------');
+        console.log('elements: ', elements);
     };
 
     const handleDeviceElementTypes = async () => {
@@ -94,16 +113,31 @@ const DeviceElementsScreen: React.FC = () => {
     const handleSaveInspectionElements = async () => {
         const record: InspectionDeviceElementUpdate = {
             inspectionId: '674bfb70-bc98-40c8-9b54-0156080648c5',
-            deviceElementId: 1,
+            deviceElementId: 2,
             deviceOrder: 1,
-            elementPositionId: elementPositionId,
+            elementPositionId: 3,
         };
+        console.log('----------------------------------------------------');
+        console.log('record: ', record);
         await saveInspectionDeviceElement(record);
     };
 
     const handleDeleteInspectionElements = async (inspectionId: string) => {
         await deleteInspectionDeviceElement(inspectionId);
     };
+
+    function getPositionName(positionId: number): string {
+        switch (positionId) {
+            case 1:
+                return 'Zonen Davor';
+            case 2:
+                return 'Anlage';
+            case 3:
+                return 'Zonen Danach';
+            default:
+                return '';
+        }
+    }
 
     return (
         <GestureHandlerRootView style={styles.scrollContainer}>
@@ -126,13 +160,13 @@ const DeviceElementsScreen: React.FC = () => {
                             handleGetInspectionElements('674bfb70-bc98-40c8-9b54-0156080648c5')
                         }
                         iconName="database"
-                        iconColor="red"
+                        iconColor="purple"
                         buttonText="Get Inspection Elements"
                     />
 
                     <NavButton
                         onPress={() =>
-                            handleDeleteInspectionElements('da3ae5e2-e8f8-42e6-87d2-2ae8d834b3f6')
+                            handleDeleteInspectionElements('e1f2db2d-d166-41d5-a067-0f511c70880b')
                         }
                         iconName="database"
                         iconColor="red"
@@ -166,29 +200,22 @@ const DeviceElementsScreen: React.FC = () => {
                                 value: type.id,
                             }))}
                         />
-                        <Carousel deviceElements={deviceElements} selectedTypeId={selectedTypeId} />
-                    </View>
-                    <View style={styles.deviceElement}>
-                        <TextTitle text="Zonen Davor" />
-                        <CarouselIncluded
+                        <DeviceElements
                             deviceElements={deviceElements}
                             selectedTypeId={selectedTypeId}
                         />
                     </View>
-                    <View style={styles.deviceElement}>
-                        <TextTitle text="Anlage" />
-                        <CarouselIncluded
-                            deviceElements={deviceElements}
-                            selectedTypeId={selectedTypeId}
-                        />
-                    </View>
-                    <View style={styles.deviceElement}>
-                        <TextTitle text="Zonen" />
-                        <CarouselIncluded
-                            deviceElements={deviceElements}
-                            selectedTypeId={selectedTypeId}
-                        />
-                    </View>
+                    {inspectionDeviceElementsPositions.map((positionId) => {
+                        const filteredElements = inspectionDeviceElements.filter(
+                            (element) => element.elementPositionId === positionId,
+                        );
+                        return (
+                            <View style={styles.deviceElement} key={positionId}>
+                                <TextTitle text={getPositionName(positionId)} />
+                                <InspectionDeviceElements deviceElements={filteredElements} />
+                            </View>
+                        );
+                    })}
                 </View>
             </ScrollView>
         </GestureHandlerRootView>

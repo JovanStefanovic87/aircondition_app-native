@@ -19,8 +19,6 @@ import {
     DeviceElementType,
     InspectionDeviceElementUpdate,
 } from '../../database/types';
-import Carousel from '../components/image/Carousel';
-import Dropdown from '../components/input/Dropdown';
 import {
     deleteInspectionDeviceElement,
     saveDeviceElementsSortOrder,
@@ -99,9 +97,9 @@ const NavScreen: React.FC = () => {
     const handleSaveInspectionElements = async () => {
         const record: InspectionDeviceElementUpdate = {
             inspectionId: 'a844e533-042e-4a9f-b6b2-a6aee757e2a5',
-            deviceElementId: 2,
+            deviceElementId: 3,
             deviceOrder: 2,
-            elementPositionId: 1,
+            elementPositionId: 2,
         };
         await saveInspectionDeviceElement(record);
     };
@@ -216,18 +214,7 @@ const NavScreen: React.FC = () => {
                         iconColor="red"
                         buttonText="Element Positions"
                     />
-
-                    <Dropdown
-                        selectedValue={selectedTypeId}
-                        setSelectedValue={setSelectedTypeId}
-                        items={deviceElementTypes.map((type) => ({
-                            label: type.name,
-                            value: type.id,
-                        }))}
-                        pickerPlaceholder="Select Type"
-                    />
                 </View>
-                <Carousel deviceElements={deviceElements} selectedTypeId={selectedTypeId} />
             </ScrollView>
         </GestureHandlerRootView>
     );

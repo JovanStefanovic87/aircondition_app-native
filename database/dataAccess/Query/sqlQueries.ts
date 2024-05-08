@@ -175,7 +175,7 @@ export const getInspectionDeviceElements = async (
     inspectionId: string,
 ): Promise<InspectionDeviceElement[]> => {
     const query = `
-        SELECT ide.*, de.imageFileName, de.imagePath FROM Inspection_DeviceElement ide
+        SELECT ide.*, de.imageFileName, de.imagePath, de.deviceElementTypeId FROM Inspection_DeviceElement ide
         LEFT JOIN DeviceElement de ON de.id = ide.deviceElementId
         WHERE ide.inspectionId = '${inspectionId}'`;
     return executeQuery<InspectionDeviceElement>({ query });

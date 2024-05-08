@@ -25,7 +25,7 @@ type Props = {
     isFocused: boolean;
 };
 
-const DeviceElementIncludedImg: FC<Props> = ({
+const InspectionDeviceElementImg: FC<Props> = ({
     deviceElement,
     options,
     onFocusChange,
@@ -124,7 +124,7 @@ const DeviceElementIncludedImg: FC<Props> = ({
     );
 };
 
-export default DeviceElementIncludedImg;
+export default InspectionDeviceElementImg;
 
 const styles = StyleSheet.create({
     container: {

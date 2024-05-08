@@ -1,46 +1,60 @@
-import React, { memo, FC, useRef, useState, useEffect } from 'react';
+import React, { FC, useRef, useState, useEffect, memo } from 'react';
 import { View, FlatList, StyleSheet, Dimensions, TouchableOpacity, Text } from 'react-native';
-import DeviceElementImg from './DeviceElementImg';
-import { DeviceElement } from '../../../database/types';
+import { DeviceElement, InspectionDeviceElement } from '../../../database/types';
 import { customColors } from '../../assets/styles/customStyles';
+import InspectionDeviceElementImg from './InspectionDeviceElementImg';
 
 const windowWidth = Dimensions.get('window').width;
 
 type Props = {
-    deviceElements: DeviceElement[];
-    selectedTypeId: number | null;
+    deviceElements: InspectionDeviceElement[];
 };
 
-const Carousel: FC<Props> = ({ deviceElements, selectedTypeId }) => {
+const InspectionDeviceElements: FC<Props> = ({ deviceElements }) => {
     const flatListRef = useRef<FlatList>(null);
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [filteredElements, setFilteredElements] = useState<DeviceElement[]>(deviceElements);
+    const [filteredElements, setFilteredElements] = useState<InspectionDeviceElement[]>([]);
     const [isTablet, setIsTablet] = useState(false);
+    const [focusedDeviceId, setFocusedDeviceId] = useState<string | null>(null);
     const tabletThreshold = 600;
+
+    const handleFocusChange = (deviceId: string, focused: boolean) => {
+        if (focused) {
+            setFocusedDeviceId(deviceId);
+        } else {
+            setFocusedDeviceId(null);
+        }
+    };
 
     useEffect(() => {
         const isTabletDevice = windowWidth >= tabletThreshold;
         setIsTablet(isTabletDevice);
     }, []);
 
-    const renderItem = ({ item }: { item: DeviceElement }) => (
-        <DeviceElementImg
-            deviceElement={item}
-            options={['Zonen Davor', 'Anlage', 'Zonen Danach']}
-        />
-    );
-
     useEffect(() => {
-        const filtered = selectedTypeId
-            ? deviceElements.filter((element) => element.deviceElementTypeId === selectedTypeId)
-            : deviceElements;
+        const mappedDeviceElements = deviceElements.map((element) => ({
+            id: element.id,
+            inspectionId: element.inspectionId,
+            deviceElementId: element.deviceElementId,
+            deviceOrder: element.deviceOrder,
+            imageFileName: element.imageFileName,
+            imagePath: element.imagePath,
+            name: element.imageFileName.split('.')[0],
+            elementPositionId: element.elementPositionId,
+        }));
+        setFilteredElements(mappedDeviceElements);
+    }, [deviceElements]);
 
-        setFilteredElements(filtered);
-        setCurrentIndex(0);
-        setTimeout(() => {
-            flatListRef.current?.scrollToIndex({ animated: true, index: 0 });
-        }, 50);
-    }, [deviceElements, selectedTypeId]);
+    const renderItem = ({ item }: { item: DeviceElement }) => {
+        return (
+            <InspectionDeviceElementImg
+                deviceElement={item}
+                options={['Zonen Davor', 'Anlage', 'Zonen Danach']}
+                onFocusChange={handleFocusChange}
+                isFocused={item.id.toString() === focusedDeviceId}
+            />
+        );
+    };
 
     const handleScrollRight = () => {
         if (currentIndex < filteredElements.length - 1) {
@@ -61,6 +75,7 @@ const Carousel: FC<Props> = ({ deviceElements, selectedTypeId }) => {
     const totalItemsWidth = filteredElements.length * (isTablet ? windowWidth * 0.33 : windowWidth);
     const remainingSpace = totalItemsWidth - windowWidth;
     const snapInterval = remainingSpace < filteredElements.length ? remainingSpace : windowWidth;
+
     return (
         <View style={styles.container}>
             <View style={styles.containerImages}>
@@ -77,12 +92,17 @@ const Carousel: FC<Props> = ({ deviceElements, selectedTypeId }) => {
                         decelerationRate="normal"
                         onScroll={(event) => {
                             const index = isTablet
-                                ? Math.floor(
+                                ? Math.round(
                                       event.nativeEvent.contentOffset.x / (windowWidth * 0.33),
                                   )
                                 : Math.round(event.nativeEvent.contentOffset.x / windowWidth);
                             setCurrentIndex(index);
                         }}
+                        removeClippedSubviews={true}
+                        maxToRenderPerBatch={15}
+                        updateCellsBatchingPeriod={15}
+                        initialNumToRender={15}
+                        windowSize={10}
                     />
                 )}
             </View>
@@ -102,7 +122,7 @@ const Carousel: FC<Props> = ({ deviceElements, selectedTypeId }) => {
     );
 };
 
-export default memo(Carousel);
+export default memo(InspectionDeviceElements);
 
 const styles = StyleSheet.create({
     container: {

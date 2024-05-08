@@ -184,6 +184,7 @@ export type InspectionDeviceElement = {
     deviceOrder: number;
     imageFileName: string;
     imagePath: string;
+    elementPositionId: number;
 };
 
 export type InspectionDeviceElementUpdate = {
