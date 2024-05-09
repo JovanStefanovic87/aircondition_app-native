@@ -128,14 +128,15 @@ const InspectionDeviceElementImg: FC<Props> = ({
             >
                 <Pressable style={styles.modalContainer} onPress={hideModal}>
                     <View style={styles.modalContent}>
-                        <Text>Title</Text>
-                        <Text>Are you sure you want to delete this element?</Text>
+                        <Text style={styles.modalTitle}>
+                            Sind Sie sicher, dass Sie dieses Element löschen möchten?
+                        </Text>
                         <View style={styles.modalButtons}>
                             <TouchableOpacity onPress={handleConfirmDelete}>
-                                <Text style={styles.confirmButton}>Yes</Text>
+                                <Text style={styles.confirmButton}>Ja</Text>
                             </TouchableOpacity>
                             <TouchableOpacity onPress={hideModal}>
-                                <Text style={styles.cancelButton}>No</Text>
+                                <Text style={styles.cancelButton}>Nein</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -210,19 +211,40 @@ const styles = StyleSheet.create({
         elevation: 5,
         width: windowWidth * 0.8,
         alignItems: 'center',
+        justifyContent: 'center',
+        gap: 20,
+    },
+    modalTitle: {
+        color: 'black',
+        fontSize: windowWidth * 0.05,
+        fontWeight: 'bold',
+        marginBottom: 10,
+        textAlign: 'center',
     },
     modalButtons: {
         flexDirection: 'row',
         justifyContent: 'space-around',
         marginTop: 20,
+        width: '100%',
     },
     confirmButton: {
-        color: 'green',
+        paddingHorizontal: windowWidth * 0.05,
+        paddingVertical: windowWidth * 0.025,
+        backgroundColor: 'green',
+        borderRadius: 5,
+        color: 'white',
+        fontSize: windowWidth * 0.05,
         fontWeight: 'bold',
     },
     cancelButton: {
-        color: 'red',
+        paddingHorizontal: windowWidth * 0.05,
+        paddingVertical: windowWidth * 0.025,
+        backgroundColor: 'red',
+        borderRadius: 5,
+        color: 'white',
         fontWeight: 'bold',
+        fontSize: windowWidth * 0.05,
+        marginLeft: 10,
     },
     option: {
         padding: 10,

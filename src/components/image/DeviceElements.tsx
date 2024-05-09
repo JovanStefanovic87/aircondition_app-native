@@ -27,7 +27,11 @@ const DeviceElements: FC<Props> = ({ deviceElements, selectedTypeId }) => {
         return (
             <DeviceElementImg
                 deviceElement={item}
-                options={['Zonen Davor', 'Anlage', 'Zonen Danach']}
+                options={[
+                    { id: 1, value: 'Zonen Davor' },
+                    { id: 2, value: 'Anlage' },
+                    { id: 3, value: 'Zonen Danach' },
+                ]}
             />
         );
     };

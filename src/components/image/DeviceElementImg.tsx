@@ -1,5 +1,5 @@
 import React, { FC, useState, useEffect } from 'react';
-import { DeviceElement } from '../../../database/types';
+import { DeviceElement, InspectionDeviceElementUpdate } from '../../../database/types';
 import {
     View,
     Text,
@@ -14,18 +14,24 @@ import { DeviceElementImage } from '../../resources/deviceElementImages';
 import Icon from 'react-native-vector-icons/Feather';
 import { customColors } from '../../assets/styles/customStyles';
 import TextTitle from '../text/TextTitle';
+import { saveInspectionDeviceElement } from '../../../database/dataAccess/Command/sqlCommands';
+import { fetchInspectionDeviceElements } from '../../helpers/api';
+import { useInspectionDeviceElementsStore } from '../../store/store';
 
 const windowWidth = Dimensions.get('window').width;
 const tabletThreshold = 600;
 
 type Props = {
     deviceElement: DeviceElement;
-    options: string[];
+    options: { id: number; value: string }[];
 };
 
 const DeviceElementImg: FC<Props> = ({ deviceElement, options }) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [isTablet, setIsTablet] = useState(false);
+    const setInspectionDeviceElements = useInspectionDeviceElementsStore(
+        (state) => state.setInspectionDeviceElements,
+    );
 
     useEffect(() => {
         const isTabletDevice = windowWidth >= tabletThreshold;
@@ -40,9 +46,25 @@ const DeviceElementImg: FC<Props> = ({ deviceElement, options }) => {
         setModalVisible(false);
     };
 
-    const handleOptionSelect = (option: string) => {
-        console.log('Selected option:', option);
-        hideModal();
+    const handleOptionSelect = async (option: { id: number; value: string }) => {
+        try {
+            console.log('Selected option:', option);
+            const record: InspectionDeviceElementUpdate = {
+                inspectionId: '674bfb70-bc98-40c8-9b54-0156080648c5',
+                deviceElementId: deviceElement.id,
+                deviceOrder: 1,
+                elementPositionId: option.id,
+            };
+            await saveInspectionDeviceElement(record);
+            fetchInspectionDeviceElements(
+                '674bfb70-bc98-40c8-9b54-0156080648c5',
+                setInspectionDeviceElements,
+            );
+            hideModal();
+        } catch (error) {
+            console.error('Error saving inspection device element:', error);
+            throw error;
+        }
     };
 
     return (
@@ -82,7 +104,7 @@ const DeviceElementImg: FC<Props> = ({ deviceElement, options }) => {
                                 onPress={() => handleOptionSelect(option)}
                                 style={[styles.option, index === 0 && styles.firstOptionSeparator]}
                             >
-                                <TextTitle text={option} />
+                                <TextTitle text={option.value} />
                             </Pressable>
                         ))}
                     </View>

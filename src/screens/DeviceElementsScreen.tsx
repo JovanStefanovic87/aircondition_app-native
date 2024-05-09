@@ -65,6 +65,7 @@ const DeviceElementsScreen: React.FC = () => {
             '674bfb70-bc98-40c8-9b54-0156080648c5',
             setInspectionDeviceElements,
         );
+        handleDeviceElements();
     }, []);
 
     const deleteAllTabless = async () => {
