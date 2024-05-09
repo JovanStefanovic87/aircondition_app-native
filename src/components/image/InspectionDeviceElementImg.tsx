@@ -14,6 +14,9 @@ import { DeviceElementImage } from '../../resources/deviceElementImages';
 import Icon from 'react-native-vector-icons/Feather';
 import { customColors } from '../../assets/styles/customStyles';
 import TextTitle from '../text/TextTitle';
+import { deleteInspectionDeviceElement } from '../../../database/dataAccess/Command/sqlCommands';
+import { fetchInspectionDeviceElements } from '../../helpers/api';
+import { useInspectionStore, useInspectionDeviceElementsStore } from '../../store/store';
 
 const windowWidth = Dimensions.get('window').width;
 const tabletThreshold = 600;
@@ -33,15 +36,15 @@ const InspectionDeviceElementImg: FC<Props> = ({
 }) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [isTablet, setIsTablet] = useState(false);
+    const inspectionId = useInspectionStore((state) => state.inspectionId);
+    const setInspectionDeviceElements = useInspectionDeviceElementsStore(
+        (state) => state.setInspectionDeviceElements,
+    );
 
     useEffect(() => {
         const isTabletDevice = windowWidth >= tabletThreshold;
         setIsTablet(isTabletDevice);
     }, []);
-
-    const showModal = () => {
-        setModalVisible(true);
-    };
 
     const hideModal = () => {
         setModalVisible(false);
@@ -58,6 +61,23 @@ const InspectionDeviceElementImg: FC<Props> = ({
 
     const handlePressOut = () => {
         onFocusChange(deviceElement.id.toString(), false);
+    };
+
+    const handleDeleteInspectionElements = async (inspectionId: string) => {
+        await deleteInspectionDeviceElement(inspectionId);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (deviceElement) {
+            console.log(true);
+            console.log(deviceElement.id.toString());
+            await handleDeleteInspectionElements(deviceElement.id.toString());
+            hideModal();
+            fetchInspectionDeviceElements(
+                '674bfb70-bc98-40c8-9b54-0156080648c5',
+                setInspectionDeviceElements,
+            );
+        }
     };
 
     return (
@@ -95,7 +115,7 @@ const InspectionDeviceElementImg: FC<Props> = ({
             )}
             <Text style={styles.name}>{deviceElement.name}</Text>
             {isFocused && (
-                <TouchableOpacity style={styles.xContainer} onPress={showModal}>
+                <TouchableOpacity style={styles.xContainer} onPress={() => setModalVisible(true)}>
                     <Icon name="x" size={24} color="white" />
                 </TouchableOpacity>
             )}
@@ -108,15 +128,16 @@ const InspectionDeviceElementImg: FC<Props> = ({
             >
                 <Pressable style={styles.modalContainer} onPress={hideModal}>
                     <View style={styles.modalContent}>
-                        {options.map((option, index) => (
-                            <Pressable
-                                key={index}
-                                onPress={() => handleOptionSelect(option)}
-                                style={[styles.option, index === 0 && styles.firstOptionSeparator]}
-                            >
-                                <TextTitle text={option} />
-                            </Pressable>
-                        ))}
+                        <Text>Title</Text>
+                        <Text>Are you sure you want to delete this element?</Text>
+                        <View style={styles.modalButtons}>
+                            <TouchableOpacity onPress={handleConfirmDelete}>
+                                <Text style={styles.confirmButton}>Yes</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={hideModal}>
+                                <Text style={styles.cancelButton}>No</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </Pressable>
             </Modal>
@@ -189,6 +210,19 @@ const styles = StyleSheet.create({
         elevation: 5,
         width: windowWidth * 0.8,
         alignItems: 'center',
+    },
+    modalButtons: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        marginTop: 20,
+    },
+    confirmButton: {
+        color: 'green',
+        fontWeight: 'bold',
+    },
+    cancelButton: {
+        color: 'red',
+        fontWeight: 'bold',
     },
     option: {
         padding: 10,

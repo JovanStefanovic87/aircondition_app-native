@@ -25,18 +25,23 @@ import {
     deleteInspectionDeviceElement,
     saveInspectionDeviceElement,
 } from '../../database/dataAccess/Command/sqlCommands';
+import { useInspectionDeviceElementsStore } from '../store/store';
 import { customColors } from '../assets/styles/customStyles';
 import TextTitle from '../components/text/TextTitle';
+import { fetchDeviceElementTypes, fetchInspectionDeviceElements } from '../helpers/api';
 
 type NavScreenNavigationProp = NavigationProp<any, any>;
 
 const DeviceElementsScreen: React.FC = () => {
+    const inspectionDeviceElements = useInspectionDeviceElementsStore(
+        (state) => state.inspectionDeviceElements,
+    );
+    const setInspectionDeviceElements = useInspectionDeviceElementsStore(
+        (state) => state.setInspectionDeviceElements,
+    );
     const navigation = useNavigation<NavScreenNavigationProp>();
     const setInspectionId = useInspectionStore((state) => state.setInspectionId);
     const [deviceElements, setDeviceElements] = useState<DeviceElement[]>([]);
-    const [inspectionDeviceElements, setInspectionDeviceElements] = useState<
-        InspectionDeviceElement[]
-    >([]);
     const [selectedTypeId, setSelectedTypeId] = useState<number | null>(null);
     const [deviceElementTypes, setDeviceElementTypes] = useState<DeviceElementType[]>([]);
     const inspectionDeviceElementsPositions = [1, 2, 3];
@@ -55,30 +60,11 @@ const DeviceElementsScreen: React.FC = () => {
     };
 
     useEffect(() => {
-        const fetchDeviceElementTypes = async () => {
-            try {
-                const elementTypes = await getDeviceElementTypes();
-
-                setDeviceElementTypes(elementTypes);
-            } catch (error) {
-                console.error('Error fetching device element types:', error);
-            }
-        };
-
-        const fetchInspectionDeviceElements = async () => {
-            try {
-                const elements = await getInspectionDeviceElements(
-                    '674bfb70-bc98-40c8-9b54-0156080648c5',
-                );
-                setInspectionDeviceElements(elements);
-                console.log(elements);
-            } catch (error) {
-                console.error('Error fetching inspection device elements:', error);
-            }
-        };
-
-        fetchDeviceElementTypes();
-        fetchInspectionDeviceElements();
+        fetchDeviceElementTypes(setDeviceElementTypes);
+        fetchInspectionDeviceElements(
+            '674bfb70-bc98-40c8-9b54-0156080648c5',
+            setInspectionDeviceElements,
+        );
     }, []);
 
     const deleteAllTabless = async () => {
@@ -113,13 +99,20 @@ const DeviceElementsScreen: React.FC = () => {
     const handleSaveInspectionElements = async () => {
         const record: InspectionDeviceElementUpdate = {
             inspectionId: '674bfb70-bc98-40c8-9b54-0156080648c5',
-            deviceElementId: 2,
+            deviceElementId: 4,
             deviceOrder: 1,
-            elementPositionId: 3,
+            elementPositionId: 1,
         };
-        console.log('----------------------------------------------------');
-        console.log('record: ', record);
-        await saveInspectionDeviceElement(record);
+        try {
+            await saveInspectionDeviceElement(record);
+            fetchInspectionDeviceElements(
+                '674bfb70-bc98-40c8-9b54-0156080648c5',
+                setInspectionDeviceElements,
+            );
+        } catch (error) {
+            console.error('Error saving inspection device element:', error);
+            throw error;
+        }
     };
 
     const handleDeleteInspectionElements = async (inspectionId: string) => {
