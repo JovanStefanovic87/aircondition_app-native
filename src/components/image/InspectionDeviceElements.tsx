@@ -1,16 +1,17 @@
 import React, { FC, useRef, useState, useEffect, memo } from 'react';
 import { View, FlatList, StyleSheet, Dimensions, TouchableOpacity, Text } from 'react-native';
-import { DeviceElement, InspectionDeviceElement } from '../../../database/types';
+import { InspectionDeviceElement } from '../../../database/types';
 import { customColors } from '../../assets/styles/customStyles';
 import InspectionDeviceElementImg from './InspectionDeviceElementImg';
+import { saveDeviceElementsSortOrder } from '../../../database/dataAccess/Command/sqlCommands';
 
 const windowWidth = Dimensions.get('window').width;
 
 type Props = {
-    deviceElements: InspectionDeviceElement[];
+    inspectionDeviceElements: InspectionDeviceElement[];
 };
 
-const InspectionDeviceElements: FC<Props> = ({ deviceElements }) => {
+const InspectionDeviceElements: FC<Props> = ({ inspectionDeviceElements }) => {
     const flatListRef = useRef<FlatList>(null);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [filteredElements, setFilteredElements] = useState<InspectionDeviceElement[]>([]);
@@ -31,8 +32,10 @@ const InspectionDeviceElements: FC<Props> = ({ deviceElements }) => {
         setIsTablet(isTabletDevice);
     }, []);
 
+    /*     console.log(filteredElements); */
+
     useEffect(() => {
-        const mappedDeviceElements = deviceElements.map((element) => ({
+        const mappedDeviceElements = inspectionDeviceElements.map((element) => ({
             id: element.id,
             inspectionId: element.inspectionId,
             deviceElementId: element.deviceElementId,
@@ -42,16 +45,65 @@ const InspectionDeviceElements: FC<Props> = ({ deviceElements }) => {
             name: element.imageFileName.split('.')[0],
             elementPositionId: element.elementPositionId,
         }));
-        setFilteredElements(mappedDeviceElements);
-    }, [deviceElements]);
 
-    const renderItem = ({ item }: { item: DeviceElement }) => {
+        setFilteredElements(mappedDeviceElements);
+    }, [inspectionDeviceElements, focusedDeviceId]);
+
+    const handleDeleteElement = async (deletedElementId: string) => {
+        try {
+            const deletedElement = filteredElements.find(
+                (element) => element.id === deletedElementId,
+            );
+            if (!deletedElement) {
+                console.error('Element to delete not found:', deletedElementId);
+                return;
+            }
+
+            const deletedElementOrder = deletedElement.deviceOrder;
+
+            const updatedElements = filteredElements.filter(
+                (element) => element.id !== deletedElementId,
+            );
+
+            const updatedElementsWithNewOrder = updatedElements.map((element) => {
+                if (element.deviceOrder > deletedElementOrder) {
+                    console.log('Adjusting deviceOrder for element:', element.id);
+                    return {
+                        ...element,
+                        deviceOrder: element.deviceOrder - 1,
+                    };
+                } else if (element.deviceOrder === deletedElementOrder) {
+                    return {
+                        ...element,
+                        deviceOrder: deletedElementOrder,
+                    };
+                }
+                return element;
+            });
+
+            await saveDeviceElementsSortOrder(
+                updatedElementsWithNewOrder.map((element) => ({
+                    id: element.id,
+                    deviceOrder: element.deviceOrder,
+                })),
+            );
+
+            setFilteredElements(updatedElementsWithNewOrder);
+        } catch (error) {
+            console.error('Error deleting element:', error);
+            // Handle error if deletion fails
+        }
+    };
+
+    const renderItem = ({ item }: { item: InspectionDeviceElement }) => {
         return (
             <InspectionDeviceElementImg
                 deviceElement={item}
+                elementByPositionId={filteredElements}
                 options={['Zonen Davor', 'Anlage', 'Zonen Danach']}
                 onFocusChange={handleFocusChange}
                 isFocused={item.id.toString() === focusedDeviceId}
+                onDeleteElement={handleDeleteElement}
             />
         );
     };

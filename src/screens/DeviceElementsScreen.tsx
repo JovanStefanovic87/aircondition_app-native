@@ -15,7 +15,6 @@ import { deleteAllTables } from '../../database/dataAccess/helpers';
 import {
     DeviceElement,
     DeviceElementType,
-    InspectionDeviceElement,
     InspectionDeviceElementUpdate,
 } from '../../database/types';
 import DeviceElements from '../components/image/DeviceElements';
@@ -25,7 +24,7 @@ import {
     deleteInspectionDeviceElement,
     saveInspectionDeviceElement,
 } from '../../database/dataAccess/Command/sqlCommands';
-import { useInspectionDeviceElementsStore } from '../store/store';
+import { useInspectionDeviceElementsStore, useDeviceElementSortStore } from '../store/store';
 import { customColors } from '../assets/styles/customStyles';
 import TextTitle from '../components/text/TextTitle';
 import { fetchDeviceElementTypes, fetchInspectionDeviceElements } from '../helpers/api';
@@ -39,6 +38,7 @@ const DeviceElementsScreen: React.FC = () => {
     const setInspectionDeviceElements = useInspectionDeviceElementsStore(
         (state) => state.setInspectionDeviceElements,
     );
+    const deviceElementSort = useDeviceElementSortStore((state) => state.deviceOrder);
     const navigation = useNavigation<NavScreenNavigationProp>();
     const setInspectionId = useInspectionStore((state) => state.setInspectionId);
     const [deviceElements, setDeviceElements] = useState<DeviceElement[]>([]);
@@ -66,7 +66,7 @@ const DeviceElementsScreen: React.FC = () => {
             setInspectionDeviceElements,
         );
         handleDeviceElements();
-    }, []);
+    }, [deviceElementSort]);
 
     const deleteAllTabless = async () => {
         await deleteAllTables();
@@ -100,8 +100,8 @@ const DeviceElementsScreen: React.FC = () => {
     const handleSaveInspectionElements = async () => {
         const record: InspectionDeviceElementUpdate = {
             inspectionId: '674bfb70-bc98-40c8-9b54-0156080648c5',
-            deviceElementId: 4,
-            deviceOrder: 1,
+            deviceElementId: 2,
+            deviceOrder: 2,
             elementPositionId: 1,
         };
         try {
@@ -206,7 +206,9 @@ const DeviceElementsScreen: React.FC = () => {
                         return (
                             <View style={styles.deviceElement} key={positionId}>
                                 <TextTitle text={getPositionName(positionId)} />
-                                <InspectionDeviceElements deviceElements={filteredElements} />
+                                <InspectionDeviceElements
+                                    inspectionDeviceElements={filteredElements}
+                                />
                             </View>
                         );
                     })}

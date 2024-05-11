@@ -1,5 +1,5 @@
 import React, { FC, useState, useEffect } from 'react';
-import { DeviceElement } from '../../../database/types';
+import { InspectionDeviceElement } from '../../../database/types';
 import {
     View,
     Text,
@@ -13,7 +13,6 @@ import {
 import { DeviceElementImage } from '../../resources/deviceElementImages';
 import Icon from 'react-native-vector-icons/Feather';
 import { customColors } from '../../assets/styles/customStyles';
-import TextTitle from '../text/TextTitle';
 import { deleteInspectionDeviceElement } from '../../../database/dataAccess/Command/sqlCommands';
 import { fetchInspectionDeviceElements } from '../../helpers/api';
 import { useInspectionStore, useInspectionDeviceElementsStore } from '../../store/store';
@@ -22,21 +21,25 @@ const windowWidth = Dimensions.get('window').width;
 const tabletThreshold = 600;
 
 type Props = {
-    deviceElement: DeviceElement;
+    deviceElement: InspectionDeviceElement;
+    elementByPositionId: InspectionDeviceElement[];
     options: string[];
     onFocusChange: (deviceId: string, focused: boolean) => void;
     isFocused: boolean;
+    onDeleteElement: (deletedElementId: string) => void;
 };
 
 const InspectionDeviceElementImg: FC<Props> = ({
     deviceElement,
+    elementByPositionId,
     options,
     onFocusChange,
     isFocused,
+    onDeleteElement,
 }) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [isTablet, setIsTablet] = useState(false);
-    const inspectionId = useInspectionStore((state) => state.inspectionId);
+    /* const inspectionId = useInspectionStore((state) => state.inspectionId); */
     const setInspectionDeviceElements = useInspectionDeviceElementsStore(
         (state) => state.setInspectionDeviceElements,
     );
@@ -48,11 +51,6 @@ const InspectionDeviceElementImg: FC<Props> = ({
 
     const hideModal = () => {
         setModalVisible(false);
-    };
-
-    const handleOptionSelect = (option: string) => {
-        console.log('Selected option:', option);
-        hideModal();
     };
 
     const handlePressIn = () => {
@@ -73,6 +71,7 @@ const InspectionDeviceElementImg: FC<Props> = ({
             console.log(deviceElement.id.toString());
             await handleDeleteInspectionElements(deviceElement.id.toString());
             hideModal();
+            onDeleteElement(deviceElement.id.toString());
             fetchInspectionDeviceElements(
                 '674bfb70-bc98-40c8-9b54-0156080648c5',
                 setInspectionDeviceElements,
@@ -113,7 +112,7 @@ const InspectionDeviceElementImg: FC<Props> = ({
                     </TouchableOpacity>
                 </View>
             )}
-            <Text style={styles.name}>{deviceElement.name}</Text>
+            <Text style={styles.name}>{deviceElement.imageFileName}</Text>
             {isFocused && (
                 <TouchableOpacity style={styles.xContainer} onPress={() => setModalVisible(true)}>
                     <Icon name="x" size={24} color="white" />

@@ -29,6 +29,9 @@ type Props = {
 const DeviceElementImg: FC<Props> = ({ deviceElement, options }) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [isTablet, setIsTablet] = useState(false);
+    const inspectionDeviceElements = useInspectionDeviceElementsStore(
+        (state) => state.inspectionDeviceElements,
+    );
     const setInspectionDeviceElements = useInspectionDeviceElementsStore(
         (state) => state.setInspectionDeviceElements,
     );
@@ -47,12 +50,15 @@ const DeviceElementImg: FC<Props> = ({ deviceElement, options }) => {
     };
 
     const handleOptionSelect = async (option: { id: number; value: string }) => {
+        const deviceElelemtsByPosition = inspectionDeviceElements.filter(
+            (element) => element.elementPositionId === option.id,
+        );
         try {
             console.log('Selected option:', option);
             const record: InspectionDeviceElementUpdate = {
                 inspectionId: '674bfb70-bc98-40c8-9b54-0156080648c5',
                 deviceElementId: deviceElement.id,
-                deviceOrder: 1,
+                deviceOrder: deviceElelemtsByPosition.length + 1,
                 elementPositionId: option.id,
             };
             await saveInspectionDeviceElement(record);

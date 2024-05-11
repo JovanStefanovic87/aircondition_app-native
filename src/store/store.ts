@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { InspectionDeviceElement } from '../../database/types';
+import { InspectionDeviceElement, DeviceElementSortUpdate } from '../../database/types';
 
 type InspectionStore = {
     inspectionId: string | null;
@@ -19,4 +19,14 @@ type InspectionDeviceElementsStore = {
 export const useInspectionDeviceElementsStore = create<InspectionDeviceElementsStore>((set) => ({
     inspectionDeviceElements: [],
     setInspectionDeviceElements: (elements) => set({ inspectionDeviceElements: elements }),
+}));
+
+type DeviceElementSortState = {
+    deviceOrder: number;
+    setDeviceOrder: (newOrder: number) => void; // Adjusted type
+};
+
+export const useDeviceElementSortStore = create<DeviceElementSortState>((set) => ({
+    deviceOrder: 0,
+    setDeviceOrder: (newOrder) => set({ deviceOrder: newOrder }),
 }));
