@@ -15,27 +15,27 @@ import Icon from 'react-native-vector-icons/Feather';
 import { customColors } from '../../assets/styles/customStyles';
 import { deleteInspectionDeviceElement } from '../../../database/dataAccess/Command/sqlCommands';
 import { fetchInspectionDeviceElements } from '../../helpers/api';
-import { useInspectionStore, useInspectionDeviceElementsStore } from '../../store/store';
+import { useInspectionDeviceElementsStore } from '../../store/store';
 
 const windowWidth = Dimensions.get('window').width;
 const tabletThreshold = 600;
 
 type Props = {
     deviceElement: InspectionDeviceElement;
-    elementByPositionId: InspectionDeviceElement[];
-    options: string[];
     onFocusChange: (deviceId: string, focused: boolean) => void;
     isFocused: boolean;
     onDeleteElement: (deletedElementId: string) => void;
+    moveLeft: (element: InspectionDeviceElement) => void;
+    moveRight: (element: InspectionDeviceElement) => void;
 };
 
 const InspectionDeviceElementImg: FC<Props> = ({
     deviceElement,
-    elementByPositionId,
-    options,
     onFocusChange,
     isFocused,
     onDeleteElement,
+    moveLeft,
+    moveRight,
 }) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [isTablet, setIsTablet] = useState(false);
@@ -65,18 +65,20 @@ const InspectionDeviceElementImg: FC<Props> = ({
         await deleteInspectionDeviceElement(inspectionId);
     };
 
-    const handleConfirmDelete = async () => {
+    const handleConfirmDelete = () => {
         if (deviceElement) {
-            console.log(true);
-            console.log(deviceElement.id.toString());
-            await handleDeleteInspectionElements(deviceElement.id.toString());
+            handleDeleteInspectionElements(deviceElement.id.toString());
             hideModal();
             onDeleteElement(deviceElement.id.toString());
-            fetchInspectionDeviceElements(
-                '674bfb70-bc98-40c8-9b54-0156080648c5',
-                setInspectionDeviceElements,
-            );
+            fetchUpdatedDeviceElements();
         }
+    };
+
+    const fetchUpdatedDeviceElements = () => {
+        fetchInspectionDeviceElements(
+            '674bfb70-bc98-40c8-9b54-0156080648c5',
+            setInspectionDeviceElements,
+        );
     };
 
     return (
@@ -104,10 +106,16 @@ const InspectionDeviceElementImg: FC<Props> = ({
             </View>
             {isFocused && (
                 <View style={styles.arrowContainer}>
-                    <TouchableOpacity style={styles.arrowButton}>
+                    <TouchableOpacity
+                        style={styles.arrowButton}
+                        onPress={() => moveLeft(deviceElement)}
+                    >
                         <Icon name="arrow-left" size={24} color="white" />
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.arrowButton}>
+                    <TouchableOpacity
+                        style={styles.arrowButton}
+                        onPress={() => moveRight(deviceElement)}
+                    >
                         <Icon name="arrow-right" size={24} color="white" />
                     </TouchableOpacity>
                 </View>

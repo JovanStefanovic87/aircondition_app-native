@@ -4,6 +4,8 @@ import { InspectionDeviceElement } from '../../../database/types';
 import { customColors } from '../../assets/styles/customStyles';
 import InspectionDeviceElementImg from './InspectionDeviceElementImg';
 import { saveDeviceElementsSortOrder } from '../../../database/dataAccess/Command/sqlCommands';
+import { fetchInspectionDeviceElements } from '../../helpers/api';
+import { useInspectionDeviceElementsStore } from '../../store/store';
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -18,6 +20,9 @@ const InspectionDeviceElements: FC<Props> = ({ inspectionDeviceElements }) => {
     const [isTablet, setIsTablet] = useState(false);
     const [focusedDeviceId, setFocusedDeviceId] = useState<string | null>(null);
     const tabletThreshold = 600;
+    const setInspectionDeviceElements = useInspectionDeviceElementsStore(
+        (state) => state.setInspectionDeviceElements,
+    );
 
     const handleFocusChange = (deviceId: string, focused: boolean) => {
         if (focused) {
@@ -46,7 +51,9 @@ const InspectionDeviceElements: FC<Props> = ({ inspectionDeviceElements }) => {
             elementPositionId: element.elementPositionId,
         }));
 
-        setFilteredElements(mappedDeviceElements);
+        const sortedElements = mappedDeviceElements.sort((a, b) => a.deviceOrder - b.deviceOrder);
+
+        setFilteredElements(sortedElements);
     }, [inspectionDeviceElements, focusedDeviceId]);
 
     const handleDeleteElement = async (deletedElementId: string) => {
@@ -67,7 +74,6 @@ const InspectionDeviceElements: FC<Props> = ({ inspectionDeviceElements }) => {
 
             const updatedElementsWithNewOrder = updatedElements.map((element) => {
                 if (element.deviceOrder > deletedElementOrder) {
-                    console.log('Adjusting deviceOrder for element:', element.id);
                     return {
                         ...element,
                         deviceOrder: element.deviceOrder - 1,
@@ -91,20 +97,51 @@ const InspectionDeviceElements: FC<Props> = ({ inspectionDeviceElements }) => {
             setFilteredElements(updatedElementsWithNewOrder);
         } catch (error) {
             console.error('Error deleting element:', error);
-            // Handle error if deletion fails
         }
     };
 
-    const renderItem = ({ item }: { item: InspectionDeviceElement }) => {
-        return (
-            <InspectionDeviceElementImg
-                deviceElement={item}
-                elementByPositionId={filteredElements}
-                options={['Zonen Davor', 'Anlage', 'Zonen Danach']}
-                onFocusChange={handleFocusChange}
-                isFocused={item.id.toString() === focusedDeviceId}
-                onDeleteElement={handleDeleteElement}
-            />
+    const handleMoveLeft = async (element: InspectionDeviceElement) => {
+        const currentIndex = element.deviceOrder;
+        const prevSibling = filteredElements.find((el) => el.deviceOrder === currentIndex - 1);
+
+        if (prevSibling) {
+            try {
+                saveDeviceElementsSortOrder([
+                    { id: element.id, deviceOrder: currentIndex - 1 },
+                    { id: prevSibling.id, deviceOrder: currentIndex },
+                ]);
+                fetchUpdatedDeviceElements();
+            } catch (error) {
+                console.error('Error moving left:', error);
+            }
+        } else {
+            console.log('No previous sibling found for:', element);
+        }
+    };
+
+    const handleMoveRight = async (element: InspectionDeviceElement) => {
+        const currentIndex = element.deviceOrder;
+        const nextSibling = filteredElements.find((el) => el.deviceOrder === currentIndex + 1);
+
+        if (nextSibling) {
+            try {
+                saveDeviceElementsSortOrder([
+                    { id: element.id, deviceOrder: currentIndex + 1 },
+                    { id: nextSibling.id, deviceOrder: currentIndex },
+                ]);
+                fetchUpdatedDeviceElements();
+            } catch (error) {
+                console.error('Error moving right:', error);
+            }
+        } else {
+            console.log('No next sibling found for:', element);
+        }
+    };
+
+    const fetchUpdatedDeviceElements = () => {
+        fetchInspectionDeviceElements(
+            '674bfb70-bc98-40c8-9b54-0156080648c5',
+            setInspectionDeviceElements,
         );
     };
 
@@ -122,6 +159,19 @@ const InspectionDeviceElements: FC<Props> = ({ inspectionDeviceElements }) => {
             setCurrentIndex(newIndex);
             flatListRef.current.scrollToIndex({ animated: true, index: newIndex });
         }
+    };
+
+    const renderItem = ({ item }: { item: InspectionDeviceElement }) => {
+        return (
+            <InspectionDeviceElementImg
+                deviceElement={item}
+                onFocusChange={handleFocusChange}
+                isFocused={item.id.toString() === focusedDeviceId}
+                onDeleteElement={handleDeleteElement}
+                moveLeft={handleMoveLeft}
+                moveRight={handleMoveRight}
+            />
+        );
     };
 
     const totalItemsWidth = filteredElements.length * (isTablet ? windowWidth * 0.33 : windowWidth);
