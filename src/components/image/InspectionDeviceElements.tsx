@@ -17,9 +17,7 @@ const InspectionDeviceElements: FC<Props> = ({ inspectionDeviceElements }) => {
     const flatListRef = useRef<FlatList>(null);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [filteredElements, setFilteredElements] = useState<InspectionDeviceElement[]>([]);
-    const [isTablet, setIsTablet] = useState(false);
     const [focusedDeviceId, setFocusedDeviceId] = useState<string | null>(null);
-    const tabletThreshold = 600;
     const setInspectionDeviceElements = useInspectionDeviceElementsStore(
         (state) => state.setInspectionDeviceElements,
     );
@@ -31,11 +29,6 @@ const InspectionDeviceElements: FC<Props> = ({ inspectionDeviceElements }) => {
             setFocusedDeviceId(null);
         }
     };
-
-    useEffect(() => {
-        const isTabletDevice = windowWidth >= tabletThreshold;
-        setIsTablet(isTabletDevice);
-    }, []);
 
     /*     console.log(filteredElements); */
 
@@ -110,6 +103,7 @@ const InspectionDeviceElements: FC<Props> = ({ inspectionDeviceElements }) => {
                     { id: element.id, deviceOrder: currentIndex - 1 },
                     { id: prevSibling.id, deviceOrder: currentIndex },
                 ]);
+                handleScrollLeft();
                 fetchUpdatedDeviceElements();
             } catch (error) {
                 console.error('Error moving left:', error);
@@ -129,7 +123,9 @@ const InspectionDeviceElements: FC<Props> = ({ inspectionDeviceElements }) => {
                     { id: element.id, deviceOrder: currentIndex + 1 },
                     { id: nextSibling.id, deviceOrder: currentIndex },
                 ]);
+
                 fetchUpdatedDeviceElements();
+                handleScrollRight();
             } catch (error) {
                 console.error('Error moving right:', error);
             }
@@ -174,7 +170,7 @@ const InspectionDeviceElements: FC<Props> = ({ inspectionDeviceElements }) => {
         );
     };
 
-    const totalItemsWidth = filteredElements.length * (isTablet ? windowWidth * 0.33 : windowWidth);
+    const totalItemsWidth = filteredElements.length * (windowWidth * 0.33);
     const remainingSpace = totalItemsWidth - windowWidth;
     const snapInterval = remainingSpace < filteredElements.length ? remainingSpace : windowWidth;
 
@@ -193,11 +189,9 @@ const InspectionDeviceElements: FC<Props> = ({ inspectionDeviceElements }) => {
                         snapToAlignment="center"
                         decelerationRate="normal"
                         onScroll={(event) => {
-                            const index = isTablet
-                                ? Math.round(
-                                      event.nativeEvent.contentOffset.x / (windowWidth * 0.33),
-                                  )
-                                : Math.round(event.nativeEvent.contentOffset.x / windowWidth);
+                            const index = Math.round(
+                                event.nativeEvent.contentOffset.x / (windowWidth * 0.33),
+                            );
                             setCurrentIndex(index);
                         }}
                         removeClippedSubviews={true}

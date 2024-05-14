@@ -87,7 +87,9 @@ const InspectionDeviceElementImg: FC<Props> = ({
             style={[
                 styles.container,
                 {
-                    width: isTablet ? windowWidth * 0.33 : windowWidth,
+                    width: windowWidth * 0.33,
+                    paddingTop: isTablet ? 0 : windowWidth * 0.05,
+                    justifyContent: isTablet ? 'center' : 'flex-start',
                 },
                 isFocused && styles.imageFocused,
             ]}
@@ -104,6 +106,9 @@ const InspectionDeviceElementImg: FC<Props> = ({
                     />
                 )}
             </View>
+            <Text style={[styles.name, { fontSize: isTablet ? 20 : 12 }]}>
+                {deviceElement.imageFileName.split('.')[0]}
+            </Text>
             {isFocused && (
                 <View style={styles.arrowContainer}>
                     <TouchableOpacity
@@ -120,7 +125,6 @@ const InspectionDeviceElementImg: FC<Props> = ({
                     </TouchableOpacity>
                 </View>
             )}
-            <Text style={styles.name}>{deviceElement.imageFileName}</Text>
             {isFocused && (
                 <TouchableOpacity style={styles.xContainer} onPress={() => setModalVisible(true)}>
                     <Icon name="x" size={24} color="white" />
@@ -159,7 +163,6 @@ const styles = StyleSheet.create({
     container: {
         position: 'relative',
         alignItems: 'center',
-        justifyContent: 'center',
         backgroundColor: 'white',
         borderRadius: 10,
         shadowColor: '#000',
@@ -171,7 +174,7 @@ const styles = StyleSheet.create({
         shadowRadius: 3.84,
         elevation: 5,
         marginBottom: 20,
-        height: windowWidth * 0.5,
+        height: '98%',
         borderTopWidth: 2,
         borderBottomWidth: 2,
         borderLeftWidth: 6,
@@ -184,13 +187,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     image: {
-        width: windowWidth * 0.3,
-        height: windowWidth * 0.3,
+        width: windowWidth * 0.25,
+        height: windowWidth * 0.25,
         aspectRatio: 1,
         marginBottom: 10,
     },
     name: {
-        fontSize: 16,
         fontWeight: 'bold',
         color: 'black',
     },
@@ -198,12 +200,39 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 10,
         right: 20,
-        width: 40,
-        height: 40,
-        borderRadius: 20,
+        padding: windowWidth * 0.018,
+        borderRadius: 50,
         backgroundColor: 'red',
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    firstOptionSeparator: {
+        borderTopWidth: 2,
+    },
+    imageFocused: {
+        backgroundColor: customColors.blueLightest,
+        borderWidth: 2,
+        borderColor: 'black',
+    },
+    arrowContainer: {
+        position: 'absolute',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: '100%',
+        paddingHorizontal: windowWidth * 0.019,
+        bottom: 10,
+    },
+    arrowButton: {
+        padding: windowWidth * 0.012,
+        backgroundColor: customColors.blue,
+        borderRadius: 50,
+    },
+    option: {
+        padding: 10,
+        borderBottomWidth: 2,
+        borderColor: '#ccc',
+        width: '100%',
+        alignItems: 'center',
     },
     modalContainer: {
         flex: 1,
@@ -252,33 +281,5 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: windowWidth * 0.05,
         marginLeft: 10,
-    },
-    option: {
-        padding: 10,
-        borderBottomWidth: 2,
-        borderColor: '#ccc',
-        width: '100%',
-        alignItems: 'center',
-    },
-    firstOptionSeparator: {
-        borderTopWidth: 2,
-    },
-    imageFocused: {
-        backgroundColor: customColors.blueLightest,
-        borderWidth: 2,
-        borderColor: 'black',
-    },
-    arrowContainer: {
-        position: 'absolute',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        width: '100%',
-        paddingHorizontal: 20,
-        bottom: 10,
-    },
-    arrowButton: {
-        padding: 10,
-        backgroundColor: customColors.blue,
-        borderRadius: 50,
     },
 });

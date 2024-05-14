@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     name: {
-        fontSize: 16,
+        fontSize: 20,
         fontWeight: 'bold',
         color: 'black',
     },
