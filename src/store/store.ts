@@ -23,7 +23,7 @@ export const useInspectionDeviceElementsStore = create<InspectionDeviceElementsS
 
 type DeviceElementSortState = {
     deviceOrder: number;
-    setDeviceOrder: (newOrder: number) => void; // Adjusted type
+    setDeviceOrder: (newOrder: number) => void;
 };
 
 export const useDeviceElementSortStore = create<DeviceElementSortState>((set) => ({

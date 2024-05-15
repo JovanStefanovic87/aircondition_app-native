@@ -38,6 +38,7 @@ const InspectionDeviceStateScreen = () => {
     const [inspectionDeviceStateDetails, setInspectionDeviceStateDetails] =
         useState<DeviceStateComponentsForInspection[]>(null);
     const [isCameraVisible, setCameraVisible] = useState(false);
+    const [allCompleted, setAllCompleted] = useState<boolean[]>([]);
     const [avatarSource, setAvatarSource] = useState(null);
 
     useEffect(() => {
@@ -101,7 +102,23 @@ const InspectionDeviceStateScreen = () => {
     };
 
     const submit = async () => {
-        navigation.navigate('AllInspectionsScreen');
+        if (isAllCompleted()) {
+            navigation.navigate('DeviceElementsScreen');
+        } else {
+            console.log('error');
+        }
+    };
+
+    const updateCompletionStatus = (identifier: string, isCompleted: boolean) => {
+        setAllCompleted((prevStatus) => ({
+            ...prevStatus,
+            [identifier]: isCompleted,
+        }));
+    };
+
+    const isAllCompleted = () => {
+        const completionValues = Object.values(allCompleted);
+        return completionValues.length > 0 && completionValues.every((status) => status === true);
     };
 
     return (
@@ -128,8 +145,11 @@ const InspectionDeviceStateScreen = () => {
                         <RowContainerFlex>
                             {inspectionDeviceStateDetails !== null &&
                                 inspectionDeviceStateDetails.map(
-                                    (group: DeviceStateComponentsForInspection, i: number) => (
-                                        <React.Fragment key={i}>
+                                    (
+                                        group: DeviceStateComponentsForInspection,
+                                        groupIndex: number,
+                                    ) => (
+                                        <React.Fragment key={groupIndex}>
                                             {group.titleComponents.map(
                                                 (title: TitleComponent, j) => (
                                                     <AutoFitTableContainer
@@ -139,6 +159,12 @@ const InspectionDeviceStateScreen = () => {
                                                         <DeviceStateColumnContainer
                                                             title={group.groupTypeName}
                                                             group={group}
+                                                            setIsGroupCompleted={(isCompleted) =>
+                                                                updateCompletionStatus(
+                                                                    `${group.groupTypeName}-${groupIndex}`,
+                                                                    isCompleted,
+                                                                )
+                                                            }
                                                         >
                                                             <InspectionTitle
                                                                 title={title.name}

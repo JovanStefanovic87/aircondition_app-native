@@ -1,11 +1,11 @@
-import React, { FC, useRef, useState, useEffect, memo } from 'react';
+import React, { FC, useRef, useState, useEffect } from 'react';
 import { View, FlatList, StyleSheet, Dimensions, TouchableOpacity, Text } from 'react-native';
+import { useInspectionStore, useInspectionDeviceElementsStore } from '../../store/store';
 import { InspectionDeviceElement } from '../../../database/types';
 import { customColors } from '../../assets/styles/customStyles';
 import InspectionDeviceElementImg from './InspectionDeviceElementImg';
 import { saveDeviceElementsSortOrder } from '../../../database/dataAccess/Command/sqlCommands';
 import { fetchInspectionDeviceElements } from '../../helpers/api';
-import { useInspectionDeviceElementsStore } from '../../store/store';
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -15,6 +15,7 @@ type Props = {
 
 const InspectionDeviceElements: FC<Props> = ({ inspectionDeviceElements }) => {
     const flatListRef = useRef<FlatList>(null);
+    const inspectionId = useInspectionStore((state) => state.inspectionId);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [filteredElements, setFilteredElements] = useState<InspectionDeviceElement[]>([]);
     const [focusedDeviceId, setFocusedDeviceId] = useState<string | null>(null);
@@ -33,16 +34,21 @@ const InspectionDeviceElements: FC<Props> = ({ inspectionDeviceElements }) => {
     /*     console.log(filteredElements); */
 
     useEffect(() => {
-        const mappedDeviceElements = inspectionDeviceElements.map((element) => ({
-            id: element.id,
-            inspectionId: element.inspectionId,
-            deviceElementId: element.deviceElementId,
-            deviceOrder: element.deviceOrder,
-            imageFileName: element.imageFileName,
-            imagePath: element.imagePath,
-            name: element.imageFileName.split('.')[0],
-            elementPositionId: element.elementPositionId,
-        }));
+        const mappedDeviceElements = inspectionDeviceElements.map((element) => {
+            // Log element.inspectionId
+            console.log('Element Inspection ID:', element.inspectionId);
+
+            return {
+                id: element.id,
+                inspectionId: element.inspectionId,
+                deviceElementId: element.deviceElementId,
+                deviceOrder: element.deviceOrder,
+                imageFileName: element.imageFileName,
+                imagePath: element.imagePath,
+                name: element.imageFileName.split('.')[0],
+                elementPositionId: element.elementPositionId,
+            };
+        });
 
         const sortedElements = mappedDeviceElements.sort((a, b) => a.deviceOrder - b.deviceOrder);
 
@@ -93,6 +99,8 @@ const InspectionDeviceElements: FC<Props> = ({ inspectionDeviceElements }) => {
         }
     };
 
+    console.log(inspectionId);
+
     const handleMoveLeft = async (element: InspectionDeviceElement) => {
         const currentIndex = element.deviceOrder;
         const prevSibling = filteredElements.find((el) => el.deviceOrder === currentIndex - 1);
@@ -135,10 +143,7 @@ const InspectionDeviceElements: FC<Props> = ({ inspectionDeviceElements }) => {
     };
 
     const fetchUpdatedDeviceElements = () => {
-        fetchInspectionDeviceElements(
-            '674bfb70-bc98-40c8-9b54-0156080648c5',
-            setInspectionDeviceElements,
-        );
+        fetchInspectionDeviceElements(inspectionId, setInspectionDeviceElements);
     };
 
     const handleScrollRight = () => {
@@ -218,7 +223,7 @@ const InspectionDeviceElements: FC<Props> = ({ inspectionDeviceElements }) => {
     );
 };
 
-export default memo(InspectionDeviceElements);
+export default InspectionDeviceElements;
 
 const styles = StyleSheet.create({
     container: {

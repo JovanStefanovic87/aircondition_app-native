@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import CollapsibleTableHead from '../table/CollapsibleTableHead';
@@ -14,10 +14,30 @@ interface Props {
     title?: string;
     children: React.ReactNode;
     group: DeviceStateComponentsForInspection;
+    setIsGroupCompleted: (value: boolean) => void;
 }
 
-const DeviceStateTableContainer: React.FC<Props> = ({ title = 'ANLAGE', children, group }) => {
+const DeviceStateTableContainer: React.FC<Props> = ({
+    title = 'ANLAGE',
+    children,
+    group,
+    setIsGroupCompleted,
+}) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
+
+    useEffect(() => {
+        const deviceState = group.titleComponents.map((title: TitleComponent) =>
+            title.deviceStateComponents.map(
+                (deviceState: DeviceStateComponent) => deviceState.value,
+            ),
+        );
+
+        const isCompleted = !deviceState.some((group) =>
+            group.some((deviceStateValue) => deviceStateValue === null),
+        );
+
+        setIsGroupCompleted(isCompleted);
+    }, [group]);
 
     const handleToggleHeight = () => {
         setIsOpen(!isOpen);

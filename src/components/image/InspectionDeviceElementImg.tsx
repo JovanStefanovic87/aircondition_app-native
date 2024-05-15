@@ -15,7 +15,7 @@ import Icon from 'react-native-vector-icons/Feather';
 import { customColors } from '../../assets/styles/customStyles';
 import { deleteInspectionDeviceElement } from '../../../database/dataAccess/Command/sqlCommands';
 import { fetchInspectionDeviceElements } from '../../helpers/api';
-import { useInspectionDeviceElementsStore } from '../../store/store';
+import { useInspectionDeviceElementsStore, useInspectionStore } from '../../store/store';
 
 const windowWidth = Dimensions.get('window').width;
 const tabletThreshold = 600;
@@ -37,6 +37,7 @@ const InspectionDeviceElementImg: FC<Props> = ({
     moveLeft,
     moveRight,
 }) => {
+    const inspectionId = useInspectionStore((state) => state.inspectionId);
     const [modalVisible, setModalVisible] = useState(false);
     const [isTablet, setIsTablet] = useState(false);
     /* const inspectionId = useInspectionStore((state) => state.inspectionId); */
@@ -75,10 +76,7 @@ const InspectionDeviceElementImg: FC<Props> = ({
     };
 
     const fetchUpdatedDeviceElements = () => {
-        fetchInspectionDeviceElements(
-            '674bfb70-bc98-40c8-9b54-0156080648c5',
-            setInspectionDeviceElements,
-        );
+        fetchInspectionDeviceElements(inspectionId, setInspectionDeviceElements);
     };
 
     return (

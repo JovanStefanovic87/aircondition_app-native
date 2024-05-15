@@ -16,7 +16,7 @@ import { customColors } from '../../assets/styles/customStyles';
 import TextTitle from '../text/TextTitle';
 import { saveInspectionDeviceElement } from '../../../database/dataAccess/Command/sqlCommands';
 import { fetchInspectionDeviceElements } from '../../helpers/api';
-import { useInspectionDeviceElementsStore } from '../../store/store';
+import { useInspectionStore, useInspectionDeviceElementsStore } from '../../store/store';
 
 const windowWidth = Dimensions.get('window').width;
 const tabletThreshold = 600;
@@ -29,6 +29,7 @@ type Props = {
 const DeviceElementImg: FC<Props> = ({ deviceElement, options }) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [isTablet, setIsTablet] = useState(false);
+    const inspectionId = useInspectionStore((state) => state.inspectionId);
     const inspectionDeviceElements = useInspectionDeviceElementsStore(
         (state) => state.inspectionDeviceElements,
     );
@@ -56,16 +57,13 @@ const DeviceElementImg: FC<Props> = ({ deviceElement, options }) => {
         try {
             console.log('Selected option:', option);
             const record: InspectionDeviceElementUpdate = {
-                inspectionId: '674bfb70-bc98-40c8-9b54-0156080648c5',
+                inspectionId: inspectionId,
                 deviceElementId: deviceElement.id,
                 deviceOrder: deviceElelemtsByPosition.length + 1,
                 elementPositionId: option.id,
             };
             await saveInspectionDeviceElement(record);
-            fetchInspectionDeviceElements(
-                '674bfb70-bc98-40c8-9b54-0156080648c5',
-                setInspectionDeviceElements,
-            );
+            fetchInspectionDeviceElements(inspectionId, setInspectionDeviceElements);
             hideModal();
         } catch (error) {
             console.error('Error saving inspection device element:', error);

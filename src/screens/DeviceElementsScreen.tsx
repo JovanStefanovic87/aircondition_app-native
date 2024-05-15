@@ -3,7 +3,11 @@ import { View, ScrollView, StyleSheet } from 'react-native';
 import { vw } from 'react-native-css-vh-vw';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
-import { useInspectionStore } from '../store/store';
+import {
+    useInspectionStore,
+    useInspectionDeviceElementsStore,
+    useDeviceElementSortStore,
+} from '../store/store';
 import NavButton from '../components/buttons/NavButton';
 import {
     getDeviceElementTypes,
@@ -24,7 +28,6 @@ import {
     deleteInspectionDeviceElement,
     saveInspectionDeviceElement,
 } from '../../database/dataAccess/Command/sqlCommands';
-import { useInspectionDeviceElementsStore, useDeviceElementSortStore } from '../store/store';
 import { customColors } from '../assets/styles/customStyles';
 import TextTitle from '../components/text/TextTitle';
 import { fetchDeviceElementTypes, fetchInspectionDeviceElements } from '../helpers/api';
@@ -40,6 +43,7 @@ const DeviceElementsScreen: React.FC = () => {
     );
     const deviceElementSort = useDeviceElementSortStore((state) => state.deviceOrder);
     const navigation = useNavigation<NavScreenNavigationProp>();
+    const inspectionId = useInspectionStore((state) => state.inspectionId);
     const setInspectionId = useInspectionStore((state) => state.setInspectionId);
     const [deviceElements, setDeviceElements] = useState<DeviceElement[]>([]);
     const [selectedTypeId, setSelectedTypeId] = useState<number | null>(null);
@@ -61,10 +65,7 @@ const DeviceElementsScreen: React.FC = () => {
 
     useEffect(() => {
         fetchDeviceElementTypes(setDeviceElementTypes);
-        fetchInspectionDeviceElements(
-            '674bfb70-bc98-40c8-9b54-0156080648c5',
-            setInspectionDeviceElements,
-        );
+        fetchInspectionDeviceElements(inspectionId, setInspectionDeviceElements);
         handleDeviceElements();
     }, [deviceElementSort]);
 
@@ -99,17 +100,14 @@ const DeviceElementsScreen: React.FC = () => {
 
     const handleSaveInspectionElements = async () => {
         const record: InspectionDeviceElementUpdate = {
-            inspectionId: '674bfb70-bc98-40c8-9b54-0156080648c5',
+            inspectionId: inspectionId,
             deviceElementId: 2,
             deviceOrder: 2,
             elementPositionId: 1,
         };
         try {
             await saveInspectionDeviceElement(record);
-            fetchInspectionDeviceElements(
-                '674bfb70-bc98-40c8-9b54-0156080648c5',
-                setInspectionDeviceElements,
-            );
+            fetchInspectionDeviceElements(inspectionId, setInspectionDeviceElements);
         } catch (error) {
             console.error('Error saving inspection device element:', error);
             throw error;
@@ -150,18 +148,14 @@ const DeviceElementsScreen: React.FC = () => {
                         buttonText="Get All Inspections"
                     />
                     <NavButton
-                        onPress={() =>
-                            handleGetInspectionElements('674bfb70-bc98-40c8-9b54-0156080648c5')
-                        }
+                        onPress={() => handleGetInspectionElements(inspectionId)}
                         iconName="database"
                         iconColor="purple"
                         buttonText="Get Inspection Elements"
                     />
 
                     <NavButton
-                        onPress={() =>
-                            handleDeleteInspectionElements('e1f2db2d-d166-41d5-a067-0f511c70880b')
-                        }
+                        onPress={() => handleDeleteInspectionElements(inspectionId)}
                         iconName="database"
                         iconColor="red"
                         buttonText="Delete Inspection Elements"
