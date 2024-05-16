@@ -43,9 +43,9 @@ const NavScreen: React.FC = () => {
         navigation.navigate('AllInspectionsScreen');
     };
 
-    const handleDevicElementsPress = () => {
+    /* const handleDevicElementsPress = () => {
         navigation.navigate('DeviceElementsScreen');
-    };
+    }; */
 
     const handleHomePress = () => {
         navigation.navigate('HomeScreen');
@@ -156,12 +156,12 @@ const NavScreen: React.FC = () => {
                         iconColor="red"
                         buttonText="Ausloggen"
                     />
-                    <NavButton
+                    {/* <NavButton
                         onPress={handleDevicElementsPress}
                         iconName="microchip"
                         iconColor="red"
                         buttonText="DeviceElements"
-                    />
+                    /> */}
                     <NavButton
                         onPress={() => deleteAllTabless()}
                         iconName="database"

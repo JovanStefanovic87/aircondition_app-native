@@ -17,6 +17,8 @@ import TextTitle from '../text/TextTitle';
 import { saveInspectionDeviceElement } from '../../../database/dataAccess/Command/sqlCommands';
 import { fetchInspectionDeviceElements } from '../../helpers/api';
 import { useInspectionStore, useInspectionDeviceElementsStore } from '../../store/store';
+import TextBold20 from '../text/TextBold20';
+import ModalOptions from '../modals/ModalOptions';
 
 const windowWidth = Dimensions.get('window').width;
 const tabletThreshold = 600;
@@ -90,30 +92,16 @@ const DeviceElementImg: FC<Props> = ({ deviceElement, options }) => {
                     />
                 )}
             </View>
-            <Text style={styles.name}>{deviceElement.name}</Text>
+            <TextBold20 text={deviceElement.name} />
             <TouchableOpacity style={styles.plusContainer} onPress={showModal}>
                 <Icon name="plus" size={24} color="white" />
             </TouchableOpacity>
-            <Modal
-                animationType="slide"
-                transparent={true}
-                visible={modalVisible}
-                onRequestClose={hideModal}
-            >
-                <Pressable style={styles.modalContainer} onPress={hideModal}>
-                    <View style={styles.modalContent}>
-                        {options.map((option, index) => (
-                            <Pressable
-                                key={index}
-                                onPress={() => handleOptionSelect(option)}
-                                style={[styles.option, index === 0 && styles.firstOptionSeparator]}
-                            >
-                                <TextTitle text={option.value} />
-                            </Pressable>
-                        ))}
-                    </View>
-                </Pressable>
-            </Modal>
+            <ModalOptions
+                options={options}
+                modalVisible={modalVisible}
+                hideModal={hideModal}
+                handleOptionSelect={handleOptionSelect}
+            />
         </View>
     );
 };
@@ -154,11 +142,6 @@ const styles = StyleSheet.create({
         aspectRatio: 1,
         marginBottom: 10,
     },
-    name: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: 'black',
-    },
     plusContainer: {
         position: 'absolute',
         top: 10,
@@ -169,30 +152,6 @@ const styles = StyleSheet.create({
         backgroundColor: customColors.blue,
         alignItems: 'center',
         justifyContent: 'center',
-    },
-    modalContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
-    modalContent: {
-        backgroundColor: 'white',
-        padding: 20,
-        borderRadius: 10,
-        elevation: 5,
-        width: windowWidth * 0.8,
-        alignItems: 'center',
-    },
-    option: {
-        padding: 10,
-        borderBottomWidth: 2,
-        borderColor: '#ccc',
-        width: '100%',
-        alignItems: 'center',
-    },
-    firstOptionSeparator: {
-        borderTopWidth: 2,
     },
     arrowContainer: {
         position: 'absolute',

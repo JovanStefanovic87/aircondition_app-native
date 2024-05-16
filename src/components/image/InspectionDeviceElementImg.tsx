@@ -1,21 +1,14 @@
 import React, { FC, useState, useEffect } from 'react';
 import { InspectionDeviceElement } from '../../../database/types';
-import {
-    View,
-    Text,
-    StyleSheet,
-    Image,
-    TouchableOpacity,
-    Modal,
-    Pressable,
-    Dimensions,
-} from 'react-native';
+import { View, StyleSheet, Image, TouchableOpacity, Dimensions } from 'react-native';
 import { DeviceElementImage } from '../../resources/deviceElementImages';
 import Icon from 'react-native-vector-icons/Feather';
 import { customColors } from '../../assets/styles/customStyles';
 import { deleteInspectionDeviceElement } from '../../../database/dataAccess/Command/sqlCommands';
 import { fetchInspectionDeviceElements } from '../../helpers/api';
 import { useInspectionDeviceElementsStore, useInspectionStore } from '../../store/store';
+import DynamicFontSizeText from '../text/DynamicFontSizeText';
+import ConfirmDeleteModal from '../modals/ConfirmDeleteModal';
 
 const windowWidth = Dimensions.get('window').width;
 const tabletThreshold = 600;
@@ -104,9 +97,8 @@ const InspectionDeviceElementImg: FC<Props> = ({
                     />
                 )}
             </View>
-            <Text style={[styles.name, { fontSize: isTablet ? 20 : 12 }]}>
-                {deviceElement.imageFileName.split('.')[0]}
-            </Text>
+            <DynamicFontSizeText fileName={deviceElement.imageFileName} isTablet={isTablet} />
+
             {isFocused && (
                 <View style={styles.arrowContainer}>
                     <TouchableOpacity
@@ -128,29 +120,11 @@ const InspectionDeviceElementImg: FC<Props> = ({
                     <Icon name="x" size={24} color="white" />
                 </TouchableOpacity>
             )}
-
-            <Modal
-                animationType="slide"
-                transparent={true}
-                visible={modalVisible}
-                onRequestClose={hideModal}
-            >
-                <Pressable style={styles.modalContainer} onPress={hideModal}>
-                    <View style={styles.modalContent}>
-                        <Text style={styles.modalTitle}>
-                            Sind Sie sicher, dass Sie dieses Element löschen möchten?
-                        </Text>
-                        <View style={styles.modalButtons}>
-                            <TouchableOpacity onPress={handleConfirmDelete}>
-                                <Text style={styles.confirmButton}>Ja</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={hideModal}>
-                                <Text style={styles.cancelButton}>Nein</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </Pressable>
-            </Modal>
+            <ConfirmDeleteModal
+                modalVisible={modalVisible}
+                hideModal={hideModal}
+                handleConfirmDelete={handleConfirmDelete}
+            />
         </TouchableOpacity>
     );
 };
@@ -231,53 +205,5 @@ const styles = StyleSheet.create({
         borderColor: '#ccc',
         width: '100%',
         alignItems: 'center',
-    },
-    modalContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
-    modalContent: {
-        backgroundColor: 'white',
-        padding: 20,
-        borderRadius: 10,
-        elevation: 5,
-        width: windowWidth * 0.8,
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 20,
-    },
-    modalTitle: {
-        color: 'black',
-        fontSize: windowWidth * 0.05,
-        fontWeight: 'bold',
-        marginBottom: 10,
-        textAlign: 'center',
-    },
-    modalButtons: {
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        marginTop: 20,
-        width: '100%',
-    },
-    confirmButton: {
-        paddingHorizontal: windowWidth * 0.05,
-        paddingVertical: windowWidth * 0.025,
-        backgroundColor: 'green',
-        borderRadius: 5,
-        color: 'white',
-        fontSize: windowWidth * 0.05,
-        fontWeight: 'bold',
-    },
-    cancelButton: {
-        paddingHorizontal: windowWidth * 0.05,
-        paddingVertical: windowWidth * 0.025,
-        backgroundColor: 'red',
-        borderRadius: 5,
-        color: 'white',
-        fontWeight: 'bold',
-        fontSize: windowWidth * 0.05,
-        marginLeft: 10,
     },
 });
