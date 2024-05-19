@@ -3,6 +3,7 @@ import { View, StyleSheet, PermissionsAndroid } from 'react-native';
 import { Camera, useCameraDevice } from 'react-native-vision-camera';
 import CameraButton from '../buttons/CameraButton';
 import CloseCameraButton from '../buttons/CloseCameraButton';
+import ErrorInformationModal from '../modals/ErrorInformationModal';
 
 interface Props {
     onClose: () => void;
@@ -12,6 +13,8 @@ const TakePicture: React.FC<Props> = ({ onClose }) => {
     const cameraRef = useRef(null);
     const device = useCameraDevice('back');
     const [hasPermission, setHasPermission] = useState(false);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const takePicture = async () => {
         if (cameraRef.current) {
@@ -47,8 +50,9 @@ const TakePicture: React.FC<Props> = ({ onClose }) => {
             } else {
                 setHasPermission(false);
             }
-        } catch (err) {
-            console.warn('Error requesting camera permission:', err);
+        } catch (error) {
+            setErrorMessage(error.message);
+            setErrorModalVisible(true);
             setHasPermission(false);
         }
     };
@@ -66,6 +70,11 @@ const TakePicture: React.FC<Props> = ({ onClose }) => {
                 />
                 <CameraButton onPress={takePicture} />
                 <CloseCameraButton onPress={onClose} />
+                <ErrorInformationModal
+                    visible={errorModalVisible}
+                    message={errorMessage}
+                    onClose={() => setErrorModalVisible(false)}
+                />
             </View>
         )
     );

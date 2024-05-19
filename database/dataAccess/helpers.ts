@@ -145,7 +145,10 @@ export const selectInsertedRecord = async (table: string) => {
     }
 };
 
-export const deleteAllTables = async (): Promise<void> => {
+export const deleteAllTables = async (
+    setErrorMessage: (message: string | null) => void,
+    setErrorModalVisible: (visible: boolean) => void,
+): Promise<void> => {
     try {
         const db = await SQLite.openDatabase({ name: 'AC_inspector.db', location: 'default' });
         const tables = await getAllTables();
@@ -170,7 +173,8 @@ export const deleteAllTables = async (): Promise<void> => {
             });
         }
     } catch (error) {
-        console.error('Error opening database: ', error);
+        setErrorMessage(error.message);
+        setErrorModalVisible(true);
     }
 };
 

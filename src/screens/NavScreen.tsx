@@ -24,6 +24,7 @@ import {
     saveDeviceElementsSortOrder,
     saveInspectionDeviceElement,
 } from '../../database/dataAccess/Command/sqlCommands';
+import ErrorInformationModal from '../components/modals/ErrorInformationModal';
 
 type NavScreenNavigationProp = NavigationProp<any, any>;
 
@@ -33,6 +34,8 @@ const NavScreen: React.FC = () => {
     const [deviceElements, setDeviceElements] = useState<DeviceElement[]>([]);
     const [selectedTypeId, setSelectedTypeId] = useState<number | null>(null);
     const [deviceElementTypes, setDeviceElementTypes] = useState<DeviceElementType[]>([]);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const handleNewInspectionPress = () => {
         setInspectionId(null);
@@ -66,7 +69,7 @@ const NavScreen: React.FC = () => {
     }, []);
 
     const deleteAllTabless = async () => {
-        await deleteAllTables();
+        await deleteAllTables(setErrorMessage, setErrorModalVisible);
     };
 
     const handleGetDeviceElements = async () => {
@@ -215,6 +218,11 @@ const NavScreen: React.FC = () => {
                         buttonText="Element Positions"
                     />
                 </View>
+                <ErrorInformationModal
+                    visible={errorModalVisible}
+                    message={errorMessage}
+                    onClose={() => setErrorModalVisible(false)}
+                />
             </ScrollView>
         </GestureHandlerRootView>
     );

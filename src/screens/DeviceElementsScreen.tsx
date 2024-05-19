@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
+import { View, ScrollView, StyleSheet, KeyboardAvoidingView } from 'react-native';
 import { vw } from 'react-native-css-vh-vw';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
@@ -31,6 +31,8 @@ import {
 import { customColors } from '../assets/styles/customStyles';
 import TextTitle from '../components/text/TextTitle';
 import { fetchDeviceElementTypes, fetchInspectionDeviceElements } from '../helpers/api';
+import PrimaryButton from '../components/buttons/PrimaryButton';
+import ErrorInformationModal from '../components/modals/ErrorInformationModal';
 
 type NavScreenNavigationProp = NavigationProp<any, any>;
 
@@ -49,6 +51,8 @@ const DeviceElementsScreen: React.FC = () => {
     const [selectedTypeId, setSelectedTypeId] = useState<number | null>(null);
     const [deviceElementTypes, setDeviceElementTypes] = useState<DeviceElementType[]>([]);
     const inspectionDeviceElementsPositions = [1, 2, 3];
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const handleNewInspectionPress = () => {
         setInspectionId(null);
@@ -70,7 +74,7 @@ const DeviceElementsScreen: React.FC = () => {
     }, [deviceElementSort]);
 
     const deleteAllTabless = async () => {
-        await deleteAllTables();
+        await deleteAllTables(setErrorMessage, setErrorModalVisible);
     };
 
     const handleDeviceElements = async () => {
@@ -109,8 +113,8 @@ const DeviceElementsScreen: React.FC = () => {
             await saveInspectionDeviceElement(record);
             fetchInspectionDeviceElements(inspectionId, setInspectionDeviceElements);
         } catch (error) {
-            console.error('Error saving inspection device element:', error);
-            throw error;
+            setErrorMessage(error.message);
+            setErrorModalVisible(true);
         }
     };
 
@@ -132,101 +136,128 @@ const DeviceElementsScreen: React.FC = () => {
     }
 
     return (
-        <GestureHandlerRootView style={styles.scrollContainer}>
-            <ScrollView style={styles.scrollView}>
-                <View style={styles.container}>
-                    <NavButton
-                        onPress={() => deleteAllTabless()}
-                        iconName="database"
-                        iconColor="red"
-                        buttonText="Delete All Tables"
-                    />
-                    <NavButton
-                        onPress={() => handleGetAllInspections()}
-                        iconName="database"
-                        iconColor="red"
-                        buttonText="Get All Inspections"
-                    />
-                    <NavButton
-                        onPress={() => handleGetInspectionElements(inspectionId)}
-                        iconName="database"
-                        iconColor="purple"
-                        buttonText="Get Inspection Elements"
-                    />
+        <View style={styles.container}>
+            <GestureHandlerRootView style={styles.scrollContainer}>
+                <ScrollView style={styles.scrollView}>
+                    <View style={styles.innerContainer}>
+                        {/* <NavButton
+                            onPress={() => deleteAllTabless()}
+                            iconName="database"
+                            iconColor="red"
+                            buttonText="Delete All Tables"
+                        />
+                        <NavButton
+                            onPress={() => handleGetAllInspections()}
+                            iconName="database"
+                            iconColor="red"
+                            buttonText="Get All Inspections"
+                        />
+                        <NavButton
+                            onPress={() => handleGetInspectionElements(inspectionId)}
+                            iconName="database"
+                            iconColor="purple"
+                            buttonText="Get Inspection Elements"
+                        />
 
-                    <NavButton
-                        onPress={() => handleDeleteInspectionElements(inspectionId)}
-                        iconName="database"
-                        iconColor="red"
-                        buttonText="Delete Inspection Elements"
-                    />
-                    <NavButton
-                        onPress={() => handleSaveInspectionElements()}
-                        iconName="database"
-                        iconColor="red"
-                        buttonText="Save Inspection Elements"
-                    />
-                    <NavButton
-                        onPress={() => handleDeviceElements()}
-                        iconName="database"
-                        iconColor="red"
-                        buttonText="Get Display Elements"
-                    />
-                    <NavButton
-                        onPress={() => handleDeviceElements()}
-                        iconName="database"
-                        iconColor="red"
-                        buttonText="Get And Display Device Elements"
-                    />
-                    <View style={styles.deviceElement}>
-                        <TextTitle text="All Device Elements" />
-                        <DropdownElements
-                            selectedValue={selectedTypeId}
-                            setSelectedValue={setSelectedTypeId}
-                            items={deviceElementTypes.map((type) => ({
-                                label: type.name,
-                                value: type.id,
-                            }))}
+                        <NavButton
+                            onPress={() => handleDeleteInspectionElements(inspectionId)}
+                            iconName="database"
+                            iconColor="red"
+                            buttonText="Delete Inspection Elements"
                         />
-                        <DeviceElements
-                            deviceElements={deviceElements}
-                            selectedTypeId={selectedTypeId}
+                        <NavButton
+                            onPress={() => handleSaveInspectionElements()}
+                            iconName="database"
+                            iconColor="red"
+                            buttonText="Save Inspection Elements"
                         />
+                        <NavButton
+                            onPress={() => handleDeviceElements()}
+                            iconName="database"
+                            iconColor="red"
+                            buttonText="Get Display Elements"
+                        />
+                        <NavButton
+                            onPress={() => handleDeviceElements()}
+                            iconName="database"
+                            iconColor="red"
+                            buttonText="Get And Display Device Elements"
+                        /> */}
+                        <View style={styles.deviceElement}>
+                            <TextTitle text="Alle Geräteelemente" />
+                            <DropdownElements
+                                selectedValue={selectedTypeId}
+                                setSelectedValue={setSelectedTypeId}
+                                items={deviceElementTypes.map((type) => ({
+                                    label: type.name,
+                                    value: type.id,
+                                }))}
+                            />
+                            <DeviceElements
+                                deviceElements={deviceElements}
+                                selectedTypeId={selectedTypeId}
+                            />
+                        </View>
+                        {inspectionDeviceElementsPositions.map((positionId) => {
+                            const filteredElements = inspectionDeviceElements.filter(
+                                (element) => element.elementPositionId === positionId,
+                            );
+                            return (
+                                <View style={styles.deviceElement} key={positionId}>
+                                    <TextTitle text={getPositionName(positionId)} />
+                                    <InspectionDeviceElements
+                                        inspectionDeviceElements={filteredElements}
+                                    />
+                                </View>
+                            );
+                        })}
                     </View>
-                    {inspectionDeviceElementsPositions.map((positionId) => {
-                        const filteredElements = inspectionDeviceElements.filter(
-                            (element) => element.elementPositionId === positionId,
-                        );
-                        return (
-                            <View style={styles.deviceElement} key={positionId}>
-                                <TextTitle text={getPositionName(positionId)} />
-                                <InspectionDeviceElements
-                                    inspectionDeviceElements={filteredElements}
-                                />
-                            </View>
-                        );
-                    })}
-                </View>
-            </ScrollView>
-        </GestureHandlerRootView>
+                </ScrollView>
+            </GestureHandlerRootView>
+            <View style={styles.rightAlign}>
+                <PrimaryButton title="Nächster Schritt" onPress={() => {}} />
+            </View>
+            <ErrorInformationModal
+                visible={errorModalVisible}
+                message={errorMessage}
+                onClose={() => setErrorModalVisible(false)}
+            />
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        gap: 10,
+        flexWrap: 'wrap',
+        paddingBottom: 30,
+    },
     scrollContainer: {
         alignItems: 'center',
+        width: '100%',
+        maxHeight: '92%',
     },
     scrollView: {
         width: '100%',
+        height: '100%',
+        borderColor: customColors.grayLight,
+        borderWidth: 2,
+        borderStyle: 'solid',
+        borderBottomColor: 'transparent',
     },
-    container: {
+    innerContainer: {
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'center',
         flexDirection: 'row',
         flexWrap: 'wrap',
-        justifyContent: 'center',
-        alignItems: 'center',
-        gap: 40,
-        marginTop: vw(2),
-        backgroundColor: customColors.background,
+        gap: 10,
+        paddingTop: 10,
+        paddingBottom: 20,
     },
     deviceElement: {
         gap: 10,
@@ -238,6 +269,14 @@ const styles = StyleSheet.create({
         paddingTop: 10,
         alignItems: 'center',
         backgroundColor: customColors.blueLighter,
+    },
+    rightAlign: {
+        display: 'flex',
+        alignItems: 'flex-end',
+        position: 'absolute',
+        bottom: 20,
+        paddingHorizontal: 20,
+        width: '100%',
     },
 });
 

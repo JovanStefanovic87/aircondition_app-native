@@ -212,6 +212,15 @@ const InspectionDeviceStateScreen = () => {
 export default InspectionDeviceStateScreen;
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        gap: 10,
+        flexWrap: 'wrap',
+        paddingBottom: 30,
+    },
     scrollContainer: {
         alignItems: 'center',
         width: '100%',
@@ -225,15 +234,6 @@ const styles = StyleSheet.create({
         borderStyle: 'solid',
         borderBottomColor: 'transparent',
         padding: 10,
-    },
-    container: {
-        flex: 1,
-        flexDirection: 'row',
-        justifyContent: 'flex-start',
-        alignItems: 'center',
-        gap: 10,
-        flexWrap: 'wrap',
-        paddingBottom: 30,
     },
     horizontalLine: {
         borderBottomColor: customColors.grayLight,

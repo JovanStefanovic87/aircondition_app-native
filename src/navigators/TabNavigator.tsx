@@ -51,7 +51,7 @@ const TabNavigator = () => {
             <Stack.Screen
                 name="DeviceElementsScreen"
                 component={DeviceElementsScreen}
-                options={tabNameOptions('Device Ellements')}
+                options={tabNameOptions('GERÄTEELEMENTE')}
             />
             <Stack.Screen name="HomeScreen" component={HomeScreen} />
         </Stack.Navigator>

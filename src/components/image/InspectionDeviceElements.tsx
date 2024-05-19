@@ -6,6 +6,7 @@ import { customColors } from '../../assets/styles/customStyles';
 import InspectionDeviceElementImg from './InspectionDeviceElementImg';
 import { saveDeviceElementsSortOrder } from '../../../database/dataAccess/Command/sqlCommands';
 import { fetchInspectionDeviceElements } from '../../helpers/api';
+import ErrorInformationModal from '../modals/ErrorInformationModal';
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -22,6 +23,8 @@ const InspectionDeviceElements: FC<Props> = ({ inspectionDeviceElements }) => {
     const setInspectionDeviceElements = useInspectionDeviceElementsStore(
         (state) => state.setInspectionDeviceElements,
     );
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const handleFocusChange = (deviceId: string, focused: boolean) => {
         if (focused) {
@@ -35,9 +38,6 @@ const InspectionDeviceElements: FC<Props> = ({ inspectionDeviceElements }) => {
 
     useEffect(() => {
         const mappedDeviceElements = inspectionDeviceElements.map((element) => {
-            // Log element.inspectionId
-            console.log('Element Inspection ID:', element.inspectionId);
-
             return {
                 id: element.id,
                 inspectionId: element.inspectionId,
@@ -55,7 +55,7 @@ const InspectionDeviceElements: FC<Props> = ({ inspectionDeviceElements }) => {
         setFilteredElements(sortedElements);
     }, [inspectionDeviceElements, focusedDeviceId]);
 
-    const handleDeleteElement = async (deletedElementId: string) => {
+    const handleDeleteElement = (deletedElementId: string) => {
         try {
             const deletedElement = filteredElements.find(
                 (element) => element.id === deletedElementId,
@@ -86,7 +86,7 @@ const InspectionDeviceElements: FC<Props> = ({ inspectionDeviceElements }) => {
                 return element;
             });
 
-            await saveDeviceElementsSortOrder(
+            saveDeviceElementsSortOrder(
                 updatedElementsWithNewOrder.map((element) => ({
                     id: element.id,
                     deviceOrder: element.deviceOrder,
@@ -94,12 +94,22 @@ const InspectionDeviceElements: FC<Props> = ({ inspectionDeviceElements }) => {
             );
 
             setFilteredElements(updatedElementsWithNewOrder);
+
+            let newIndex = currentIndex;
+            if (currentIndex >= updatedElementsWithNewOrder.length) {
+                newIndex = currentIndex - 1;
+            } else if (currentIndex < updatedElementsWithNewOrder.length) {
+                newIndex = currentIndex;
+            }
+
+            if (newIndex >= 0 && newIndex < updatedElementsWithNewOrder.length) {
+                flatListRef.current.scrollToIndex({ animated: true, index: newIndex });
+            }
         } catch (error) {
-            console.error('Error deleting element:', error);
+            setErrorMessage(error.message);
+            setErrorModalVisible(true);
         }
     };
-
-    console.log(inspectionId);
 
     const handleMoveLeft = async (element: InspectionDeviceElement) => {
         const currentIndex = element.deviceOrder;
@@ -111,10 +121,11 @@ const InspectionDeviceElements: FC<Props> = ({ inspectionDeviceElements }) => {
                     { id: element.id, deviceOrder: currentIndex - 1 },
                     { id: prevSibling.id, deviceOrder: currentIndex },
                 ]);
-                handleScrollLeft();
                 fetchUpdatedDeviceElements();
+                handleScrollLeft();
             } catch (error) {
-                console.error('Error moving left:', error);
+                setErrorMessage(error.message);
+                setErrorModalVisible(true);
             }
         } else {
             console.log('No previous sibling found for:', element);
@@ -131,11 +142,11 @@ const InspectionDeviceElements: FC<Props> = ({ inspectionDeviceElements }) => {
                     { id: element.id, deviceOrder: currentIndex + 1 },
                     { id: nextSibling.id, deviceOrder: currentIndex },
                 ]);
-
                 fetchUpdatedDeviceElements();
                 handleScrollRight();
             } catch (error) {
-                console.error('Error moving right:', error);
+                setErrorMessage(error.message);
+                setErrorModalVisible(true);
             }
         } else {
             console.log('No next sibling found for:', element);
@@ -219,6 +230,11 @@ const InspectionDeviceElements: FC<Props> = ({ inspectionDeviceElements }) => {
                     </View>
                 )}
             </View>
+            <ErrorInformationModal
+                visible={errorModalVisible}
+                message={errorMessage}
+                onClose={() => setErrorModalVisible(false)}
+            />
         </View>
     );
 };

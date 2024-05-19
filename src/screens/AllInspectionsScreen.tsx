@@ -16,6 +16,8 @@ const AllInspectionsScreen = () => {
     const [inspections, setInspections] = useState<InspectionUpdate[]>([]);
     const setInspectionId = useInspectionStore((state) => state.setInspectionId);
     const [selectedStatus, setSelectedStatus] = useState<number>(0);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchInspections = async () => {
@@ -27,7 +29,8 @@ const AllInspectionsScreen = () => {
                 }));
                 setInspections(inspections);
             } catch (error) {
-                console.error('Error fetching inspections:', error);
+                setErrorMessage(error.message);
+                setErrorModalVisible(true);
             }
         };
 

@@ -3,6 +3,7 @@ import { StyleSheet, View, PermissionsAndroid, BackHandler, Text } from 'react-n
 import { useCameraDevice, useCodeScanner, Camera } from 'react-native-vision-camera';
 import CloseCameraButton from '../buttons/CloseCameraButton';
 import ErrorBoundary from '../errors/ErrorBoundary';
+import ErrorInformationModal from '../modals/ErrorInformationModal';
 
 type Props = {
     width?: number;
@@ -21,6 +22,8 @@ const BarcodeScanner: FC<Props> = ({
 }) => {
     const [hasPermission, setHasPermission] = useState(false);
     const [scanning, setScanning] = useState(true);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const device = useCameraDevice('back');
 
     useEffect(() => {
@@ -75,8 +78,9 @@ const BarcodeScanner: FC<Props> = ({
             } else {
                 setHasPermission(false);
             }
-        } catch (err) {
-            console.warn('Error requesting camera permission:', err);
+        } catch (error) {
+            setErrorMessage(error.message);
+            setErrorModalVisible(true);
             setHasPermission(false);
         }
     };
@@ -104,6 +108,11 @@ const BarcodeScanner: FC<Props> = ({
                 }}
             />
             <CloseCameraButton onPress={() => setScanning(false)} />
+            <ErrorInformationModal
+                visible={errorModalVisible}
+                message={errorMessage}
+                onClose={() => setErrorModalVisible(false)}
+            />
         </ErrorBoundary>
     );
 };

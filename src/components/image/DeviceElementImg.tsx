@@ -1,24 +1,15 @@
 import React, { FC, useState, useEffect } from 'react';
 import { DeviceElement, InspectionDeviceElementUpdate } from '../../../database/types';
-import {
-    View,
-    Text,
-    StyleSheet,
-    Image,
-    TouchableOpacity,
-    Modal,
-    Pressable,
-    Dimensions,
-} from 'react-native';
+import { View, StyleSheet, Image, TouchableOpacity, Dimensions } from 'react-native';
 import { DeviceElementImage } from '../../resources/deviceElementImages';
 import Icon from 'react-native-vector-icons/Feather';
 import { customColors } from '../../assets/styles/customStyles';
-import TextTitle from '../text/TextTitle';
 import { saveInspectionDeviceElement } from '../../../database/dataAccess/Command/sqlCommands';
 import { fetchInspectionDeviceElements } from '../../helpers/api';
 import { useInspectionStore, useInspectionDeviceElementsStore } from '../../store/store';
 import TextBold20 from '../text/TextBold20';
 import ModalOptions from '../modals/ModalOptions';
+import ErrorInformationModal from '../modals/ErrorInformationModal';
 
 const windowWidth = Dimensions.get('window').width;
 const tabletThreshold = 600;
@@ -32,6 +23,8 @@ const DeviceElementImg: FC<Props> = ({ deviceElement, options }) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [isTablet, setIsTablet] = useState(false);
     const inspectionId = useInspectionStore((state) => state.inspectionId);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const inspectionDeviceElements = useInspectionDeviceElementsStore(
         (state) => state.inspectionDeviceElements,
     );
@@ -68,8 +61,8 @@ const DeviceElementImg: FC<Props> = ({ deviceElement, options }) => {
             fetchInspectionDeviceElements(inspectionId, setInspectionDeviceElements);
             hideModal();
         } catch (error) {
-            console.error('Error saving inspection device element:', error);
-            throw error;
+            setErrorMessage(error.message);
+            setErrorModalVisible(true);
         }
     };
 
@@ -101,6 +94,11 @@ const DeviceElementImg: FC<Props> = ({ deviceElement, options }) => {
                 modalVisible={modalVisible}
                 hideModal={hideModal}
                 handleOptionSelect={handleOptionSelect}
+            />
+            <ErrorInformationModal
+                visible={errorModalVisible}
+                message={errorMessage}
+                onClose={() => setErrorModalVisible(false)}
             />
         </View>
     );
