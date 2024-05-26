@@ -135,6 +135,10 @@ const DeviceElementsScreen: React.FC = () => {
         }
     }
 
+    const submit = async () => {
+        navigation.navigate('NavScreen');
+    };
+
     return (
         <View style={styles.container}>
             <GestureHandlerRootView style={styles.scrollContainer}>
@@ -215,7 +219,7 @@ const DeviceElementsScreen: React.FC = () => {
                 </ScrollView>
             </GestureHandlerRootView>
             <View style={styles.rightAlign}>
-                <PrimaryButton title="Nächster Schritt" onPress={() => {}} />
+                <PrimaryButton title="Nächster Schritt" onPress={submit} />
             </View>
             <ErrorInformationModal
                 visible={errorModalVisible}

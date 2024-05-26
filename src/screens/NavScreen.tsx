@@ -164,7 +164,7 @@ const NavScreen: React.FC = () => {
                         iconName="microchip"
                         iconColor="red"
                         buttonText="DeviceElements"
-                    /> */}
+                    /> 
                     <NavButton
                         onPress={() => deleteAllTabless()}
                         iconName="database"
@@ -216,7 +216,7 @@ const NavScreen: React.FC = () => {
                         iconName="database"
                         iconColor="red"
                         buttonText="Element Positions"
-                    />
+                    />*/}
                 </View>
                 <ErrorInformationModal
                     visible={errorModalVisible}
