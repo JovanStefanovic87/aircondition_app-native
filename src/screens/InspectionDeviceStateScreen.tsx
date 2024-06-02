@@ -46,6 +46,7 @@ const InspectionDeviceStateScreen = () => {
             const inspectionDeviceStateDetailsResult = await getInspectionDeviceStateDetails(
                 newInspectionId,
             );
+
             setInspectionDeviceStateDetails(inspectionDeviceStateDetailsResult);
             const inspectionResult = await getInspectionById(newInspectionId);
             setInspection(inspectionResult);
