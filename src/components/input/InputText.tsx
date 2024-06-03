@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { TextInput, StyleSheet, DimensionValue } from 'react-native';
+import { TextInput, StyleSheet, DimensionValue, Dimensions } from 'react-native';
 import { customColors } from '../../assets/styles/customStyles';
+
+const windowWidth = Dimensions.get('window').width;
+const tabletThreshold = 600;
 
 interface Props {
     value: string;
@@ -23,7 +26,15 @@ const InputText: React.FC<Props> = ({
     isValid = true,
     isVisible = true,
 }) => {
+    const [isTablet, setIsTablet] = useState(false);
     const [inputText, setInputText] = useState<string>(value !== null ? value.toString() : '');
+    const FONT_SIZE = isTablet ? 22 : 16;
+    const INPUT_HEIGHT = isTablet ? 'auto' : 40;
+
+    useEffect(() => {
+        const isTabletDevice = windowWidth >= tabletThreshold;
+        setIsTablet(isTabletDevice);
+    }, []);
 
     useEffect(() => {
         setInputText(value !== null ? value.toString() : '');
@@ -33,6 +44,23 @@ const InputText: React.FC<Props> = ({
         setInputText(text);
         setValue(text);
     };
+
+    const styles = StyleSheet.create({
+        input: {
+            flex: 1,
+            height: INPUT_HEIGHT,
+            borderColor: customColors.blueLight,
+            borderWidth: 2,
+            paddingVertical: 10,
+            paddingHorizontal: 15,
+            borderRadius: 5,
+            color: customColors.black,
+            fontSize: FONT_SIZE,
+        },
+        inputInvalid: {
+            borderColor: 'red',
+        },
+    });
 
     const inputStyles = [styles.input, { width, minWidth }, !isValid && styles.inputInvalid];
 
@@ -47,20 +75,5 @@ const InputText: React.FC<Props> = ({
         />
     ) : null;
 };
-
-const styles = StyleSheet.create({
-    input: {
-        flex: 1,
-        height: 40,
-        borderColor: customColors.blueLight,
-        borderWidth: 2,
-        paddingHorizontal: 10,
-        borderRadius: 5,
-        color: customColors.black,
-    },
-    inputInvalid: {
-        borderColor: 'red',
-    },
-});
 
 export default InputText;

@@ -12,6 +12,7 @@ export const customColors = {
     red: '#FF0000',
     placeholder: '#9d9e9e',
     background: '#e0e0e0',
+    modalBackground: 'rgba(0, 0, 0, 0.5)',
     text: '#333333',
     accent: '#FF5733',
     black: '#000000',

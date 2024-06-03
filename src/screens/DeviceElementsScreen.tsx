@@ -19,6 +19,7 @@ import { deleteAllTables } from '../../database/dataAccess/helpers';
 import {
     DeviceElement,
     DeviceElementType,
+    InspectionDeviceElement,
     InspectionDeviceElementUpdate,
 } from '../../database/types';
 import DeviceElements from '../components/image/DeviceElements';
@@ -30,7 +31,6 @@ import {
 } from '../../database/dataAccess/Command/sqlCommands';
 import { customColors } from '../assets/styles/customStyles';
 import TextTitle from '../components/text/TextTitle';
-import { fetchDeviceElementTypes, fetchInspectionDeviceElements } from '../helpers/api';
 import PrimaryButton from '../components/buttons/PrimaryButton';
 import ErrorInformationModal from '../components/modals/ErrorInformationModal';
 
@@ -68,7 +68,7 @@ const DeviceElementsScreen: React.FC = () => {
     };
 
     useEffect(() => {
-        fetchDeviceElementTypes(setDeviceElementTypes);
+        fetchDeviceElementTypes();
         fetchInspectionDeviceElements(inspectionId, setInspectionDeviceElements);
         handleDeviceElements();
     }, [deviceElementSort]);
@@ -78,10 +78,15 @@ const DeviceElementsScreen: React.FC = () => {
     };
 
     const handleDeviceElements = async () => {
-        const elements = await getDeviceElements();
-        setDeviceElements(elements);
-        console.log('----------------------------------------------------');
-        console.log('elements: ', elements);
+        try {
+            const elements = await getDeviceElements();
+            setDeviceElements(elements);
+            console.log('----------------------------------------------------');
+            console.log('elements: ', elements);
+        } catch (error) {
+            setErrorMessage(error.message);
+            setErrorModalVisible(true);
+        }
     };
 
     const handleDeviceElementTypes = async () => {
@@ -137,6 +142,29 @@ const DeviceElementsScreen: React.FC = () => {
 
     const submit = async () => {
         navigation.navigate('NavScreen');
+    };
+
+    const fetchDeviceElementTypes = async () => {
+        try {
+            const elementTypes = await getDeviceElementTypes();
+            setDeviceElementTypes(elementTypes);
+        } catch (error) {
+            setErrorMessage(error.message);
+            setErrorModalVisible(true);
+        }
+    };
+
+    const fetchInspectionDeviceElements = async (
+        inspectionId: string,
+        setInspectionDeviceElements: (elements: InspectionDeviceElement[]) => void,
+    ) => {
+        try {
+            const elements = await getInspectionDeviceElements(inspectionId);
+            setInspectionDeviceElements(elements);
+        } catch (error) {
+            setErrorMessage(error.message);
+            setErrorModalVisible(true);
+        }
     };
 
     return (

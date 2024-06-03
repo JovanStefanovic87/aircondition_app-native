@@ -224,7 +224,7 @@ const InspectionBasicDetailsScreen = () => {
                                         maxWidth="100%"
                                     />
                                     <InputText
-                                        placeholder="name der Anlage"
+                                        placeholder="Name der Anlage"
                                         value={form.facilityName}
                                         setValue={(value) =>
                                             setForm({ ...form, facilityName: value })

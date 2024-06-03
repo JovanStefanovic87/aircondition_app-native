@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { TextInput, StyleSheet, DimensionValue } from 'react-native';
+import { TextInput, StyleSheet, DimensionValue, Dimensions } from 'react-native';
 import { customColors } from '../../assets/styles/customStyles';
+
+const windowWidth = Dimensions.get('window').width;
+const tabletThreshold = 600;
 
 interface Props {
     value: number | null;
@@ -23,7 +26,15 @@ const InputNumeric: React.FC<Props> = ({
     isValid = true,
     isVisible = true,
 }) => {
+    const [isTablet, setIsTablet] = useState(false);
     const [inputText, setInputText] = useState<string>(value !== null ? value.toString() : '');
+    const FONT_SIZE = isTablet ? 22 : 16;
+    const INPUT_HEIGHT = isTablet ? 'auto' : 40;
+
+    useEffect(() => {
+        const isTabletDevice = windowWidth >= tabletThreshold;
+        setIsTablet(isTabletDevice);
+    }, []);
 
     useEffect(() => {
         setInputText(value !== null ? value.toString() : null);
@@ -34,6 +45,22 @@ const InputNumeric: React.FC<Props> = ({
         setInputText(formattedText);
         setValue(Number(formattedText.replace(/,/g, '')));
     };
+
+    const styles = StyleSheet.create({
+        input: {
+            flex: 1,
+            height: INPUT_HEIGHT,
+            borderColor: customColors.blueLight,
+            borderWidth: 2,
+            paddingHorizontal: 10,
+            borderRadius: 5,
+            color: customColors.black,
+            fontSize: FONT_SIZE,
+        },
+        inputInvalid: {
+            borderColor: 'red',
+        },
+    });
 
     const inputStyles = [styles.input, { width, minWidth }, !isValid && styles.inputInvalid];
 
@@ -49,20 +76,5 @@ const InputNumeric: React.FC<Props> = ({
         />
     ) : null;
 };
-
-const styles = StyleSheet.create({
-    input: {
-        flex: 1,
-        height: 40,
-        borderColor: customColors.blueLight,
-        borderWidth: 2,
-        paddingHorizontal: 10,
-        borderRadius: 5,
-        color: customColors.black,
-    },
-    inputInvalid: {
-        borderColor: 'red',
-    },
-});
 
 export default InputNumeric;
