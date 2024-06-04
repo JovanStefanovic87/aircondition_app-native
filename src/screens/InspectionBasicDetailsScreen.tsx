@@ -15,7 +15,7 @@ import { useNavigation, NavigationProp } from '@react-navigation/native';
 import BarcodeScanner from '../components/camera/BarcodeScanner';
 import InputText from '../components/input/InputText';
 import IconButton from '../components/buttons/IconButton';
-import Dropdown from '../components/input/Dropdown';
+import DropdownWithValidation from '../components/input/DropdownWithValidation';
 import PrimaryButton from '../components/buttons/PrimaryButton';
 import {
     getDeviceTypes,
@@ -213,7 +213,7 @@ const InspectionBasicDetailsScreen = () => {
                             <View style={styles.inputGroupContainer}>
                                 <TextMain text="GERÄTEINFORMATION:" />
                                 <TableContainer>
-                                    <Dropdown
+                                    <DropdownWithValidation
                                         selectedValue={form.deviceTypeId}
                                         setSelectedValue={(value) =>
                                             setForm({ ...form, deviceTypeId: value })
@@ -237,7 +237,7 @@ const InspectionBasicDetailsScreen = () => {
                                         setValue={(value) => setForm({ ...form, location: value })}
                                         isValid={validation.location}
                                     />
-                                    <Dropdown
+                                    <DropdownWithValidation
                                         selectedValue={form.inspectionTypeId}
                                         setSelectedValue={(value) =>
                                             setForm({ ...form, inspectionTypeId: value })

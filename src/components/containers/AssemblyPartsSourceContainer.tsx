@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import ImageSlider from '../sliders/ImageSlider';
-import Dropdown from '../input/Dropdown';
+import Dropdown from '../input/DropdownWithValidation';
 import { customColors } from '../../assets/styles/customStyles';
 
 interface Props {

@@ -1,38 +1,53 @@
 import React, { memo, FC, useRef, useState, useEffect } from 'react';
-import { View, FlatList, StyleSheet, Dimensions, TouchableOpacity, Text } from 'react-native';
+import { View, ScrollView, StyleSheet, Dimensions, TouchableOpacity, Text } from 'react-native';
 import DeviceElementImg from './DeviceElementImg';
 import { DeviceElement } from '../../../database/types';
-import { customColors } from '../../assets/styles/customStyles';
+import styles from '../../assets/styles/imageStyles';
+import TextTitle from '../text/TextTitle';
+import DropdownElements from '../input/DropdownElements';
 
 const windowWidth = Dimensions.get('window').width;
+const tabletThreshold = 600;
 
 type Props = {
     deviceElements: DeviceElement[];
+    setSelectedTypeId: (id: number | null) => void;
     selectedTypeId: number | null;
+    deviceElementTypes: { id: number; name: string }[];
 };
 
-const DeviceElements: FC<Props> = ({ deviceElements, selectedTypeId }) => {
-    const flatListRef = useRef<FlatList>(null);
+const DeviceElements: FC<Props> = ({
+    deviceElements,
+    selectedTypeId,
+    setSelectedTypeId,
+    deviceElementTypes,
+}) => {
+    const scrollViewRef = useRef<ScrollView>(null);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [filteredElements, setFilteredElements] = useState<DeviceElement[]>(deviceElements);
     const [isTablet, setIsTablet] = useState(false);
-    const tabletThreshold = 600;
 
     useEffect(() => {
         const isTabletDevice = windowWidth >= tabletThreshold;
         setIsTablet(isTabletDevice);
     }, []);
 
-    const renderItem = ({ item }: { item: DeviceElement }) => {
+    const renderItem = (item: DeviceElement) => {
         return (
-            <DeviceElementImg
-                deviceElement={item}
-                options={[
-                    { id: 1, value: 'Zonen Davor' },
-                    { id: 2, value: 'Anlage' },
-                    { id: 3, value: 'Zonen Danach' },
-                ]}
-            />
+            <View
+                key={item.id}
+                style={{ width: isTablet ? windowWidth * 0.25 : windowWidth * 0.33 }}
+            >
+                <DeviceElementImg
+                    deviceElement={item}
+                    options={[
+                        { id: 1, value: 'Anlage' },
+                        { id: 2, value: 'Zonen Davor' },
+                        { id: 3, value: 'Zonen Danach' },
+                    ]}
+                    isTablet={isTablet}
+                />
+            </View>
         );
     };
 
@@ -44,7 +59,7 @@ const DeviceElements: FC<Props> = ({ deviceElements, selectedTypeId }) => {
         setFilteredElements(filtered);
         setCurrentIndex(0);
         setTimeout(() => {
-            flatListRef.current?.scrollToIndex({ animated: true, index: 0 });
+            scrollViewRef.current?.scrollTo({ x: 0, animated: true });
         }, 50);
     }, [deviceElements, selectedTypeId]);
 
@@ -52,7 +67,10 @@ const DeviceElements: FC<Props> = ({ deviceElements, selectedTypeId }) => {
         if (currentIndex < filteredElements.length - 1) {
             const newIndex = currentIndex + 1;
             setCurrentIndex(newIndex);
-            flatListRef.current.scrollToIndex({ animated: true, index: newIndex });
+            scrollViewRef.current?.scrollTo({
+                x: newIndex * (isTablet ? windowWidth * 0.25 : windowWidth),
+                animated: true,
+            });
         }
     };
 
@@ -60,40 +78,26 @@ const DeviceElements: FC<Props> = ({ deviceElements, selectedTypeId }) => {
         if (currentIndex > 0) {
             const newIndex = currentIndex - 1;
             setCurrentIndex(newIndex);
-            flatListRef.current.scrollToIndex({ animated: true, index: newIndex });
+            scrollViewRef.current?.scrollTo({
+                x: newIndex * (isTablet ? windowWidth * 0.25 : windowWidth),
+                animated: true,
+            });
         }
     };
 
-    const totalItemsWidth = filteredElements.length * (isTablet ? windowWidth * 0.33 : windowWidth);
-    const remainingSpace = totalItemsWidth - windowWidth;
-    const snapInterval = remainingSpace < filteredElements.length ? remainingSpace : windowWidth;
     return (
         <View style={styles.container}>
-            <View style={styles.containerImages}>
-                {filteredElements.length > 0 && (
-                    <FlatList
-                        ref={flatListRef}
-                        data={filteredElements}
-                        horizontal
-                        renderItem={renderItem}
-                        keyExtractor={(item) => item.id.toString()}
-                        showsHorizontalScrollIndicator={false}
-                        snapToInterval={snapInterval}
-                        snapToAlignment="center"
-                        decelerationRate="normal"
-                        onScroll={(event) => {
-                            const index = isTablet
-                                ? Math.floor(
-                                      event.nativeEvent.contentOffset.x / (windowWidth * 0.33),
-                                  )
-                                : Math.round(event.nativeEvent.contentOffset.x / windowWidth);
-                            setCurrentIndex(index);
-                        }}
-                    />
-                )}
-            </View>
-            <View style={styles.arrowsContainer}>
-                {filteredElements.length > 0 && (
+            <View style={styles.Head}>
+                <TextTitle text="Alle Geräteelemente" isTablet={isTablet} />
+                <DropdownElements
+                    selectedValue={selectedTypeId}
+                    setSelectedValue={setSelectedTypeId}
+                    items={deviceElementTypes.map((type) => ({
+                        label: type.name,
+                        value: type.id,
+                    }))}
+                />
+                <View style={styles.arrowsContainer}>
                     <View style={styles.arrows}>
                         <TouchableOpacity style={styles.arrowButton} onPress={handleScrollLeft}>
                             <Text style={styles.arrowText}>{'◀'}</Text>
@@ -102,6 +106,47 @@ const DeviceElements: FC<Props> = ({ deviceElements, selectedTypeId }) => {
                             <Text style={styles.arrowText}>{'▶'}</Text>
                         </TouchableOpacity>
                     </View>
+                </View>
+            </View>
+            <View style={styles.containerImagesDouble}>
+                {filteredElements.length > 0 && (
+                    <ScrollView
+                        ref={scrollViewRef}
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        onScroll={(event) => {
+                            const index = isTablet
+                                ? Math.round(
+                                      event.nativeEvent.contentOffset.x / (windowWidth * 0.25),
+                                  )
+                                : Math.round(
+                                      (event.nativeEvent.contentOffset.x / windowWidth) * 0.33,
+                                  );
+                            setCurrentIndex(index);
+                        }}
+                        scrollEventThrottle={16}
+                    >
+                        <View>
+                            <View style={{ flexDirection: 'row' }}>
+                                {filteredElements
+                                    .slice(0, Math.ceil(filteredElements.length / 2))
+                                    .map((item, index) => (
+                                        <React.Fragment key={index}>
+                                            {renderItem(item)}
+                                        </React.Fragment>
+                                    ))}
+                            </View>
+                            <View style={{ flexDirection: 'row' }}>
+                                {filteredElements
+                                    .slice(Math.ceil(filteredElements.length / 2))
+                                    .map((item, index) => (
+                                        <React.Fragment key={index}>
+                                            {renderItem(item)}
+                                        </React.Fragment>
+                                    ))}
+                            </View>
+                        </View>
+                    </ScrollView>
                 )}
             </View>
         </View>
@@ -109,38 +154,3 @@ const DeviceElements: FC<Props> = ({ deviceElements, selectedTypeId }) => {
 };
 
 export default memo(DeviceElements);
-
-const styles = StyleSheet.create({
-    container: {
-        flexDirection: 'column',
-        width: '100%',
-        backgroundColor: customColors.blueLighter,
-    },
-    containerImages: {
-        paddingTop: 10,
-        backgroundColor: customColors.blueDarker,
-        height: windowWidth * 0.55,
-    },
-    arrowsContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        width: '100%',
-        zIndex: 2,
-    },
-    arrows: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        width: '100%',
-        zIndex: 2,
-        alignItems: 'center',
-        borderTopWidth: 2,
-        borderTopColor: customColors.blueDark,
-    },
-    arrowButton: {
-        paddingHorizontal: 10,
-    },
-    arrowText: {
-        fontSize: 44,
-        color: 'blue',
-    },
-});

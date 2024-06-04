@@ -2,13 +2,8 @@ import React from 'react';
 import { Text } from 'react-native';
 import { customColors } from '../../assets/styles/customStyles';
 
-const TextTitle = ({ text = '' }) => <Text style={styles.text}>{text}</Text>;
-
-const styles = {
-    text: {
-        color: customColors.black,
-        fontSize: 24,
-    },
-};
+const TextTitle = ({ text = '', isTablet = true }) => (
+    <Text style={{ color: customColors.black, fontSize: isTablet ? 24 : 16 }}>{text}</Text>
+);
 
 export default TextTitle;

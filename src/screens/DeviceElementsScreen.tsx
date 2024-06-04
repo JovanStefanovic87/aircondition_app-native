@@ -48,7 +48,7 @@ const DeviceElementsScreen: React.FC = () => {
     const inspectionId = useInspectionStore((state) => state.inspectionId);
     const setInspectionId = useInspectionStore((state) => state.setInspectionId);
     const [deviceElements, setDeviceElements] = useState<DeviceElement[]>([]);
-    const [selectedTypeId, setSelectedTypeId] = useState<number | null>(null);
+    const [selectedTypeId, setSelectedTypeId] = useState<number | null>(1);
     const [deviceElementTypes, setDeviceElementTypes] = useState<DeviceElementType[]>([]);
     const inspectionDeviceElementsPositions = [1, 2, 3];
     const [errorModalVisible, setErrorModalVisible] = useState(false);
@@ -127,19 +127,6 @@ const DeviceElementsScreen: React.FC = () => {
         await deleteInspectionDeviceElement(inspectionId);
     };
 
-    function getPositionName(positionId: number): string {
-        switch (positionId) {
-            case 1:
-                return 'Zonen Davor';
-            case 2:
-                return 'Anlage';
-            case 3:
-                return 'Zonen Danach';
-            default:
-                return '';
-        }
-    }
-
     const submit = async () => {
         navigation.navigate('NavScreen');
     };
@@ -216,18 +203,11 @@ const DeviceElementsScreen: React.FC = () => {
                             buttonText="Get And Display Device Elements"
                         /> */}
                         <View style={styles.deviceElement}>
-                            <TextTitle text="Alle Geräteelemente" />
-                            <DropdownElements
-                                selectedValue={selectedTypeId}
-                                setSelectedValue={setSelectedTypeId}
-                                items={deviceElementTypes.map((type) => ({
-                                    label: type.name,
-                                    value: type.id,
-                                }))}
-                            />
                             <DeviceElements
                                 deviceElements={deviceElements}
+                                setSelectedTypeId={setSelectedTypeId}
                                 selectedTypeId={selectedTypeId}
+                                deviceElementTypes={deviceElementTypes}
                             />
                         </View>
                         {inspectionDeviceElementsPositions.map((positionId) => {
@@ -236,9 +216,9 @@ const DeviceElementsScreen: React.FC = () => {
                             );
                             return (
                                 <View style={styles.deviceElement} key={positionId}>
-                                    <TextTitle text={getPositionName(positionId)} />
                                     <InspectionDeviceElements
                                         inspectionDeviceElements={filteredElements}
+                                        positionId={positionId}
                                     />
                                 </View>
                             );
@@ -287,12 +267,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         flexDirection: 'row',
         flexWrap: 'wrap',
-        gap: 10,
-        paddingTop: 10,
         paddingBottom: 20,
     },
     deviceElement: {
-        gap: 10,
+        gap: 5,
         width: '100%',
         minHeight: 200,
         borderWidth: 2,

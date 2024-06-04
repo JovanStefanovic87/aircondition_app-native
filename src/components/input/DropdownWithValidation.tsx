@@ -28,7 +28,7 @@ interface Props {
     maxWidth?: DimensionValue;
 }
 
-const Dropdown: FC<Props> = ({
+const DropdownWithValidation: FC<Props> = ({
     selectedValue,
     setSelectedValue,
     items,
@@ -66,7 +66,7 @@ const Dropdown: FC<Props> = ({
             paddingHorizontal: 15,
         },
         selectedItemText: {
-            color: customColors.black,
+            color: customColors.blueLight,
             fontSize: INPUT_FONT_SIZE,
         },
         placeholderText: {
@@ -163,4 +163,4 @@ const Dropdown: FC<Props> = ({
     );
 };
 
-export default Dropdown;
+export default DropdownWithValidation;

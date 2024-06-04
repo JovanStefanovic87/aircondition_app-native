@@ -5,7 +5,7 @@ import { getInspections } from '../../database/dataAccess/Query/sqlQueries';
 import InspectionItem from '../components/table/InspectionItem';
 import { InspectionUpdate } from '../../database/types';
 import { useInspectionStore } from '../store/store';
-import Dropdown from '../components/input/Dropdown';
+import Dropdown from '../components/input/DropdownWithValidation';
 import TextMain from '../components/text/TextMain';
 import NoResultMessage from '../components/text/NoResultMessage';
 
