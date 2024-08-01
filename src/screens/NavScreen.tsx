@@ -10,6 +10,7 @@ import {
     getDeviceElementTypes,
     getDeviceElements,
     getInspectionDeviceElements,
+    getInspectionDeviceStateByGroupType,
     getInspections,
 } from '../../database/dataAccess/Query/sqlQueries';
 import { deleteAllTables } from '../../database/dataAccess/helpers';
@@ -131,6 +132,12 @@ const NavScreen: React.FC = () => {
         console.log('deviceElementPositions: ', deviceElementPositions);
     };
 
+    const handleDeviceByGroupType = async () => {
+        const deviceElementTypes = await getInspectionDeviceStateByGroupType('');
+        console.log('----------------------------------------------------');
+        console.log('InspectionDevicesByGroupType (State of whole device): ', deviceElementTypes);
+    };
+
     return (
         <GestureHandlerRootView style={styles.scrollContainer}>
             <ScrollView style={styles.scrollView}>
@@ -159,7 +166,14 @@ const NavScreen: React.FC = () => {
                         iconColor="red"
                         buttonText="Ausloggen"
                     />
-                    {/* <NavButton
+                    {/* 
+                    <NavButton
+                        onPress={handleDeviceByGroupType}
+                        iconName="microchip"
+                        iconColor="red"
+                        buttonText="DeviceElements"
+                    />
+                    <NavButton
                         onPress={handleDevicElementsPress}
                         iconName="microchip"
                         iconColor="red"

@@ -56,17 +56,17 @@ CREATE TABLE IF NOT EXISTS DeviceStateComponent (
   name TEXT,
   groupTypeId INTEGER,
   stateTypeId INTEGER,
-  isUsingNote BOOL DEFAULT false,
   FOREIGN KEY (groupTypeId) REFERENCES GroupType(id),
-  FOREIGN KEY (stateTypeId) REFERENCES StateType(id),
+  FOREIGN KEY (stateTypeId) REFERENCES StateType(id)
 );
 
-CREATE TABLE IF NOT EXISTS ElementAndTitle (
+CREATE TABLE IF NOT EXISTS Component_Element_Title (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   deviceStateComponentId INTEGER,
   titleComponentId INTEGER,
   deviceElementId INTEGER NULL,
   displayOrder INTEGER,
+  isUsingNote BOOL DEFAULT false,
   FOREIGN KEY (deviceStateComponentId) REFERENCES DeviceStateComponent(id),
   FOREIGN KEY (titleComponentId) REFERENCES TitleComponent(id),
   FOREIGN KEY (deviceElementId) REFERENCES DeviceElement(id)
@@ -163,9 +163,9 @@ CREATE TABLE IF NOT EXISTS Inspection_DeviceElement (
 
 CREATE TABLE IF NOT EXISTS Device_StateValue (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  deviceStateComponentId INTEGER,
+  componentElementTitleId INTEGER,
   stateValueId INTEGER,
-  FOREIGN KEY (deviceStateComponentId) REFERENCES DeviceStateComponent(id),
+  FOREIGN KEY (componentElementTitleId) REFERENCES Component_Element_Title(id),
   FOREIGN KEY (stateValueId) REFERENCES StateValue(id)
 );
 
@@ -191,55 +191,61 @@ INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (2, 'ANLAGE', false);
 INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (3, 'GESAMT', true);
 INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (4, 'AUSSEN', true);
 INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (5, 'DÄMPFELEMENT', true);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (6, 'LAMELLEN', true);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (7, 'RAHMEN, GESAMT', true);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (8, 'KONDENSATWANNE', true);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (9, 'GEHÄUSE', true);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (10, 'FILTER', true);
 
-INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId, isUsingNote) VALUES (1, 'Gehäuse-/ Türabdichtung fehlt / defekt', 2, 1, true);
-INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId, isUsingNote) VALUES (2, 'Gehäuse undicht', 2, 1, true);
-INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId, isUsingNote) VALUES (3, 'Bodenablauf nicht verschlossen', 2, 1, false);
-INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId, isUsingNote) VALUES (4, 'Kenndaten fehlen', 2, 1, false);
-INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId, isUsingNote) VALUES (5, 'Nicht einsehbar/prüfbar', 2, 1, false);
-INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId, isUsingNote) VALUES (6, 'Innendämmung abgelöst / beschädigt', 2, 1, false);
-INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId, isUsingNote) VALUES (7, 'Pflanzenbewuchs', 2, 1, false);
-INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId, isUsingNote) VALUES (8, 'Poröse Gehäuse-/Rahmendichtung', 2, 1, false);
-INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId, isUsingNote) VALUES (9, 'Poröe Innendämmung', 2, 1, false);
-INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId, isUsingNote) VALUES (10, 'Element fehlt / vertauscht', 2, 1, false);
-INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId, isUsingNote) VALUES (11, 'Fremdmaterial', 1, 1, true);
-
-INSERT INTO Device_StateValue (deviceStateComponentId, stateValueId) VALUES (1, 1);
-INSERT INTO Device_StateValue (deviceStateComponentId, stateValueId) VALUES (1, 2);
-INSERT INTO Device_StateValue (deviceStateComponentId, stateValueId) VALUES (2, 1);
-INSERT INTO Device_StateValue (deviceStateComponentId, stateValueId) VALUES (2, 2);
-INSERT INTO Device_StateValue (deviceStateComponentId, stateValueId) VALUES (3, 1);
-INSERT INTO Device_StateValue (deviceStateComponentId, stateValueId) VALUES (3, 2);
-INSERT INTO Device_StateValue (deviceStateComponentId, stateValueId) VALUES (4, 1);
-INSERT INTO Device_StateValue (deviceStateComponentId, stateValueId) VALUES (4, 2);
-INSERT INTO Device_StateValue (deviceStateComponentId, stateValueId) VALUES (5, 1);
-INSERT INTO Device_StateValue (deviceStateComponentId, stateValueId) VALUES (5, 2);
-INSERT INTO Device_StateValue (deviceStateComponentId, stateValueId) VALUES (6, 1);
-INSERT INTO Device_StateValue (deviceStateComponentId, stateValueId) VALUES (6, 4);
-INSERT INTO Device_StateValue (deviceStateComponentId, stateValueId) VALUES (7, 1);
-INSERT INTO Device_StateValue (deviceStateComponentId, stateValueId) VALUES (7, 2);
-INSERT INTO Device_StateValue (deviceStateComponentId, stateValueId) VALUES (8, 1);
-INSERT INTO Device_StateValue (deviceStateComponentId, stateValueId) VALUES (8, 2);
-INSERT INTO Device_StateValue (deviceStateComponentId, stateValueId) VALUES (9, 1);
-INSERT INTO Device_StateValue (deviceStateComponentId, stateValueId) VALUES (9, 4);
-INSERT INTO Device_StateValue (deviceStateComponentId, stateValueId) VALUES (10, 1);
-INSERT INTO Device_StateValue (deviceStateComponentId, stateValueId) VALUES (10, 2);
-INSERT INTO Device_StateValue (deviceStateComponentId, stateValueId) VALUES (10, 3);
-INSERT INTO Device_StateValue (deviceStateComponentId, stateValueId) VALUES (10, 4);
-INSERT INTO Device_StateValue (deviceStateComponentId, stateValueId) VALUES (11, 1);
-INSERT INTO Device_StateValue (deviceStateComponentId, stateValueId) VALUES (11, 2);
-
-INSERT INTO ElementAndTitle (deviceStateComponentId, titleComponentId, deviceElementId, displayOrder) VALUES (1, 1, NULL, 1);
-INSERT INTO ElementAndTitle (deviceStateComponentId, titleComponentId, deviceElementId, displayOrder) VALUES (2, 1, NULL, 2);
-INSERT INTO ElementAndTitle (deviceStateComponentId, titleComponentId, deviceElementId, displayOrder) VALUES (3, 1, NULL, 3);
-INSERT INTO ElementAndTitle (deviceStateComponentId, titleComponentId, deviceElementId, displayOrder) VALUES (4, 1, NULL, 4);
-INSERT INTO ElementAndTitle (deviceStateComponentId, titleComponentId, deviceElementId, displayOrder) VALUES (5, 1, NULL, 5);
-INSERT INTO ElementAndTitle (deviceStateComponentId, titleComponentId, deviceElementId, displayOrder) VALUES (6, 1, NULL, 6);
-INSERT INTO ElementAndTitle (deviceStateComponentId, titleComponentId, deviceElementId, displayOrder) VALUES (7, 1, NULL, 7);
-INSERT INTO ElementAndTitle (deviceStateComponentId, titleComponentId, deviceElementId, displayOrder) VALUES (8, 1, NULL, 8);
-INSERT INTO ElementAndTitle (deviceStateComponentId, titleComponentId, deviceElementId, displayOrder) VALUES (9, 1, NULL, 9);
-INSERT INTO ElementAndTitle (deviceStateComponentId, titleComponentId, deviceElementId, displayOrder) VALUES (10, 1, NULL, 10);
-INSERT INTO ElementAndTitle (deviceStateComponentId, titleComponentId, deviceElementId, displayOrder) VALUES (11, 1, NULL, 11);
+INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId) VALUES (1, 'Gehäuse-/ Türabdichtung fehlt / defekt', 2, 1);
+INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId) VALUES (2, 'Gehäuse undicht', 2, 1);
+INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId) VALUES (3, 'Bodenablauf nicht verschlossen', 2, 1);
+INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId) VALUES (4, 'Kenndaten fehlen', 2, 1);
+INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId) VALUES (5, 'Nicht einsehbar/prüfbar', 2, 1);
+INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId) VALUES (6, 'Innendämmung abgelöst / beschädigt', 2, 1);
+INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId) VALUES (7, 'Pflanzenbewuchs', 2, 1);
+INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId) VALUES (8, 'Poröse Gehäuse-/Rahmendichtung', 2, 1);
+INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId) VALUES (9, 'Poröe Innendämmung', 2, 1);
+INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId) VALUES (10, 'Element fehlt / vertauscht', 2, 1);
+INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId) VALUES (11, 'Fremdmaterial', 1, 1);
 
 
 
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (1, 1, 1, NULL, 1, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (2, 2, 1, NULL, 2, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (3, 3, 1, NULL, 3, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (4, 4, 1, NULL, 4, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (5, 5, 1, NULL, 5, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (6, 6, 1, NULL, 6, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (7, 7, 1, NULL, 7, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (8, 8, 1, NULL, 8, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (9, 9, 1, NULL, 9, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (10, 10, 1, NULL, 10, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (11, 11, 1, NULL, 11, true);
+
+
+
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (1, 1);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (1, 2);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (2, 1);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (2, 2);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (3, 1);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (3, 2);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (4, 1);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (4, 2);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (5, 1);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (5, 2);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (6, 1);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (6, 4);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (7, 1);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (7, 2);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (8, 1);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (8, 2);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (9, 1);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (9, 4);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (10, 1);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (10, 2);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (10, 3);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (10, 4);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (11, 1);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (11, 2);
