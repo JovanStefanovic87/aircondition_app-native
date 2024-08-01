@@ -93,11 +93,23 @@ export type DeviceStateComponent = {
     deviceStateValues?: DeviceStateValueDetails[];
 };
 
-export type InspectionDeviceComponentUpdate = {
+export type ComponentElementTitle = {
+    id: number;
+    deviceStateComponentId: number;
+    deviceElementId: number;
+    titleComponentId: number;
+    displayOrder: number;
+    isUsingNote: boolean;
+};
+
+export type InspectionDeviceComponent = {
     id?: string;
     inspectionId: string;
-    deviceStateId: number;
+    componentElementTitleId: number;
     value?: number;
+    note?: string;
+    measurementBarcode?: string;
+    isMeasurementPossible?: boolean;
 };
 
 export type InspectionDeviceStateUpdate = {

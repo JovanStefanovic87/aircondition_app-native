@@ -166,6 +166,41 @@ export const executeDeleteById = async (tableName: string, id: number | string) 
     }
 };
 
+export const executeDeleteByConditions = async (
+    tableName: string,
+    conditions: Record<string, number | string>,
+) => {
+    try {
+        const db = getDatabase();
+        const keys = Object.keys(conditions);
+        const values = Object.values(conditions);
+        const whereClause = keys.map((key) => `${key} = ?`).join(' AND ');
+
+        return new Promise<void>((resolve, reject) => {
+            db.transaction((tx) => {
+                const sql = `DELETE FROM ${tableName} WHERE ${whereClause}`;
+
+                tx.executeSql(
+                    sql,
+                    values,
+                    () => {
+                        console.log('Record deleted successfully');
+                        resolve();
+                    },
+                    (error) => {
+                        console.error('Error deleting record: ', error);
+                        reject(error);
+                    },
+                );
+            });
+        });
+    } catch (error) {
+        console.error('Error opening database: ', error);
+        // TODO: LOG ERROR
+        // throw error;
+    }
+};
+
 export const executeUpdateArray = async <T extends DatabaseRecord>(
     tableName: string,
     records: Partial<T>,
