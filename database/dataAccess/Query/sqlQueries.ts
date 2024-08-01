@@ -1,3 +1,4 @@
+import { STATE_TYPES } from '../../../src/helpers/constants';
 import {
     DatabaseVersionType,
     DeviceElement,
@@ -57,7 +58,7 @@ export const getInspectionById = async (inspectionId: string): Promise<Inspectio
 };
 
 export const getDeviceStateComponents = async (): Promise<DeviceStateComponent[]> => {
-    const query = `SELECT * FROM DeviceStateComponent`;
+    const query = `SELECT * FROM DeviceStateComponent where stateTypeId=${STATE_TYPES.WHOLE_DEVICE}`;
     return executeQuery<DeviceStateComponent>({ query });
 };
 
@@ -75,13 +76,14 @@ export const getInspectionDeviceStateByGroupType = async (
     inspectionId: string,
 ): Promise<DeviceStateByInspection[]> => {
     const query = `
-        SELECT dsc.*, gt.name as groupTypeName, tc.name as titleComponentName, ids.id as inspectionDeviceStateId, ids.value, ids.note FROM DeviceStateComponent dsc
+        SELECT dsc.*, gt.name as groupTypeName, tc.name as titleComponentName, ids.id as inspectionDeviceStateId, ids.value, ids.note, cet.displayOrder, cet.id as componentElementTitleId FROM DeviceStateComponent dsc
             
-        LEFT JOIN GroupType gt ON gt.id=dsc.groupTypeId
-        LEFT JOIN TitleComponent tc ON tc.id = dsc.titleComponentId
-        LEFT JOIN Inspection_DeviceState ids ON ids.deviceStateId = dsc.id
-    
-        WHERE ids.inspectionId='${inspectionId}'
+            LEFT JOIN GroupType gt ON gt.id=dsc.groupTypeId
+            LEFT JOIN Component_Element_Title cet ON cet.id = dsc.id
+            LEFT JOIN TitleComponent tc ON tc.id = cet.titleComponentId
+            LEFT JOIN Inspection_DeviceState ids ON ids.deviceStateId = dsc.id
+        
+        WHERE ids.inspectionId='${inspectionId}' and dsc.stateTypeId = ${STATE_TYPES.WHOLE_DEVICE}
         ORDER BY displayOrder
     `;
     return executeQuery<DeviceStateByInspection>({ query });
@@ -101,7 +103,9 @@ export const getInspectionDeviceStateDetails = async (
     const inspectionDeviceStateByGroupType = await getInspectionDeviceStateByGroupType(
         inspectionId,
     );
+
     const deviceStateValues = await getDeviceStateValues();
+
     const uniqueGroupTypeNames = [
         ...new Set(inspectionDeviceStateByGroupType.map((item) => item.groupTypeName)),
     ];
@@ -133,7 +137,9 @@ export const getInspectionDeviceStateDetails = async (
                             isUsingNote: titleItem.isUsingNote,
                             displayOrder: titleItem.displayOrder,
                             deviceStateValues: deviceStateValues.filter(
-                                (value) => value.deviceStateComponentId === titleItem.id,
+                                (value) =>
+                                    value.componentElementTitleId ===
+                                    titleItem.componentElementTitleId,
                             ),
                         };
                         return deviceStateComponent;
@@ -141,6 +147,7 @@ export const getInspectionDeviceStateDetails = async (
             };
             titleComponents.push(titleComponent);
         }
+
         finalResult.push({ groupTypeName, titleComponents });
     }
 

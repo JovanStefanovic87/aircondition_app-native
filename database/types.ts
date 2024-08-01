@@ -121,11 +121,12 @@ export type DeviceStateByInspection = {
     displayOrder: number;
     groupTypeName: string;
     titleComponentName: string;
+    componentElementTitleId: number;
 };
 
 export type DeviceStateValueDetails = {
     id: string;
-    deviceStateComponentId: number;
+    componentElementTitleId: number;
     stateValueId: number;
     valueName: string;
 };
