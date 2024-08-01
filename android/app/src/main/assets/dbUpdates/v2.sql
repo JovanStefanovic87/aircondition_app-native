@@ -72,17 +72,6 @@ CREATE TABLE IF NOT EXISTS Component_Element_Title (
   FOREIGN KEY (deviceElementId) REFERENCES DeviceElement(id)
 );
 
-CREATE TABLE IF NOT EXISTS MeasurementComponent (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  name TEXT,
-  groupTypeId INTEGER,
-  titleComponentId INTEGER,
-  elementId INTEGER NULL,
-  displayOrder INTEGER,
-  FOREIGN KEY (groupTypeId) REFERENCES GroupType(id),
-  FOREIGN KEY (titleComponentId) REFERENCES TitleComponent(id),
-  FOREIGN KEY (elementId) REFERENCES DeviceElement(id)
-);
 
 CREATE TABLE IF NOT EXISTS QuestionGroup (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -130,24 +119,17 @@ CREATE TABLE IF NOT EXISTS Inspection_Question (
   FOREIGN KEY (answerId) REFERENCES AnswerType(id)
 );
 
-CREATE TABLE IF NOT EXISTS Inspection_Measurement (
-  id TEXT PRIMARY KEY,
-  inspectionId TEXT,
-  measurementId INTEGER,
-  value REAL NULL,
-  barcode VARCHAR(13),
-  FOREIGN KEY (inspectionId) REFERENCES Inspection(id),
-  FOREIGN KEY (measurementId) REFERENCES MeasurementComponent(id)
-);
 
 CREATE TABLE IF NOT EXISTS Inspection_DeviceState (
   id TEXT PRIMARY KEY,
   inspectionId TEXT,
-  deviceStateId INTEGER,
+  componentElementTitleId INTEGER,
   value REAL NULL,
   note TEXT,
+  measurementBarcode TEXT,
+  isMeasurementPossible BOOLEAN,
   FOREIGN KEY (inspectionId) REFERENCES Inspection(id),
-  FOREIGN KEY (deviceStateId) REFERENCES DeviceStateComponent(id)
+  FOREIGN KEY (componentElementTitleId) REFERENCES Component_Element_Title(id)
 );
 
 CREATE TABLE IF NOT EXISTS Inspection_DeviceElement (

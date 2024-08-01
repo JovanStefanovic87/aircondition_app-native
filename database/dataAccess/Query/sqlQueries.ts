@@ -1,5 +1,6 @@
 import { STATE_TYPES } from '../../../src/helpers/constants';
 import {
+    ComponentElementTitle,
     DatabaseVersionType,
     DeviceElement,
     DeviceElementPosition,
@@ -12,7 +13,7 @@ import {
     ImageStorage,
     Inspection,
     InspectionAndImageStorage,
-    InspectionDeviceComponentUpdate,
+    InspectionDeviceComponent,
     InspectionDeviceElement,
     InspectionStatus,
     InspectionType,
@@ -57,9 +58,41 @@ export const getInspectionById = async (inspectionId: string): Promise<Inspectio
     return executeQuerySingle<InspectionUpdate>({ query });
 };
 
-export const getDeviceStateComponents = async (): Promise<DeviceStateComponent[]> => {
-    const query = `SELECT * FROM DeviceStateComponent where stateTypeId=${STATE_TYPES.WHOLE_DEVICE}`;
+export const getInspectionDeviceStateForElements = async (
+    inspectionId: string,
+): Promise<InspectionDeviceComponent[]> => {
+    const query = `
+        SELECT ids.id, ids.inspectionId, ids.deviceStateId, ids.value, ids.note 
+        FROM Inspection_DeviceState ids
+        JOIN DeviceStateComponent dsc ON dsc.id = ids.deviceStateId
+        WHERE stateTypeId=${STATE_TYPES.DEVICE_ELEMENT} AND ids.id = ${inspectionId}`;
+    return executeQuery<InspectionDeviceComponent>({ query });
+};
+
+export const getDeviceStateComponentsWholeDevice = async (): Promise<ComponentElementTitle[]> => {
+    const query = `
+        SELECT cet.* FROM Component_Element_Title cet
+        LEFT JOIN DeviceStateComponent dsc ON dsc.id = cet.deviceStateComponentId
+        WHERE dsc.stateTypeId=${STATE_TYPES.WHOLE_DEVICE}`;
+    return executeQuery<ComponentElementTitle>({ query });
+};
+
+export const getDeviceStateComponentsElementDevice = async (): Promise<DeviceStateComponent[]> => {
+    const query = `SELECT * FROM DeviceStateComponent where stateTypeId=${STATE_TYPES.DEVICE_ELEMENT}`;
     return executeQuery<DeviceStateComponent>({ query });
+};
+
+export const getDeviceStateComponentIds = async (elementsList: number[]): Promise<number[]> => {
+    const query = `
+        SELECT DISTINCT dsc.id 
+        FROM DeviceStateComponent dsc
+        JOIN Component_Element_Title cet
+        ON dsc.id = cet.deviceStateComponentId
+        WHERE dsc.stateTypeId = ${STATE_TYPES.DEVICE_ELEMENT} 
+        AND cet.deviceElementId IN (${elementsList.join(',')})
+    `;
+    const result = await executeQuery<{ id: number }>({ query });
+    return result.map((row) => row.id);
 };
 
 export const getElementStateComponents = async (): Promise<DeviceStateComponent[]> => {
@@ -67,21 +100,26 @@ export const getElementStateComponents = async (): Promise<DeviceStateComponent[
     return executeQuery<DeviceStateComponent>({ query });
 };
 
-export const getInspectionDeviceState = async (): Promise<InspectionDeviceComponentUpdate[]> => {
+export const getInspectionDeviceState = async (): Promise<InspectionDeviceComponent[]> => {
     const query = `SELECT * FROM Inspection_DeviceState`;
-    return executeQuery<InspectionDeviceComponentUpdate>({ query });
+    return executeQuery<InspectionDeviceComponent>({ query });
 };
 
 export const getInspectionDeviceStateByGroupType = async (
     inspectionId: string,
 ): Promise<DeviceStateByInspection[]> => {
     const query = `
-        SELECT dsc.*, gt.name as groupTypeName, tc.name as titleComponentName, ids.id as inspectionDeviceStateId, ids.value, ids.note, cet.displayOrder, cet.id as componentElementTitleId FROM DeviceStateComponent dsc
+        SELECT
+            dsc.id, ids.inspectionId, cet.deviceStateComponentId as deviceStateId, ids.id as inspectionDeviceStateId,
+            ids.value, ids.note, dsc.name, dsc.groupTypeId, gt.name as groupTypeName, cet.titleComponentId, cet.isUsingNote, 
+            cet.displayOrder,  tc.name as titleComponentName, cet.id as componentElementTitleId
             
+            FROM Component_Element_Title cet
+            
+            LEFT JOIN DeviceStateComponent dsc ON dsc.id = cet.deviceStateComponentId
             LEFT JOIN GroupType gt ON gt.id=dsc.groupTypeId
-            LEFT JOIN Component_Element_Title cet ON cet.id = dsc.id
             LEFT JOIN TitleComponent tc ON tc.id = cet.titleComponentId
-            LEFT JOIN Inspection_DeviceState ids ON ids.deviceStateId = dsc.id
+            LEFT JOIN Inspection_DeviceState ids ON ids.componentElementTitleId = cet.id
         
         WHERE ids.inspectionId='${inspectionId}' and dsc.stateTypeId = ${STATE_TYPES.WHOLE_DEVICE}
         ORDER BY displayOrder

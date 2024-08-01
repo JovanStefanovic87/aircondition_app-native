@@ -9,6 +9,7 @@ import {
     getDeviceElementPositions,
     getDeviceElementTypes,
     getDeviceElements,
+    getDeviceStateComponentsElementDevice,
     getInspectionDeviceElements,
     getInspectionDeviceStateByGroupType,
     getInspections,
@@ -138,6 +139,12 @@ const NavScreen: React.FC = () => {
         console.log('InspectionDevicesByGroupType (State of whole device): ', deviceElementTypes);
     };
 
+    const handleGetDeviceElementComponents = async () => {
+        const deviceElementComponents = await getDeviceStateComponentsElementDevice();
+        console.log('----------------------------------------------------');
+        console.log('deviceElementComponents: ', deviceElementComponents);
+    };
+
     return (
         <GestureHandlerRootView style={styles.scrollContainer}>
             <ScrollView style={styles.scrollView}>
@@ -166,7 +173,13 @@ const NavScreen: React.FC = () => {
                         iconColor="red"
                         buttonText="Ausloggen"
                     />
-                    {/* <NavButton
+                    {/* 
+                    <NavButton
+                        onPress={handleDeviceByGroupType}
+                        iconName="microchip"
+                        iconColor="red"
+                        buttonText="DeviceElements"
+                    />
                     <NavButton
                         onPress={handleDeviceByGroupType}
                         iconName="microchip"
@@ -230,6 +243,13 @@ const NavScreen: React.FC = () => {
                         iconName="database"
                         iconColor="red"
                         buttonText="Element Positions"
+                    />
+                    
+                    <NavButton
+                        onPress={() => handleGetDeviceElementComponents()}
+                        iconName="database"
+                        iconColor="blue"
+                        buttonText="Get Device Element Components"
                     />*/}
                 </View>
                 <ErrorInformationModal
