@@ -270,8 +270,6 @@ export const getInspectionElementStateDetails = async (
         elementId,
     );
 
-    console.log('inspectionDeviceStateByGroupType', inspectionDeviceStateByGroupType);
-
     const deviceStateValues = await getDeviceStateValues();
 
     const uniqueGroupTypeNames = [
