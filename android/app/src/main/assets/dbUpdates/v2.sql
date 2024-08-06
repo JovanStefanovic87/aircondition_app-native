@@ -127,7 +127,7 @@ CREATE TABLE IF NOT EXISTS Inspection_DeviceState (
   value REAL NULL,
   note TEXT,
   measurementBarcode TEXT,
-  isMeasurementPossible BOOLEAN,
+  isMeasurementPossible BOOLEAN NULL,
   FOREIGN KEY (inspectionId) REFERENCES Inspection(id),
   FOREIGN KEY (componentElementTitleId) REFERENCES Component_Element_Title(id)
 );

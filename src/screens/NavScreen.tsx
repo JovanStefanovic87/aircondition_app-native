@@ -173,7 +173,7 @@ const NavScreen: React.FC = () => {
                         iconColor="red"
                         buttonText="Ausloggen"
                     />
-                    {/* 
+
                     <NavButton
                         onPress={handleDeviceByGroupType}
                         iconName="microchip"
@@ -186,12 +186,6 @@ const NavScreen: React.FC = () => {
                         iconColor="red"
                         buttonText="DeviceElements"
                     />
-                    <NavButton
-                        onPress={handleDevicElementsPress}
-                        iconName="microchip"
-                        iconColor="red"
-                        buttonText="DeviceElements"
-                    /> 
                     <NavButton
                         onPress={() => deleteAllTabless()}
                         iconName="database"
@@ -244,13 +238,13 @@ const NavScreen: React.FC = () => {
                         iconColor="red"
                         buttonText="Element Positions"
                     />
-                    
+
                     <NavButton
                         onPress={() => handleGetDeviceElementComponents()}
                         iconName="database"
                         iconColor="blue"
                         buttonText="Get Device Element Components"
-                    />*/}
+                    />
                 </View>
                 <ErrorInformationModal
                     visible={errorModalVisible}

@@ -136,6 +136,25 @@ export type DeviceStateByInspection = {
     componentElementTitleId: number;
 };
 
+export type ElementStateByInspection = {
+    id: number;
+    inspectionId: string;
+    deviceStateId: number;
+    deviceElementId: number;
+    inspectionDeviceStateId: string;
+    value: number | null;
+    note: string | null;
+    name: string;
+    groupTypeId: number;
+    titleComponentId: number;
+    elementId: number | null;
+    isUsingNote: boolean;
+    displayOrder: number;
+    groupTypeName: string;
+    titleComponentName: string;
+    componentElementTitleId: number;
+};
+
 export type DeviceStateValueDetails = {
     id: string;
     componentElementTitleId: number;

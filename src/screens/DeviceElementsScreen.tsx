@@ -10,9 +10,14 @@ import {
 } from '../store/store';
 import NavButton from '../components/buttons/NavButton';
 import {
+    getAllInspectionDeviceStates,
+    getComponentElementTitleIds,
     getDeviceElementTypes,
     getDeviceElements,
     getInspectionDeviceElements,
+    getInspectionDeviceStateDetails,
+    getInspectionDeviceStateForElements,
+    getInspectionElementStateDetails,
     getInspections,
 } from '../../database/dataAccess/Query/sqlQueries';
 import { deleteAllTables } from '../../database/dataAccess/helpers';
@@ -27,6 +32,7 @@ import InspectionDeviceElements from '../components/image/InspectionDeviceElemen
 import DropdownElements from '../components/input/DropdownElements';
 import {
     deleteInspectionDeviceElement,
+    saveDeviceStatesByElementsToInspection,
     saveInspectionDeviceElement,
 } from '../../database/dataAccess/Command/sqlCommands';
 import { customColors } from '../assets/styles/customStyles';
@@ -81,8 +87,6 @@ const DeviceElementsScreen: React.FC = () => {
         try {
             const elements = await getDeviceElements();
             setDeviceElements(elements);
-            console.log('----------------------------------------------------');
-            console.log('elements: ', elements);
         } catch (error) {
             setErrorMessage(error.message);
             setErrorModalVisible(true);
@@ -128,6 +132,8 @@ const DeviceElementsScreen: React.FC = () => {
     };
 
     const submit = async () => {
+        saveDeviceStatesByElementsToInspection(inspectionId, [2, 3]);
+
         navigation.navigate('NavScreen');
     };
 

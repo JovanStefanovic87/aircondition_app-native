@@ -14,47 +14,62 @@ export const executeUpdateOrInsertWithGuid = async <T extends DatabaseRecord>(
         const db = getDatabase();
 
         return new Promise<string | void>((resolve, reject) => {
-            db.transaction((tx) => {
-                if (record.id) {
-                    // If record has an ID, update existing record
-                    const keys = Object.keys(record).filter((key) => key !== 'id');
-                    const allValues = Object.values(record).filter((value) => value !== undefined);
-                    const placeholders = keys.map((_, index) => `${keys[index]} = ?`).join(',');
-                    const values = allValues.filter((value) => value !== record.id);
+            db.transaction(
+                (tx) => {
+                    if (record.id) {
+                        // If record has an ID, update existing record
+                        const keys = Object.keys(record).filter((key) => key !== 'id');
+                        const allValues = Object.values(record).filter(
+                            (value) => value !== undefined,
+                        );
+                        const placeholders = keys.map((_, index) => `${keys[index]} = ?`).join(',');
+                        const values = allValues.filter((value) => value !== record.id);
 
-                    tx.executeSql(
-                        `UPDATE ${tableName} SET ${placeholders} WHERE id = ?`,
-                        [...values, record.id],
-                        () => {
-                            resolve();
-                        },
-                        (error) => {
-                            console.log('Error updating record: ', error);
-                            reject(error);
-                        },
-                    );
-                } else {
-                    // Insert new record
-                    const id = uuid.v4(); // Generate UUID
-                    const keys = Object.keys(record);
-                    const values = Object.values(record).filter((value) => value !== undefined);
-                    const placeholders = keys.map(() => '?').join(',');
-
-                    tx.executeSql(
-                        `INSERT INTO ${tableName} (id, ${keys.join(
+                        tx.executeSql(
+                            `UPDATE ${tableName} SET ${placeholders} WHERE id = ?`,
+                            [...values, record.id],
+                            () => {
+                                resolve();
+                            },
+                            (error) => {
+                                console.log('Error updating record: ', error);
+                                reject(error);
+                            },
+                        );
+                    } else {
+                        // Insert new record
+                        const id = uuid.v4(); // Generate UUID
+                        const keys = Object.keys(record);
+                        const values = Object.values(record).filter((value) => value !== undefined);
+                        const placeholders = keys.map(() => '?').join(',');
+                        const sql = `INSERT INTO ${tableName} (id, ${keys.join(
                             ',',
-                        )}) VALUES (?, ${placeholders})`,
-                        [id, ...values],
-                        () => {
-                            resolve(id as string); // Return generated UUID
-                        },
-                        (error) => {
-                            console.log('Error inserting record: ', error);
-                            reject(error);
-                        },
-                    );
-                }
-            });
+                        )}) VALUES (?, ${placeholders})`;
+
+                        console.log('SQL: ', sql);
+                        console.log('Values: ', [id, ...values]);
+
+                        tx.executeSql(
+                            sql,
+                            [id, ...values],
+                            () => {
+                                resolve(id as string); // Return generated UUID
+                            },
+                            (error) => {
+                                console.log('Error inserting record: ', error);
+                                reject(error);
+                            },
+                        );
+                    }
+                },
+                (error) => {
+                    console.log('Transaction error: ', error);
+                    reject(error);
+                },
+                () => {
+                    console.log('Transaction committed successfully');
+                },
+            );
         });
     } catch (error) {
         console.error('Error opening database: ', error);

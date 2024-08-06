@@ -17,7 +17,7 @@ import {
     executeUpdateOrInsertWithGuid,
 } from '../Command/baseCommand';
 import {
-    getDeviceStateComponentIds,
+    getComponentElementTitleIds,
     getDeviceStateComponentsWholeDevice,
     getInspectionDeviceStateForElements,
 } from '../Query/sqlQueries';
@@ -121,29 +121,26 @@ const fillDeviceStateByElementsToInspection = async (
     const existingDeviceComponentsForInspection = await getInspectionDeviceStateForElements(
         inspectionId,
     );
+
     const existingDeviceStateIds = existingDeviceComponentsForInspection.map(
         (record) => record.componentElementTitleId,
     );
 
     // return components for selected elements
-    const deviceStateComponents = await getDeviceStateComponentIds(elementsList);
+    const componentElementTitleIds = await getComponentElementTitleIds(elementsList);
 
-    console.log('deviceStateComponents', deviceStateComponents);
-
-    const componentsToAdd = deviceStateComponents.filter(
+    const componentsToAdd = componentElementTitleIds.filter(
         (id) => !existingDeviceStateIds.includes(id),
     );
-    console.log('componentsToAdd', componentsToAdd);
 
     const componentsToRemove = existingDeviceStateIds.filter(
-        (id) => !deviceStateComponents.includes(id),
+        (id) => !componentElementTitleIds.includes(id),
     );
-    console.log('componentsToRemove', componentsToRemove);
 
-    for (const componentId of componentsToAdd) {
+    for (const componentElementTitleId of componentsToAdd) {
         const record = {
             inspectionId: inspectionId,
-            deviceStateId: componentId,
+            componentElementTitleId: componentElementTitleId,
         };
 
         await executeUpdateOrInsertWithGuid<InspectionDeviceComponent>(
@@ -156,7 +153,7 @@ const fillDeviceStateByElementsToInspection = async (
     for (const componentId of componentsToRemove) {
         await executeDeleteByConditions('Inspection_DeviceState', {
             inspectionId,
-            deviceStateId: componentId,
+            componentElementTitleId: componentId,
         });
     }
 };
