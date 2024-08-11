@@ -6,6 +6,7 @@ import InspectionBasicDetailsScreen from '../screens/InspectionBasicDetailsScree
 import InspectionDeviceStateScreen from '../screens/InspectionDeviceStateScreen';
 import AllInspectionsScreen from '../screens/AllInspectionsScreen';
 import DeviceElementsScreen from '../screens/DeviceElementsScreen';
+import ElementsStateScreen from '../screens/ElementsStateScreen';
 
 const Stack = createStackNavigator();
 
@@ -52,6 +53,11 @@ const TabNavigator = () => {
                 name="DeviceElementsScreen"
                 component={DeviceElementsScreen}
                 options={tabNameOptions('GERÄTEELEMENTE')}
+            />
+            <Stack.Screen
+                name="ElementsStateScreen"
+                component={ElementsStateScreen}
+                options={tabNameOptions('ELEMENTEN STAAT')}
             />
             <Stack.Screen name="HomeScreen" component={HomeScreen} />
         </Stack.Navigator>

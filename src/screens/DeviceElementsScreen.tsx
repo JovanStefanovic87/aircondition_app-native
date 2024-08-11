@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, ScrollView, StyleSheet, KeyboardAvoidingView } from 'react-native';
-import { vw } from 'react-native-css-vh-vw';
+import { View, ScrollView, StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import {
@@ -8,35 +7,16 @@ import {
     useInspectionDeviceElementsStore,
     useDeviceElementSortStore,
 } from '../store/store';
-import NavButton from '../components/buttons/NavButton';
 import {
-    getAllInspectionDeviceStates,
-    getComponentElementTitleIds,
     getDeviceElementTypes,
     getDeviceElements,
     getInspectionDeviceElements,
-    getInspectionDeviceStateDetails,
-    getInspectionDeviceStateForElements,
-    getInspectionElementStateDetails,
-    getInspections,
 } from '../../database/dataAccess/Query/sqlQueries';
-import { deleteAllTables } from '../../database/dataAccess/helpers';
-import {
-    DeviceElement,
-    DeviceElementType,
-    InspectionDeviceElement,
-    InspectionDeviceElementUpdate,
-} from '../../database/types';
+import { DeviceElement, DeviceElementType, InspectionDeviceElement } from '../../database/types';
 import DeviceElements from '../components/image/DeviceElements';
 import InspectionDeviceElements from '../components/image/InspectionDeviceElements';
-import DropdownElements from '../components/input/DropdownElements';
-import {
-    deleteInspectionDeviceElement,
-    saveDeviceStatesByElementsToInspection,
-    saveInspectionDeviceElement,
-} from '../../database/dataAccess/Command/sqlCommands';
+import { saveDeviceStatesByElementsToInspection } from '../../database/dataAccess/Command/sqlCommands';
 import { customColors } from '../assets/styles/customStyles';
-import TextTitle from '../components/text/TextTitle';
 import PrimaryButton from '../components/buttons/PrimaryButton';
 import ErrorInformationModal from '../components/modals/ErrorInformationModal';
 
@@ -52,36 +32,21 @@ const DeviceElementsScreen: React.FC = () => {
     const deviceElementSort = useDeviceElementSortStore((state) => state.deviceOrder);
     const navigation = useNavigation<NavScreenNavigationProp>();
     const inspectionId = useInspectionStore((state) => state.inspectionId);
-    const setInspectionId = useInspectionStore((state) => state.setInspectionId);
     const [deviceElements, setDeviceElements] = useState<DeviceElement[]>([]);
     const [selectedTypeId, setSelectedTypeId] = useState<number | null>(1);
     const [deviceElementTypes, setDeviceElementTypes] = useState<DeviceElementType[]>([]);
     const inspectionDeviceElementsPositions = [1, 2, 3];
     const [errorModalVisible, setErrorModalVisible] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-    const handleNewInspectionPress = () => {
-        setInspectionId(null);
-        navigation.navigate('InspectionBasicDetailsScreen');
-    };
-
-    const handleAllInspectionsPress = () => {
-        navigation.navigate('AllInspectionsScreen');
-    };
-
-    const handleHomePress = () => {
-        navigation.navigate('HomeScreen');
-    };
+    const inspectionDevicesForNextStep = inspectionDeviceElements.map(
+        (element) => element.deviceElementId,
+    );
 
     useEffect(() => {
         fetchDeviceElementTypes();
         fetchInspectionDeviceElements(inspectionId, setInspectionDeviceElements);
         handleDeviceElements();
     }, [deviceElementSort]);
-
-    const deleteAllTabless = async () => {
-        await deleteAllTables(setErrorMessage, setErrorModalVisible);
-    };
 
     const handleDeviceElements = async () => {
         try {
@@ -93,48 +58,10 @@ const DeviceElementsScreen: React.FC = () => {
         }
     };
 
-    const handleDeviceElementTypes = async () => {
-        const elementTypes = await getDeviceElementTypes();
-        console.log('----------------------------------------------------');
-        console.log('elementTypes: ', elementTypes);
-    };
-
-    const handleGetInspectionElements = async (inspectionId: string) => {
-        const inspectionDeviceElements = await getInspectionDeviceElements(inspectionId);
-        console.log('----------------------------------------------------');
-        console.log('inspectionDeviceElements: ', inspectionDeviceElements);
-    };
-
-    const handleGetAllInspections = async () => {
-        const inspections = await getInspections();
-        console.log('----------------------------------------------------');
-        console.log('inspections: ', inspections);
-    };
-
-    const handleSaveInspectionElements = async () => {
-        const record: InspectionDeviceElementUpdate = {
-            inspectionId: inspectionId,
-            deviceElementId: 2,
-            deviceOrder: 2,
-            elementPositionId: 1,
-        };
-        try {
-            await saveInspectionDeviceElement(record);
-            fetchInspectionDeviceElements(inspectionId, setInspectionDeviceElements);
-        } catch (error) {
-            setErrorMessage(error.message);
-            setErrorModalVisible(true);
-        }
-    };
-
-    const handleDeleteInspectionElements = async (inspectionId: string) => {
-        await deleteInspectionDeviceElement(inspectionId);
-    };
-
     const submit = async () => {
-        saveDeviceStatesByElementsToInspection(inspectionId, [2, 3]);
+        await saveDeviceStatesByElementsToInspection(inspectionId, inspectionDevicesForNextStep);
 
-        navigation.navigate('NavScreen');
+        navigation.navigate('ElementsStateScreen');
     };
 
     const fetchDeviceElementTypes = async () => {
@@ -165,49 +92,6 @@ const DeviceElementsScreen: React.FC = () => {
             <GestureHandlerRootView style={styles.scrollContainer}>
                 <ScrollView style={styles.scrollView}>
                     <View style={styles.innerContainer}>
-                        {/* <NavButton
-                            onPress={() => deleteAllTabless()}
-                            iconName="database"
-                            iconColor="red"
-                            buttonText="Delete All Tables"
-                        />
-                        <NavButton
-                            onPress={() => handleGetAllInspections()}
-                            iconName="database"
-                            iconColor="red"
-                            buttonText="Get All Inspections"
-                        />
-                        <NavButton
-                            onPress={() => handleGetInspectionElements(inspectionId)}
-                            iconName="database"
-                            iconColor="purple"
-                            buttonText="Get Inspection Elements"
-                        />
-
-                        <NavButton
-                            onPress={() => handleDeleteInspectionElements(inspectionId)}
-                            iconName="database"
-                            iconColor="red"
-                            buttonText="Delete Inspection Elements"
-                        />
-                        <NavButton
-                            onPress={() => handleSaveInspectionElements()}
-                            iconName="database"
-                            iconColor="red"
-                            buttonText="Save Inspection Elements"
-                        />
-                        <NavButton
-                            onPress={() => handleDeviceElements()}
-                            iconName="database"
-                            iconColor="red"
-                            buttonText="Get Display Elements"
-                        />
-                        <NavButton
-                            onPress={() => handleDeviceElements()}
-                            iconName="database"
-                            iconColor="red"
-                            buttonText="Get And Display Device Elements"
-                        /> */}
                         <View style={styles.deviceElement}>
                             <DeviceElements
                                 deviceElements={deviceElements}

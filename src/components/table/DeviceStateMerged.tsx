@@ -19,7 +19,7 @@ interface Props {
     saveInspectionDeviceState: (deviceState: InspectionDeviceStateUpdate) => void;
 }
 
-const DeviceStateItem: React.FC<Props> = ({ deviceState, saveInspectionDeviceState }) => {
+const DeviceStateMeged: React.FC<Props> = ({ deviceState, saveInspectionDeviceState }) => {
     const { inspectionDeviceStateId, isUsingNote, value, note, deviceStateValues, name } =
         deviceState;
     const [activeColor, setActiveColor] = useState<number>(value);
@@ -29,6 +29,11 @@ const DeviceStateItem: React.FC<Props> = ({ deviceState, saveInspectionDeviceSta
     const YELLOW = 2;
     const ORANGE = 3;
     const RED = 4;
+
+    // Update activeColor when deviceState.value changes
+    useEffect(() => {
+        setActiveColor(value);
+    }, [value]);
 
     useEffect(() => {
         if (isMounted) {
@@ -40,15 +45,10 @@ const DeviceStateItem: React.FC<Props> = ({ deviceState, saveInspectionDeviceSta
         } else {
             setIsMounted(true);
         }
-    }, [activeColor]);
+    }, [activeColor, noteValue]);
 
     const handleColorClick = (color: number) => {
         setActiveColor((prevColor) => (prevColor === color ? null : color));
-        saveInspectionDeviceState({
-            id: inspectionDeviceStateId,
-            value: activeColor,
-            note: noteValue,
-        });
     };
 
     const checkColor = (color: number) =>
@@ -111,4 +111,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default DeviceStateItem;
+export default DeviceStateMeged;

@@ -4,7 +4,7 @@ import { StyleSheet, View, ScrollView, KeyboardAvoidingView, Platform } from 're
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { calculateMinColumnWidth } from '../helpers/universalFunctions';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import DeviceState from '../components/table/DeviceStateItem';
+import DeviceState from '../components/table/DeviceState';
 import DeviceStateColumnContainer from '../components/containers/DeviceStateTableContainer';
 import {
     getInspectionDeviceStateDetails,
