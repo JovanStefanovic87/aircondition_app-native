@@ -8,8 +8,8 @@ import ErrorInformationModal from '../modals/ErrorInformationModal';
 import TextTitle from '../text/TextTitle';
 
 interface Props {
-    selectedElementId: number;
-    setSelectedElementId: React.Dispatch<React.SetStateAction<number>>;
+    selectedElementId: string;
+    setSelectedElementId: React.Dispatch<React.SetStateAction<string>>;
     setSelectedDeviceElementId: React.Dispatch<React.SetStateAction<string>>;
 }
 
@@ -54,8 +54,8 @@ const InspectionDeviceElementsMerged: FC<Props> = ({
 
         // Set selected element ID only on initial mount
         if (!mountedRef.current && sortedElements.length > 0) {
-            setFocusedDeviceId(sortedElements[0].deviceElementId.toString()); // Ensure it's a string
-            setSelectedElementId(sortedElements[0].deviceElementId);
+            setFocusedDeviceId(sortedElements[0].id);
+            setSelectedElementId(sortedElements[0].id);
             setSelectedDeviceElementId(sortedElements[0].id);
             mountedRef.current = true; // Prevent further updates from this effect
         }
@@ -70,7 +70,7 @@ const InspectionDeviceElementsMerged: FC<Props> = ({
     }, [filteredElements]);
 
     const handleFocusChange = useCallback(
-        (deviceId: string, focused: boolean, deviceElementId: number) => {
+        (deviceId: string, focused: boolean, deviceElementId: string) => {
             setSelectedElementId(deviceElementId);
             setSelectedDeviceElementId(deviceId);
             if (focused) {

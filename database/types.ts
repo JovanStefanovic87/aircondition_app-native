@@ -106,10 +106,21 @@ export type InspectionDeviceComponent = {
     id?: string;
     inspectionId: string;
     componentElementTitleId: number;
+    inspectionDeviceElementId: string;
     value?: number;
     note?: string;
     measurementBarcode?: string;
     isMeasurementPossible?: boolean;
+};
+
+export type InspectionDeviceElement = {
+    id: string;
+    inspectionId: string;
+    deviceElementId: number;
+    deviceOrder: number;
+    imageFileName: string;
+    imagePath: string;
+    elementPositionId: number;
 };
 
 export type InspectionDeviceStateUpdate = {
@@ -207,16 +218,6 @@ export type DeviceElement = {
 export type DeviceElementType = {
     id: number;
     name: string;
-};
-
-export type InspectionDeviceElement = {
-    id: string;
-    inspectionId: string;
-    deviceElementId: number;
-    deviceOrder: number;
-    imageFileName: string;
-    imagePath: string;
-    elementPositionId: number;
 };
 
 export type InspectionDeviceElementUpdate = {

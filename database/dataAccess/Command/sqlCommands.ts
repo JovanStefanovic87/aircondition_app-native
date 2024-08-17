@@ -19,6 +19,8 @@ import {
 import {
     getComponentElementTitleIds,
     getDeviceStateComponentsWholeDevice,
+    getInspectionDeviceElements,
+    getInspectionDeviceStateByDeviceElements,
     getInspectionDeviceStateForElements,
 } from '../Query/sqlQueries';
 
@@ -105,55 +107,69 @@ export const saveDeviceElementsSortOrder = async (
  */
 export const saveDeviceStatesByElementsToInspection = async (
     inspectonId: string,
-    elementsList: number[],
 ): Promise<string | void> => {
     if (inspectonId) {
-        await fillDeviceStateByElementsToInspection(inspectonId, elementsList);
+        await fillDeviceStateByElementsToInspection(inspectonId);
     }
 
     return inspectonId;
 };
 
-const fillDeviceStateByElementsToInspection = async (
-    inspectionId: string,
-    elementsList: number[],
-): Promise<void> => {
-    const existingDeviceComponentsForInspection = await getInspectionDeviceStateForElements(
-        inspectionId,
+const fillDeviceStateByElementsToInspection = async (inspectionId: string): Promise<void> => {
+    const inspectionElements = await getInspectionDeviceElements(inspectionId);
+    const inspectionElementIds = inspectionElements.map((element) => element.id);
+
+    console.log('inspectionElementIds', inspectionElementIds);
+
+    const existingInspectionDeviceStates = await getInspectionDeviceStateByDeviceElements(
+        inspectionElementIds,
     );
 
-    const existingDeviceStateIds = existingDeviceComponentsForInspection.map(
-        (record) => record.componentElementTitleId,
+    console.log('existingInspectionDeviceStates', existingInspectionDeviceStates);
+
+    const existingInspectionElementIds = existingInspectionDeviceStates.map(
+        (d) => d.inspectionDeviceElementId,
     );
 
-    // return components for selected elements
-    const componentElementTitleIds = await getComponentElementTitleIds(elementsList);
+    console.log('existingInspectionElementIds', existingInspectionElementIds);
 
-    const componentsToAdd = componentElementTitleIds.filter(
-        (id) => !existingDeviceStateIds.includes(id),
+    const devicesElementsToAdd = inspectionElements.filter(
+        (e) => !existingInspectionElementIds.includes(e.id),
     );
 
-    const componentsToRemove = existingDeviceStateIds.filter(
-        (id) => !componentElementTitleIds.includes(id),
+    console.log('devicesElementsToAdd', devicesElementsToAdd);
+
+    const devicesElementsToRemove = existingInspectionElementIds.filter(
+        (id) => !inspectionElementIds.includes(id),
     );
 
-    for (const componentElementTitleId of componentsToAdd) {
-        const record = {
-            inspectionId: inspectionId,
-            componentElementTitleId: componentElementTitleId,
-        };
+    console.log('devicesElementsToRemove', devicesElementsToRemove);
 
-        await executeUpdateOrInsertWithGuid<InspectionDeviceComponent>(
-            'Inspection_DeviceState',
-            record,
-        );
+    for (const device of devicesElementsToAdd) {
+        const componentElementTitleIds = await getComponentElementTitleIds([
+            device.deviceElementId,
+        ]);
+
+        console.log('componentElementTitleIds', componentElementTitleIds);
+
+        for (const componentElementTitleId of componentElementTitleIds) {
+            const record = {
+                inspectionId: inspectionId,
+                componentElementTitleId: componentElementTitleId,
+                inspectionDeviceElementId: device.id,
+            };
+
+            await executeUpdateOrInsertWithGuid<InspectionDeviceComponent>(
+                'Inspection_DeviceState',
+                record,
+            );
+        }
     }
 
-    // Remove obsolete DeviceStateComponents
-    for (const componentId of componentsToRemove) {
+    for (const device of devicesElementsToRemove) {
         await executeDeleteByConditions('Inspection_DeviceState', {
             inspectionId,
-            componentElementTitleId: componentId,
+            inspectionDeviceElementId: device,
         });
     }
 };

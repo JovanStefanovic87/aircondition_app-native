@@ -124,12 +124,14 @@ CREATE TABLE IF NOT EXISTS Inspection_DeviceState (
   id TEXT PRIMARY KEY,
   inspectionId TEXT,
   componentElementTitleId INTEGER,
+  inspectionDeviceElementId TEXT NULL,
   value REAL NULL,
   note TEXT,
   measurementBarcode TEXT,
   isMeasurementPossible BOOLEAN NULL,
   FOREIGN KEY (inspectionId) REFERENCES Inspection(id),
   FOREIGN KEY (componentElementTitleId) REFERENCES Component_Element_Title(id)
+  FOREIGN KEY (inspectionDeviceElementId) REFERENCES Inspection_DeviceElement(id)
 );
 
 CREATE TABLE IF NOT EXISTS Inspection_DeviceElement (

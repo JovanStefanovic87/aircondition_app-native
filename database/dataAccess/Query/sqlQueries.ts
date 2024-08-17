@@ -239,7 +239,7 @@ export const getDeviceElementPositions = async (): Promise<DeviceElementPosition
 
 export const getInspectionElementStateByGroupType = async (
     inspectionId: string,
-    elementId: number,
+    inspectionElementId: string,
 ): Promise<DeviceStateByInspection[]> => {
     const query = `
         SELECT
@@ -255,7 +255,7 @@ export const getInspectionElementStateByGroupType = async (
             LEFT JOIN Inspection_DeviceState ids ON ids.componentElementTitleId = cet.id
         
         WHERE 
-            ids.inspectionId='${inspectionId}' AND dsc.stateTypeId = ${STATE_TYPES.DEVICE_ELEMENT} AND cet.deviceElementId = ${elementId}
+            ids.inspectionId='${inspectionId}' AND dsc.stateTypeId = ${STATE_TYPES.DEVICE_ELEMENT} AND ids.inspectionDeviceElementId = '${inspectionElementId}'
         ORDER BY displayOrder
     `;
     return executeQuery<DeviceStateByInspection>({ query });
@@ -263,11 +263,11 @@ export const getInspectionElementStateByGroupType = async (
 
 export const getInspectionElementStateDetails = async (
     inspectionId: string,
-    elementId: number,
+    inspectionElementId: string,
 ): Promise<DeviceStateComponentsForInspection[]> => {
     const inspectionDeviceStateByGroupType = await getInspectionElementStateByGroupType(
         inspectionId,
-        elementId,
+        inspectionElementId,
     );
 
     const deviceStateValues = await getDeviceStateValues();
@@ -318,4 +318,13 @@ export const getInspectionElementStateDetails = async (
     }
 
     return finalResult;
+};
+
+export const getInspectionDeviceStateByDeviceElements = async (
+    inspectionElementIds: string[],
+): Promise<InspectionDeviceComponent[]> => {
+    const query = `SELECT * FROM Inspection_DeviceState WHERE inspectionDeviceElementId IN (${inspectionElementIds
+        .map((id) => `'${id}'`)
+        .join(',')})`;
+    return executeQuery<InspectionDeviceComponent>({ query });
 };

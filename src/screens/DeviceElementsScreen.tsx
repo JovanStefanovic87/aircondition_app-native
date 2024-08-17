@@ -59,7 +59,7 @@ const DeviceElementsScreen: React.FC = () => {
     };
 
     const submit = async () => {
-        await saveDeviceStatesByElementsToInspection(inspectionId, inspectionDevicesForNextStep);
+        await saveDeviceStatesByElementsToInspection(inspectionId);
 
         navigation.navigate('ElementsStateScreen');
     };

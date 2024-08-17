@@ -14,7 +14,7 @@ const windowWidth = Dimensions.get('window').width;
 
 type Props = {
     deviceElement: InspectionDeviceElement;
-    onFocusChange: (deviceId: string, focused: boolean, deviceElementId?: number) => void;
+    onFocusChange: (deviceId: string, focused: boolean, deviceElementId?: string) => void;
     isFocused: boolean;
     isTablet?: boolean;
     index: number;
@@ -40,11 +40,11 @@ const InspectionDeviceElementImgMerged: FC<Props> = ({
     };
 
     const handlePressIn = () => {
-        onFocusChange(deviceElement.id.toString(), true, deviceElement.deviceElementId);
+        onFocusChange(deviceElement.id.toString(), true, deviceElement.id);
     };
 
     const handlePressOut = () => {
-        onFocusChange(deviceElement.id.toString(), false, deviceElement.deviceElementId);
+        onFocusChange(deviceElement.id.toString(), false, deviceElement.id);
     };
 
     const handleDeleteInspectionElements = async (inspectionId: string) => {

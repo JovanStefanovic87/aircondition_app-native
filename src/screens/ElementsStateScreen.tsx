@@ -37,7 +37,7 @@ const ElementsStateScreen: React.FC = () => {
     const setInspectionDeviceElements = useInspectionDeviceElementsStore(
         (state) => state.setInspectionDeviceElements,
     );
-    const [selectedElementId, setSelectedElementId] = useState<number | null>(null);
+    const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
     const [selectedDeviceElementId, setSelectedDeviceElementId] = useState<string | null>(null);
     const deviceElementSort = useDeviceElementSortStore((state) => state.deviceOrder);
     const navigation = useNavigation<NavScreenNavigationProp>();
