@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, ScrollView, StyleSheet, Text } from 'react-native';
+import { View, ScrollView, StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import {
@@ -48,7 +48,7 @@ const ElementsStateScreen: React.FC = () => {
     const [isCameraVisible, setCameraVisible] = useState(false);
     const [errorModalVisible, setErrorModalVisible] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
-    const [allCompleted, setAllCompleted] = useState<boolean[]>([]);
+    const [allCompleted, setAllCompleted] = useState<{ [key: string]: boolean }>({});
 
     useEffect(() => {
         const fetchInitialData = async () => {
@@ -60,6 +60,7 @@ const ElementsStateScreen: React.FC = () => {
                 );
                 if (result) {
                     setInspectionDeviceStateDetails(result);
+                    initializeCompletionStatus(result);
                 }
             } catch (error) {
                 console.error('Error fetching inspection device state details:', error);
@@ -71,8 +72,6 @@ const ElementsStateScreen: React.FC = () => {
     const toggleCamera = () => {
         setCameraVisible(!isCameraVisible);
     };
-
-    console.log(selectedDeviceElementId);
 
     const options: CameraOptions = {
         mediaType: 'photo' as MediaType,
@@ -95,6 +94,7 @@ const ElementsStateScreen: React.FC = () => {
             }),
         );
         setInspectionDeviceStateDetails(updatedInspection);
+        checkAndUpdateCompletionStatus(updatedInspection);
     };
 
     const handleGalleryClick = () => {
@@ -120,23 +120,44 @@ const ElementsStateScreen: React.FC = () => {
         if (isAllCompleted()) {
             navigation.navigate('AllInspectionsScreen');
         } else {
-            console.log('error');
+            setErrorMessage('Not all elements are completed. Please complete all the fields.');
+            setErrorModalVisible(true);
         }
     };
 
-    const updateCompletionStatus = (identifier: string, isCompleted: boolean) => {
-        setAllCompleted((prevStatus) => ({
-            ...prevStatus,
-            [identifier]: isCompleted,
-        }));
+    const initializeCompletionStatus = (details: DeviceStateComponentsForInspection[]) => {
+        const initialStatus: { [key: string]: boolean } = {};
+        details.forEach((group, groupIndex) => {
+            const groupId = `${group.groupTypeName}-${groupIndex}`;
+            initialStatus[groupId] = group.titleComponents.every((title) =>
+                title.deviceStateComponents.every(
+                    (state) =>
+                        state.value !== null &&
+                        (typeof state.value === 'string' ? state.value !== '' : state.value !== 0),
+                ),
+            );
+        });
+        setAllCompleted(initialStatus);
+    };
+
+    const checkAndUpdateCompletionStatus = (
+        updatedDetails: DeviceStateComponentsForInspection[],
+    ) => {
+        const updatedStatus = { ...allCompleted };
+        updatedDetails.forEach((group, groupIndex) => {
+            const groupId = `${group.groupTypeName}-${groupIndex}`;
+            updatedStatus[groupId] = group.titleComponents.every((title) =>
+                title.deviceStateComponents.every(
+                    (state) => state.value !== null && String(state.value) !== '',
+                ),
+            );
+        });
+        setAllCompleted(updatedStatus);
     };
 
     const isAllCompleted = () => {
-        const completionValues = Object.values(allCompleted);
-        return completionValues.length > 0 && completionValues.every((status) => status === true);
+        return Object.values(allCompleted).every((status) => status === true);
     };
-
-    /* -------------------------------------------------------------------------------------------------------------- */
 
     useEffect(() => {
         fetchInspectionDeviceElements(inspectionId, setInspectionDeviceElements);
@@ -153,6 +174,13 @@ const ElementsStateScreen: React.FC = () => {
             setErrorMessage(error.message);
             setErrorModalVisible(true);
         }
+    };
+
+    const updateCompletionStatus = (groupId: string, isCompleted: boolean): void => {
+        setAllCompleted((prevStatus) => ({
+            ...prevStatus,
+            [groupId]: isCompleted,
+        }));
     };
 
     return (
@@ -217,7 +245,11 @@ const ElementsStateScreen: React.FC = () => {
                 <View style={styles.horizontalLine}></View>
             </GestureHandlerRootView>
             <View style={styles.rightAlign}>
-                <PrimaryButton title="Nächster Schritt" onPress={submit} />
+                <PrimaryButton
+                    title="Nächster Schritt"
+                    onPress={submit}
+                    isDisabled={!isAllCompleted()} // Disable button if not all completed
+                />
             </View>
             <ErrorInformationModal
                 visible={errorModalVisible}

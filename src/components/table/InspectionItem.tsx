@@ -14,16 +14,42 @@ interface Props {
 const InspectionItem: React.FC<Props> = ({ inspection, onPress }) => {
     return (
         <TouchableOpacity style={styles.inspectionItem} onPress={() => onPress(inspection.id)}>
-            <View style={styles.itemHeader}>
-                <TextMain text={inspection.contractNumber} />
-                {inspection.inspectionStatusId ? <CheckedIcon /> : <DangerIcon />}
+            <View style={styles.container}>
+                <View style={styles.flexEnd}>
+                    {inspection.inspectionStatusId ? <CheckedIcon /> : <DangerIcon />}
+                </View>
+
+                <View style={styles.flexContainer}>
+                    <TextMain text="Name der Anlage: " isBold={true} />
+                    <TextMain text={inspection.facilityName} />
+                </View>
+                <View style={styles.flexContainer}>
+                    <TextMain text="Ausftellungsort: " isBold={true} />
+                    <TextMain text={inspection.location} />
+                </View>
+                <View style={styles.flexContainer}>
+                    <TextMain text="Anlage-Id: " isBold={true} />
+                    <TextMain text={inspection.barcode} />
+                </View>
+                <View style={styles.flexContainer}>
+                    <TextMain text="Nummer der Leistungsnachweis : " isBold={true} />
+                    <TextMain text={inspection.contractNumber} />
+                </View>
             </View>
-            <TextMain text={inspection.location} />
         </TouchableOpacity>
     );
 };
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        gap: 5,
+    },
+    flexEnd: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        marginBottom: 10,
+    },
     inspectionItem: {
         marginBottom: 20,
         padding: 15,
@@ -45,6 +71,10 @@ const styles = StyleSheet.create({
     itemSubTitle: {
         fontSize: 16,
         color: customColors.text,
+    },
+    flexContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
     },
 });
 
