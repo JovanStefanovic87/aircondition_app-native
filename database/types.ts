@@ -237,3 +237,8 @@ export type DeviceElementPosition = {
     id: number;
     name: string;
 };
+
+export type DeviceElementCompletionState = {
+    inspectionDeviceElementId: string;
+    isCompleted: boolean;
+};

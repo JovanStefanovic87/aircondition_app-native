@@ -119,38 +119,26 @@ const fillDeviceStateByElementsToInspection = async (inspectionId: string): Prom
     const inspectionElements = await getInspectionDeviceElements(inspectionId);
     const inspectionElementIds = inspectionElements.map((element) => element.id);
 
-    console.log('inspectionElementIds', inspectionElementIds);
-
     const existingInspectionDeviceStates = await getInspectionDeviceStateByDeviceElements(
         inspectionElementIds,
     );
-
-    console.log('existingInspectionDeviceStates', existingInspectionDeviceStates);
 
     const existingInspectionElementIds = existingInspectionDeviceStates.map(
         (d) => d.inspectionDeviceElementId,
     );
 
-    console.log('existingInspectionElementIds', existingInspectionElementIds);
-
     const devicesElementsToAdd = inspectionElements.filter(
         (e) => !existingInspectionElementIds.includes(e.id),
     );
-
-    console.log('devicesElementsToAdd', devicesElementsToAdd);
 
     const devicesElementsToRemove = existingInspectionElementIds.filter(
         (id) => !inspectionElementIds.includes(id),
     );
 
-    console.log('devicesElementsToRemove', devicesElementsToRemove);
-
     for (const device of devicesElementsToAdd) {
         const componentElementTitleIds = await getComponentElementTitleIds([
             device.deviceElementId,
         ]);
-
-        console.log('componentElementTitleIds', componentElementTitleIds);
 
         for (const componentElementTitleId of componentElementTitleIds) {
             const record = {

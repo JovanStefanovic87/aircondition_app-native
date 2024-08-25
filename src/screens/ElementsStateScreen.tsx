@@ -8,6 +8,7 @@ import {
     useDeviceElementSortStore,
 } from '../store/store';
 import {
+    getDeviceElementCompletionState,
     getInspectionDeviceElements,
     getInspectionElementStateDetails,
 } from '../../database/dataAccess/Query/sqlQueries';
@@ -117,7 +118,9 @@ const ElementsStateScreen: React.FC = () => {
     };
 
     const submit = async () => {
-        if (isAllCompleted()) {
+        const isPageCompleted = await isAllCompleted();
+
+        if (isPageCompleted) {
             navigation.navigate('AllInspectionsScreen');
         } else {
             setErrorMessage('Not all elements are completed. Please complete all the fields.');
@@ -155,8 +158,11 @@ const ElementsStateScreen: React.FC = () => {
         setAllCompleted(updatedStatus);
     };
 
-    const isAllCompleted = () => {
-        return Object.values(allCompleted).every((status) => status === true);
+    const isAllCompleted = async (): Promise<boolean> => {
+        const elementsState = await getDeviceElementCompletionState(inspectionId);
+        const allCompleted = elementsState.every((element) => element.isCompleted);
+
+        return allCompleted;
     };
 
     useEffect(() => {

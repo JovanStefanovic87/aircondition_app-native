@@ -3,6 +3,7 @@ import {
     ComponentElementTitle,
     DatabaseVersionType,
     DeviceElement,
+    DeviceElementCompletionState,
     DeviceElementPosition,
     DeviceElementType,
     DeviceStateByInspection,
@@ -327,4 +328,23 @@ export const getInspectionDeviceStateByDeviceElements = async (
         .map((id) => `'${id}'`)
         .join(',')})`;
     return executeQuery<InspectionDeviceComponent>({ query });
+};
+
+export const getDeviceElementCompletionState = async (
+    inspectionId: string,
+): Promise<DeviceElementCompletionState[]> => {
+    const query = `
+      SELECT 
+        inspectionDeviceElementId,
+        COUNT(CASE WHEN value IS NOT NULL THEN 1 END) = COUNT(*) AS isCompleted
+      FROM 
+        Inspection_DeviceState
+      WHERE 
+        inspectionId = '${inspectionId}' 
+        AND inspectionDeviceElementId IS NOT NULL
+      GROUP BY 
+        inspectionDeviceElementId
+    `;
+
+    return executeQuery<DeviceElementCompletionState>({ query });
 };
