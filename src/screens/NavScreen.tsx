@@ -174,7 +174,7 @@ const NavScreen: React.FC = () => {
                         buttonText="Ausloggen"
                     />
 
-                    <NavButton
+                    {/* <NavButton
                         onPress={handleDeviceByGroupType}
                         iconName="microchip"
                         iconColor="red"
@@ -244,7 +244,7 @@ const NavScreen: React.FC = () => {
                         iconName="database"
                         iconColor="blue"
                         buttonText="Get Device Element Components"
-                    />
+                    /> */}
                 </View>
                 <ErrorInformationModal
                     visible={errorModalVisible}

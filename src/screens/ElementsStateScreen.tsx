@@ -123,7 +123,7 @@ const ElementsStateScreen: React.FC = () => {
         if (isPageCompleted) {
             navigation.navigate('AllInspectionsScreen');
         } else {
-            setErrorMessage('Not all elements are completed. Please complete all the fields.');
+            setErrorMessage('Niet alle elementen zijn voltooid. Vul alstublieft alle velden in.');
             setErrorModalVisible(true);
         }
     };

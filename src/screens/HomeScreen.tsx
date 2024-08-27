@@ -28,7 +28,7 @@ const HomeScreen = () => {
                         <PrimaryButton title="Dugme" onPress={() => {}} />
                         <SubmitButton isDisabled={false} value="Submit" />
                     </View>
-                    <AssemblyPartsSourceContainer
+                    {/* <AssemblyPartsSourceContainer
                         selectedTab={selectedTab}
                         setSelectedTab={setSelectedTab}
                         pickerPlaceholder={pickerPlaceholder}
@@ -38,7 +38,7 @@ const HomeScreen = () => {
                         <EmojisContainer description="Analge" green red yellow orange />
                         <EmojisContainer description="Analge" green red yellow orange />
                         <EmojisContainer description="Analge" green red yellow orange />
-                    </EmojisColumnContainer>
+                    </EmojisColumnContainer> */}
                 </View>
                 <InputText
                     value={inputTextValue}
