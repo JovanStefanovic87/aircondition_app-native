@@ -180,6 +180,28 @@ INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (7, 'RAHMEN, GESAMT',
 INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (8, 'KONDENSATWANNE', true);
 INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (9, 'GEHÄUSE', true);
 INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (10, 'FILTER', true);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (11, 'REGISTER', true)
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (12, 'VENTILATORGEHÄUSE', true);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (13, 'SCHAUFELRAD', true);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (14, 'BODEN', true);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (15, 'BECKEN', true);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (16, 'DAMPFLANZE', true);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (17, 'SPRÜHDÜSEN', true);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (18, 'LUFTAUSLASS', true);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (19, 'KÜHLERREGISTER', true);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (20, 'ABLUFTKANAL', true);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (21, 'VENTILATOR', true);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (22, 'JALOUSIEKLAPPEN', true);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (23, 'KÜHLER', true);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (24, 'MATERIAL', true);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (25, 'GEHÄUSE / RAHMEN', true);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (26, 'DÜSEN', true);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (27, 'MEDIEN', true);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (28, 'KANAL', true);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (29, 'GLAS', false);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (30, 'SYSTEM', false);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (31, 'FLÄCHE', false);
+
 
 INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId) VALUES (1, 'Gehäuse-/ Türabdichtung fehlt / defekt', 2, 1);
 INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId) VALUES (2, 'Gehäuse undicht', 2, 1);
