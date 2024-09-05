@@ -180,7 +180,7 @@ INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (7, 'RAHMEN, GESAMT',
 INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (8, 'KONDENSATWANNE', true);
 INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (9, 'GEHÄUSE', true);
 INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (10, 'FILTER', true);
-INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (11, 'REGISTER', true)
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (11, 'REGISTER', true);
 INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (12, 'VENTILATORGEHÄUSE', true);
 INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (13, 'SCHAUFELRAD', true);
 INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (14, 'BODEN', true);

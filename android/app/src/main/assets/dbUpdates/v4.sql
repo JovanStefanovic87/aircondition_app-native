@@ -67,12 +67,12 @@ INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId) VALUES (62
 INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (12, 12, 3, 1, 1, true);
 INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (13, 13, 3, 1, 2, true);
 INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (14, 14, 3, 1, 3, true);
-INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (15, 15, 3, 1, 4, true);
-INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (16, 16, 3, 1, 5, true);
-INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (17, 17, 3, 1, 6, true);
-INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (18, 18, 3, 1, 7, true);
-INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (19, 19, 3, 1, 8, true);
-INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (20, 20, 3, 1, 9, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (15, 15, 4, 1, 4, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (16, 16, 4, 1, 5, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (17, 17, 4, 1, 6, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (18, 18, 4, 1, 7, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (19, 19, 4, 1, 8, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (20, 20, 4, 1, 9, true);
 
 --Außenluftkanal [2]
 INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (21, 12, 3, 2, 1, true);
@@ -298,7 +298,7 @@ INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentI
 INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (192, 13, 9, 26, 2, true);
 INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (193, 12, 10, 26, 3, true);
 INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (194, 16, 9, 26, 4, true);
-INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (195, 34, 10, 26, 5, true)
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (195, 34, 10, 26, 5, true);
 INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (196, 35, 10, 26, 6, true);
 INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (197, 37, 10, 26, 7, true);
 
@@ -671,17 +671,17 @@ INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (56
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (56, 3);
 
 --Mischluftklappe [10]
-INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (54, 1);
-INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (54, 3);
-INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (54, 4);
-INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (55, 1);
-INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (55, 3);
-INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (55, 4);
-INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (56, 1);
-INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (56, 2);
-INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (56, 4);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (57, 1);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (57, 3);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (57, 4);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (58, 1);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (58, 3);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (58, 4);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (59, 1);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (59, 2);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (59, 4);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (60, 1);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (60, 3);
 
 --Bypass [11]
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (61, 1);
@@ -711,44 +711,46 @@ INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (69
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (69, 3);
 
 --Rotationswärmetauscher [13]
-INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (69, 1);
-INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (69, 3);
-INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (69, 4);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (70, 1);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (70, 3);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (70, 4);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (71, 1);
-INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (71, 2);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (71, 3);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (71, 4);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (72, 1);
-INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (72, 3);
-
---Kreuzwermetauscher [14]
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (72, 2);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (72, 4);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (73, 1);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (73, 3);
-INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (73, 4);
+
+--Kreuzwermetauscher [14]
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (74, 1);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (74, 3);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (74, 4);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (75, 1);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (75, 3);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (75, 4);
+
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (76, 1);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (76, 3);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (76, 4);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (77, 1);
-INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (77, 2);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (77, 3);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (77, 4);
+
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (78, 1);
-INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (78, 3);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (78, 2);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (78, 4);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (79, 1);
-INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (79, 2);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (79, 3);
+
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (80, 1);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (80, 2);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (81, 1);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (81, 2);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (82, 1);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (82, 2);
+
 
 --Filter M5 [15]
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (83, 1);
