@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import CheckedIcon from '../icons/svg/Checked';
 import DangerIcon from '../icons/svg/DangerIcon';
 
-const CollapsibleTableBody = ({ title = 'Anlage', isCompleted = false }) => {
+const CollapsibleTableBody = ({ title = 'Anlage', isCompleted = false, name = 'Anlage' }) => {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -11,7 +11,8 @@ const CollapsibleTableBody = ({ title = 'Anlage', isCompleted = false }) => {
                     <View style={styles.avatarContainer}>
                         <Text style={styles.avatarText}>{title[0].toUpperCase()}</Text>
                     </View>
-                    <Text style={styles.title}>{title.toUpperCase()}</Text>
+                    <Text style={styles.title}>{`${title.toUpperCase()} ---`}</Text>
+                    <Text style={styles.title}>{name.toUpperCase()}</Text>
                 </View>
                 {isCompleted ? <CheckedIcon /> : <DangerIcon />}
             </View>

@@ -181,16 +181,16 @@ const NavScreen: React.FC = () => {
                         buttonText="DeviceElements"
                     />
                     <NavButton
-                        onPress={handleDeviceByGroupType}
-                        iconName="microchip"
-                        iconColor="red"
-                        buttonText="DeviceElements"
-                    />
-                    <NavButton
                         onPress={() => deleteAllTabless()}
                         iconName="database"
                         iconColor="red"
                         buttonText="Delete All Tables"
+                    />
+                    <NavButton
+                        onPress={handleDeviceByGroupType}
+                        iconName="microchip"
+                        iconColor="red"
+                        buttonText="DeviceElements"
                     />
                     <NavButton
                         onPress={() => handleGetAllInspections()}

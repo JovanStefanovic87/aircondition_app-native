@@ -51,10 +51,12 @@ const DeviceStateTableContainer: React.FC<Props> = ({
         group.some((deviceStateValue) => deviceStateValue === null),
     );
 
+    const groupName = group.titleComponents.length > 0 ? group.titleComponents[0].name : 'No Name';
+
     return (
         <View style={styles.outerContainer}>
             <View style={styles.innerContainer}>
-                <CollapsibleTableHead title={title} isCompleted={isCompleted} />
+                <CollapsibleTableHead title={title} name={groupName} isCompleted={isCompleted} />
                 <CollapsibleTableBody isOpen={isOpen}>{children}</CollapsibleTableBody>
             </View>
             <TouchableOpacity onPress={handleToggleHeight} style={styles.toggleButton}>
