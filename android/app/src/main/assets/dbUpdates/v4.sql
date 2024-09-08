@@ -707,6 +707,7 @@ INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (66
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (67, 1);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (67, 2);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (68, 1);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (68, 3);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (69, 1);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (69, 3);
 
@@ -1061,6 +1062,7 @@ INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (20
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (204, 1);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (204, 2);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (205, 1);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (205, 3);
 
 --Kühler [28]
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (206, 1);
@@ -1090,6 +1092,7 @@ INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (21
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (214, 1);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (214, 2);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (215, 1);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (215, 3);
 
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (216, 1);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (216, 2);
@@ -1240,7 +1243,7 @@ INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (26
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (264, 4);
 
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (265, 1);
-
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (265, 3);
 
 -- Befeuchter [32]
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (266, 1);
@@ -1283,35 +1286,36 @@ INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (27
 
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (278, 1);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (278, 2);
-INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (279, 4);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (278, 4);
+
 
 
 -- Entfeuchter [33]
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (279, 1);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (279, 3);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (279, 4);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (280, 1);
-INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (280, 3);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (280, 4);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (281, 1);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (281, 3);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (281, 4);
-INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (282, 1);
-INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (282, 3);
-INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (282, 4);
 
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (282, 1);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (282, 2);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (282, 4);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (283, 1);
-INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (283, 2);
-INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (283, 4);
-INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (284, 1);
-INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (284, 3);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (283, 3);
 
 -- Dummy [34]
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (284, 1);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (284, 3);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (284, 4);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (285, 1);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (285, 3);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (285, 4);
-INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (286, 1);
-INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (286, 3);
-INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (286, 4);
 
-INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (287, 1);
-INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (287, 2);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (286, 1);
+INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (286, 2);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (287, 1);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (287, 3);
 
