@@ -487,8 +487,8 @@ INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentI
 INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (334, 13, 26, 41, 2, true);
 INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (335, 41, 26, 41, 3, true);
 
-INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (336, 15, 27, 41, 4, true);
-INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (337, 16, 27, 41, 5, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (336, 15, 26, 41, 4, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (337, 16, 26, 41, 5, true);
 
 
 -- Becken [42]
