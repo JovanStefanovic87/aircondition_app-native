@@ -45,7 +45,7 @@ const fillDeviceStateToInspection = async (inspectonId: string): Promise<void> =
     for (const component of deviceStateComponents) {
         const record = {
             inspectionId: inspectonId,
-            componentElementTitleId: component.deviceStateComponentId,
+            componentElementTitleId: component.id,
         };
 
         await executeUpdateOrInsertWithGuid<InspectionDeviceComponent>(

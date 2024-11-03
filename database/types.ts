@@ -30,11 +30,14 @@ export type InspectionUpdate = {
     location: string;
     contractNumber: string;
     createdAt: string;
+    lastInspectionDate?: string;
     airVolume?: number;
     constructionYear?: number;
     lastMaintenance?: string;
     userId: string;
     inspectionStatusId: number;
+    isDeleted?: boolean;
+    note?: string;
 };
 
 /**
@@ -66,10 +69,14 @@ export type Inspection = {
     location: string;
     contractNumber: string;
     createdAt: string;
+    lastInspectionDate?: string;
     airVolume?: number;
     constructionYear?: number;
     lastMaintenance?: string;
     userId: string;
+    inspectionStatusId: number;
+    isDeleted?: boolean;
+    note?: string;
 };
 
 /**
@@ -109,7 +116,6 @@ export type InspectionDeviceComponent = {
     inspectionDeviceElementId: string;
     value?: number;
     note?: string;
-    measurementBarcode?: string;
     isMeasurementPossible?: boolean;
 };
 

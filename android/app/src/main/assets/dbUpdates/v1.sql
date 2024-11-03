@@ -51,6 +51,7 @@ CREATE TABLE IF NOT EXISTS Inspection (
   userId TEXT,
   inspectionStatusId INTEGER,
   isDeleted BOOLEAN DEFAULT 0,
+  note TEXT,
   FOREIGN KEY (deviceTypeId) REFERENCES DeviceType(id),
   FOREIGN KEY (inspectionTypeId) REFERENCES InspectionType(id),
   FOREIGN KEY (userId) REFERENCES User(id)

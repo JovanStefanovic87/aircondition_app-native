@@ -56,6 +56,9 @@ INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId) VALUES (60
 INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId) VALUES (61, 'Anti-Ansammlungsrand nicht vorhanden', 2, 2);
 INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId) VALUES (62, 'Defekte Dichtung', 2, 2);
 
+-- MIKROBIOLOGISCH - State of the whole device - step 2
+INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId) VALUES (63, '', 3, 1); 
+
 
 -- ä => Ä
 -- ö => Ö
@@ -535,6 +538,8 @@ INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentI
 INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (358, 12, 3, 48, 1, true);
 INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (359, 62, 3, 48, 2, true);
 
+-- MIKROBIOLOGISCH - State of the whole device - step 2
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (360, 63, 2, NULL, 30, true);
 
 
 

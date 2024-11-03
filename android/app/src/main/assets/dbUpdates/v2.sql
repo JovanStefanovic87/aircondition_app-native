@@ -67,6 +67,7 @@ CREATE TABLE IF NOT EXISTS Component_Element_Title (
   deviceElementId INTEGER NULL,
   displayOrder INTEGER,
   isUsingNote BOOL DEFAULT false,
+  isUsingMeasurementCheckbox BOOL DEFAULT false,
   FOREIGN KEY (deviceStateComponentId) REFERENCES DeviceStateComponent(id),
   FOREIGN KEY (titleComponentId) REFERENCES TitleComponent(id),
   FOREIGN KEY (deviceElementId) REFERENCES DeviceElement(id)
@@ -127,7 +128,6 @@ CREATE TABLE IF NOT EXISTS Inspection_DeviceState (
   inspectionDeviceElementId TEXT NULL,
   value REAL NULL,
   note TEXT,
-  measurementBarcode TEXT,
   isMeasurementPossible BOOLEAN NULL,
   FOREIGN KEY (inspectionId) REFERENCES Inspection(id),
   FOREIGN KEY (componentElementTitleId) REFERENCES Component_Element_Title(id)
@@ -217,17 +217,17 @@ INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId) VALUES (11
 
 
 
-INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (1, 1, 1, NULL, 1, true);
-INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (2, 2, 1, NULL, 2, true);
-INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (3, 3, 1, NULL, 3, false);
-INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (4, 4, 1, NULL, 4, false);
-INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (5, 5, 1, NULL, 5, false);
-INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (6, 6, 1, NULL, 6, false);
-INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (7, 7, 1, NULL, 7, false);
-INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (8, 8, 1, NULL, 8, false);
-INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (9, 9, 1, NULL, 9, false);
-INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (10, 10, 1, NULL, 10, false);
-INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (11, 11, 1, NULL, 11, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (1, 1, 1, NULL, 2, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (2, 2, 1, NULL, 3, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (3, 3, 1, NULL, 4, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (4, 4, 1, NULL, 5, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (5, 5, 1, NULL, 6, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (6, 6, 1, NULL, 7, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (7, 7, 1, NULL, 8, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (8, 8, 1, NULL, 9, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (9, 9, 1, NULL, 10, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (10, 10, 1, NULL, 11, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (11, 11, 1, NULL, 1, true);
 
 
 
