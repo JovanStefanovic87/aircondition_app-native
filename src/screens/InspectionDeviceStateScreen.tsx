@@ -28,6 +28,7 @@ import DeviceParameters from '../components/table/DeviceParameters';
 import RowContainerFlex from '../components/containers/RowContainerFlex';
 import AutoFitTableContainer from '../components/containers/AutoFitTableContainer';
 import { customColors } from '../assets/styles/customStyles';
+import { NON_VERIFICATION_GROUP_TYPES } from '../helpers/constants';
 
 type NewInspectionScreenNavigationProp = NavigationProp<Record<string, object>, string>;
 
@@ -163,7 +164,9 @@ const InspectionDeviceStateScreen = () => {
                                                             setIsGroupCompleted={(isCompleted) =>
                                                                 updateCompletionStatus(
                                                                     `${group.groupTypeName}-${groupIndex}`,
-                                                                    isCompleted,
+                                                                    NON_VERIFICATION_GROUP_TYPES.includes(
+                                                                        group.groupTypeName,
+                                                                    ) || isCompleted,
                                                                 )
                                                             }
                                                         >

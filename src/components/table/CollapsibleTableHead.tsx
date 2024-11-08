@@ -9,10 +9,10 @@ const CollapsibleTableBody = ({ title = 'Anlage', isCompleted = false, name = 'A
             <View style={styles.header}>
                 <View style={styles.titleContainer}>
                     <View style={styles.avatarContainer}>
-                        <Text style={styles.avatarText}>{title[0].toUpperCase()}</Text>
+                        <Text style={styles.avatarText}>{title[0]?.toUpperCase()}</Text>
                     </View>
-                    <Text style={styles.title}>{`${title.toUpperCase()} ---`}</Text>
-                    <Text style={styles.title}>{name.toUpperCase()}</Text>
+                    <Text style={styles.title}>{`${title?.toUpperCase()} ---`}</Text>
+                    <Text style={styles.title}>{name?.toUpperCase()}</Text>
                 </View>
                 {isCompleted ? <CheckedIcon /> : <DangerIcon />}
             </View>

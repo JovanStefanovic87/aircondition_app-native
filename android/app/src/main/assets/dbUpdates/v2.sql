@@ -56,6 +56,7 @@ CREATE TABLE IF NOT EXISTS DeviceStateComponent (
   name TEXT,
   groupTypeId INTEGER,
   stateTypeId INTEGER,
+  placeholder TEXT,
   FOREIGN KEY (groupTypeId) REFERENCES GroupType(id),
   FOREIGN KEY (stateTypeId) REFERENCES StateType(id)
 );
@@ -63,7 +64,7 @@ CREATE TABLE IF NOT EXISTS DeviceStateComponent (
 CREATE TABLE IF NOT EXISTS Component_Element_Title (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   deviceStateComponentId INTEGER,
-  titleComponentId INTEGER,
+  titleComponentId INTEGER NULL,
   deviceElementId INTEGER NULL,
   displayOrder INTEGER,
   isUsingNote BOOL DEFAULT false,
@@ -169,6 +170,7 @@ INSERT INTO GroupType (name) VALUES ('PHYSIKALISCH');
 INSERT INTO GroupType (name) VALUES ('KONSTRUKTIV');
 INSERT INTO GroupType (name) VALUES ('MIKROBIOLOGISCH');
 INSERT INTO GroupType (name) VALUES ('LUFTKEIMZAHLMESSUNG');
+INSERT INTO GroupType (name) VALUES ('UMLAUFWASSERUNTERSUCHUNG');
 
 INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (1, 'ANLAGE', true);
 INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (2, 'ANLAGE', false);
@@ -201,6 +203,16 @@ INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (28, 'KANAL', true);
 INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (29, 'GLAS', false);
 INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (30, 'SYSTEM', false);
 INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (31, 'FLÄCHE', false);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (32, 'DÄMPFELEMENT', false);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (33, 'GESAMT', false);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (34, 'LAMELLEN', false);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (35, 'KONDENSATWANNE', false);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (36, 'GEHÄUSE', false);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (37, 'FILTER', false);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (38, 'SCHAUFELRAD', false);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (39, 'BECKEN', false);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (40, 'LUFTAUSLASS', false);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (41, 'KÜHLER', false);
 
 
 INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId) VALUES (1, 'Gehäuse-/ Türabdichtung fehlt / defekt', 2, 1);

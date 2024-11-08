@@ -119,7 +119,7 @@ export const getInspectionDeviceStateByGroupType = async (
         SELECT
             dsc.id, ids.inspectionId, cet.deviceStateComponentId as deviceStateId, ids.id as inspectionDeviceStateId,
             ids.value, ids.note, dsc.name, dsc.groupTypeId, gt.name as groupTypeName, cet.titleComponentId, cet.isUsingNote, 
-            cet.displayOrder,  tc.name as titleComponentName, cet.id as componentElementTitleId
+            cet.displayOrder,  tc.name as titleComponentName, cet.id as componentElementTitleId, dsc.placeholder, cet.isUsingMeasurementCheckbox
             
             FROM Component_Element_Title cet
             
@@ -180,12 +180,14 @@ export const getInspectionDeviceStateDetails = async (
                             value: titleItem.value,
                             note: titleItem.note,
                             isUsingNote: titleItem.isUsingNote,
+                            isUsingMeasurementCheckbox: titleItem.isUsingMeasurementCheckbox,
                             displayOrder: titleItem.displayOrder,
                             deviceStateValues: deviceStateValues.filter(
                                 (value) =>
                                     value.componentElementTitleId ===
                                     titleItem.componentElementTitleId,
                             ),
+                            placeholder: titleItem.placeholder,
                         };
                         return deviceStateComponent;
                     }),
@@ -246,7 +248,7 @@ export const getInspectionElementStateByGroupType = async (
         SELECT
             dsc.id, ids.inspectionId, cet.deviceStateComponentId as deviceStateId, ids.id as inspectionDeviceStateId, cet.deviceElementId,
             ids.value, ids.note, dsc.name, dsc.groupTypeId, gt.name as groupTypeName, cet.titleComponentId, cet.isUsingNote, 
-            cet.displayOrder,  tc.name as titleComponentName, cet.id as componentElementTitleId
+            cet.displayOrder,  tc.name as titleComponentName, cet.id as componentElementTitleId, dsc.placeholder, cet.isUsingMeasurementCheckbox
             
             FROM Component_Element_Title cet
             
@@ -302,12 +304,14 @@ export const getInspectionElementStateDetails = async (
                             value: titleItem.value,
                             note: titleItem.note,
                             isUsingNote: titleItem.isUsingNote,
+                            isUsingMeasurementCheckbox: titleItem.isUsingMeasurementCheckbox,
                             displayOrder: titleItem.displayOrder,
                             deviceStateValues: deviceStateValues.filter(
                                 (value) =>
                                     value.componentElementTitleId ===
                                     titleItem.componentElementTitleId,
                             ),
+                            placeholder: titleItem.placeholder,
                         };
                         return deviceStateComponent;
                     }),

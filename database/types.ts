@@ -94,10 +94,12 @@ export type DeviceStateComponent = {
     inspectionDeviceStateId: string;
     elementId?: number | null;
     isUsingNote: boolean;
+    isUsingMeasurementCheckbox: boolean;
     value: number | null;
     note: string | null;
     displayOrder: number;
     deviceStateValues?: DeviceStateValueDetails[];
+    placeholder: string;
 };
 
 export type ComponentElementTitle = {
@@ -147,10 +149,12 @@ export type DeviceStateByInspection = {
     titleComponentId: number;
     elementId: number | null;
     isUsingNote: boolean;
+    isUsingMeasurementCheckbox: boolean;
     displayOrder: number;
     groupTypeName: string;
     titleComponentName: string;
     componentElementTitleId: number;
+    placeholder: string;
 };
 
 export type ElementStateByInspection = {

@@ -9,6 +9,7 @@ import {
     DeviceStateComponent,
 } from '../../../database/types';
 import { customColors } from '../../assets/styles/customStyles';
+import { NON_VERIFICATION_GROUP_TYPES } from '../../helpers/constants';
 
 interface Props {
     title?: string;
@@ -25,6 +26,15 @@ const DeviceStateTableContainer: React.FC<Props> = ({
 }) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
 
+    const checkIsGroupCompleted = () => {
+        return (
+            NON_VERIFICATION_GROUP_TYPES.includes(title) ||
+            !deviceState.some((group) =>
+                group.some((deviceStateValue) => deviceStateValue === null),
+            )
+        );
+    };
+
     useEffect(() => {
         const deviceState = group.titleComponents.map((title: TitleComponent) =>
             title.deviceStateComponents.map(
@@ -32,9 +42,7 @@ const DeviceStateTableContainer: React.FC<Props> = ({
             ),
         );
 
-        const isCompleted = !deviceState.some((group) =>
-            group.some((deviceStateValue) => deviceStateValue === null),
-        );
+        const isCompleted = checkIsGroupCompleted();
 
         setIsGroupCompleted(isCompleted);
     }, [group]);
@@ -47,9 +55,7 @@ const DeviceStateTableContainer: React.FC<Props> = ({
         title.deviceStateComponents.map((deviceState: DeviceStateComponent) => deviceState.value),
     );
 
-    const isCompleted = !deviceState.some((group) =>
-        group.some((deviceStateValue) => deviceStateValue === null),
-    );
+    const isCompleted = checkIsGroupCompleted();
 
     const groupName = group.titleComponents.length > 0 ? group.titleComponents[0].name : 'No Name';
 

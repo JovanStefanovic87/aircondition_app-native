@@ -20,8 +20,16 @@ interface Props {
 }
 
 const DeviceStateMeged: React.FC<Props> = ({ deviceState, saveInspectionDeviceState }) => {
-    const { inspectionDeviceStateId, isUsingNote, value, note, deviceStateValues, name } =
-        deviceState;
+    const {
+        inspectionDeviceStateId,
+        isUsingNote,
+        value,
+        note,
+        deviceStateValues,
+        name,
+        placeholder,
+    } = deviceState;
+
     const [activeColor, setActiveColor] = useState<number>(value);
     const [noteValue, setNoteValue] = useState<string>(note);
     const [isMounted, setIsMounted] = useState<boolean>(false);
@@ -78,6 +86,7 @@ const DeviceStateMeged: React.FC<Props> = ({ deviceState, saveInspectionDeviceSt
                 value={noteValue}
                 setValue={setNoteValue}
                 isVisible={isUsingNote}
+                placeholder={placeholder}
                 onBlur={() => {
                     saveInspectionDeviceState({
                         id: inspectionDeviceStateId,

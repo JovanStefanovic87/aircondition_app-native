@@ -59,6 +59,24 @@ INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId) VALUES (62
 -- MIKROBIOLOGISCH - State of the whole device - step 2
 INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId) VALUES (63, '', 3, 1); 
 
+-- MIKROBIOLOGISCH - State of the device element - step 4
+INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId) VALUES (64, '', 3, 2); -- MIKROBIOLOGISCH
+INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId, placeholder) VALUES (65, '', 4, 2, 'Referenz Etikette'); -- LUFTKEIMZAHLMESSUNG
+INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId, placeholder) VALUES (66, 'Abklatschprobe', 3, 2, 'Referenz Etikette'); -- MIKROBIOLOGISCH
+INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId, placeholder) VALUES (67, 'Abklatschprobe (Sekundär)', 3, 2, 'Referenz Etikette'); -- MIKROBIOLOGISCH
+INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId, placeholder) VALUES (68, 'Zulauf', 5, 2, 'Referenz Etikette'); -- UMLAUFWASSERUNTERSUCHUNG
+INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId, placeholder) VALUES (69, 'Becker/Umlauf', 5, 2, 'Referenz Etikette'); -- UMLAUFWASSERUNTERSUCHUNG
+INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId, placeholder) VALUES (70, '', 5, 2, 'Uhrzeit'); -- UMLAUFWASSERUNTERSUCHUNG
+INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId, placeholder) VALUES (71, '', 5, 2, 'Temperatur °C'); -- UMLAUFWASSERUNTERSUCHUNG
+INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId, placeholder) VALUES (72, '', 5, 2, 'Leitfähigkeit μS'); -- UMLAUFWASSERUNTERSUCHUNG
+INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId, placeholder) VALUES (73, '', 5, 2, 'pH Wert'); -- UMLAUFWASSERUNTERSUCHUNG
+INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId, placeholder) VALUES (74, '', 5, 2, 'Wasserhärte °dH'); -- UMLAUFWASSERUNTERSUCHUNG
+INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId, placeholder) VALUES (75, '', 5, 2, 'Färbung'); -- UMLAUFWASSERUNTERSUCHUNG
+INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId, placeholder) VALUES (76, '', 5, 2, 'Geruch'); -- UMLAUFWASSERUNTERSUCHUNG
+INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId, placeholder) VALUES (77, '', 5, 2, 'Kommentar'); -- UMLAUFWASSERUNTERSUCHUNG
+
+
+
 
 -- ä => Ä
 -- ö => Ö
@@ -538,10 +556,230 @@ INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentI
 INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (358, 12, 3, 48, 1, true);
 INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (359, 62, 3, 48, 2, true);
 
--- MIKROBIOLOGISCH - State of the whole device - step 2
-INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (360, 63, 2, NULL, 30, true);
 
 
+
+-- MIKROBIOLOGISCH - State of the whole device - step 2 ------------------------------------------------------------------------------------------------------------------
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (360, 63, 2, NULL, 100, true);
+
+
+
+
+-- MIKROBIOLOGISCH & LUFTKEIMZAHLMESSUNG (step 4)------------------------------------------------------------------------------------------------------------------
+
+-- Außenluftansaugung
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (361, 64, NULL, 1, 100, true, false); 
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (362, 65, NULL, 1, 101, true, true);
+
+-- Außenluftkanal
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (363, 64, NULL, 2, 100, true, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (364, 65, NULL, 2, 101, true, true);
+
+-- Schalldämpfer
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (365, 66, 32, 3, 100, true, true);
+
+-- Zuluftkanal in Technikzentrale
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (366, 66, 33, 4, 100, true, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (367, 65, NULL, 4, 101, true, true);
+
+-- Zuluftkanal
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (368, 66, 33, 5, 100, true, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (369, 65, NULL, 5, 101, true, true);
+
+-- Luftauslass
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (370, 66, 33, 6, 100, true, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (371, 65, NULL, 6, 101, true, true);
+
+-- Umluftansaugung
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (372, 64, NULL, 7, 100, true, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (373, 65, NULL, 7, 101, true, true);
+
+-- Edverlegter Kanal
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (374, 66, 33, 8, 100, true, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (375, 65, NULL, 8, 101, true, true);
+
+-- Jalousieklappe
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (376, 66, 34, 9, 100, true, true);
+
+-- Mischluftklappe
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (377, 67, 33, 10, 100, true, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (378, 65, NULL, 10, 101, true, true);
+
+-- Bypass
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (379, 66, 34, 11, 100, true, true);
+
+-- Kreislaufverbudsystem
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (380, 67, 33, 12, 100, true, true);
+
+-- Rotationswärmetauscher
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (381, 67, 33, 13, 100, true, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (382, 65, NULL, 13, 101, true, true);
+
+-- Kreuzwermetauscher
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (383, 66, 35, 14, 100, true, true);
+
+-- Filter M5
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (384, 67, 36, 15, 100, true, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (385, 67, 37, 15, 101, true, true);
+
+-- Filter F7
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (386, 67, 36, 16, 100, true, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (387, 67, 37, 16, 101, true, true);
+
+-- Filter <= G4
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (388, 67, 36, 17, 100, true, true);
+
+-- Filter F9
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (389, 67, 36, 18, 100, true, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (390, 67, 37, 18, 101, true, true);
+
+-- Filter ePM1 >= 50%
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (391, 67, 36, 19, 100, true, true);
+
+-- Filter ePM2,5 >= 50%
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (392, 67, 36, 20, 100, true, true);
+
+-- Filter H13
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (393, 67, 36, 21, 100, true, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (394, 67, 37, 21, 101, true, true);
+
+-- Filter ePM10 > 50%
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (395, 67, 36, 22, 100, true, true);
+
+-- Filter ePM1 > 80%
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (396, 67, 36, 23, 100, true, true);
+
+-- Filer Coarse
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (397, 67, 36, 24, 100, true, true);
+
+-- UV-Lampe
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (398, 64, NULL, 25, 100, true, false);
+
+-- Filter H11
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (399, 67, 36, 26, 100, true, true);
+
+-- Erhitzer
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (400, 67, 33, 27, 100, true, true);
+
+-- Kühler
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (401, 67, 33, 28, 100, true, true);
+
+-- Tropfenabscheider
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (402, 67, 34, 29, 100, true, true);
+
+-- Ventilator
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (403, 66, 38, 30, 100, true, true);
+
+-- Dampfbefeuchter
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (404, 66, 39, 31, 100, true, true);
+
+-- Befeuchter
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (405, 66, 39, 32, 100, true, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (406, 68, NULL, 32, 101, true, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (407, 70, NULL, 32, 102, true, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (408, 71, NULL, 32, 103, true, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (409, 72, NULL, 32, 104, true, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (410, 73, NULL, 32, 105, true, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (411, 74, NULL, 32, 106, true, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (412, 75, NULL, 32, 107, true, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (413, 76, NULL, 32, 108, true, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (414, 77, NULL, 32, 109, true, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (415, 69, NULL, 32, 110, true, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (416, 70, NULL, 32, 111, true, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (417, 71, NULL, 32, 112, true, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (418, 72, NULL, 32, 113, true, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (419, 73, NULL, 32, 114, true, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (420, 74, NULL, 32, 115, true, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (421, 75, NULL, 32, 116, true, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (422, 76, NULL, 32, 117, true, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (423, 77, NULL, 32, 118, true, false);
+
+-- Entfeuchter
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (424, 66, 33, 33, 100, true, true);
+
+-- Dummy
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (425, 66, 33, 34, 100, true, true);
+
+-- Splitgerät
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (426, 66, 40, 35, 100, true, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (427, 65, NULL, 35, 101, true, true);
+
+-- Abluftanlage
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (428, 64, NULL, 36, 100, true, false);
+
+-- Abluftkanal
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (429, 64, NULL, 37, 100, true, false);
+
+-- Behandlugszone
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (430, 64, NULL, 38, 100, true, false);
+
+-- Umluftkühlgerät
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (431, 65, 37, 39, 100, true, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (432, 66, 41, 39, 101, true, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (433, 65, NULL, 39, 102, true, true);
+
+-- Füllkörper
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (434, 64, NULL, 40, 100, true, false);
+
+-- Berieselung / Düsen
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (435, 64, NULL, 41, 100, true, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (436, 68, NULL, 41, 101, true, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (437, 70, NULL, 41, 102, true, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (438, 71, NULL, 41, 103, true, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (439, 72, NULL, 41, 104, true, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (440, 73, NULL, 41, 105, true, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (441, 74, NULL, 41, 106, true, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (442, 75, NULL, 41, 107, true, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (443, 76, NULL, 41, 108, true, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (444, 77, NULL, 41, 109, true, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (445, 69, NULL, 41, 110, true, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (446, 70, NULL, 41, 111, true, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (447, 71, NULL, 41, 112, true, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (448, 72, NULL, 41, 113, true, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (449, 73, NULL, 41, 114, true, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (450, 74, NULL, 41, 115, true, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (451, 75, NULL, 41, 116, true, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (452, 76, NULL, 41, 117, true, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (453, 77, NULL, 41, 118, true, false);
+
+-- Becken
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (454, 66, 33, 42, 100, true, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (455, 68, NULL, 42, 101, true, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (456, 70, NULL, 42, 102, true, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (457, 71, NULL, 42, 103, true, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (458, 72, NULL, 42, 104, true, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (459, 73, NULL, 42, 105, true, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (460, 74, NULL, 42, 106, true, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (461, 75, NULL, 42, 107, true, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (462, 76, NULL, 42, 108, true, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (463, 77, NULL, 42, 109, true, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (464, 69, NULL, 42, 110, true, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (465, 70, NULL, 42, 111, true, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (466, 71, NULL, 42, 112, true, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (467, 72, NULL, 42, 113, true, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (468, 73, NULL, 42, 114, true, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (469, 74, NULL, 42, 115, true, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (470, 75, NULL, 42, 116, true, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (471, 76, NULL, 42, 117, true, false);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (472, 77, NULL, 42, 118, true, false);
+
+-- Abluftgitter Digestorien
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (473, 64, NULL, 43, 100, true, false);
+
+-- Filter Digestorien
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (474, 64, NULL, 44, 100, true, false);
+
+-- Abluftkanal Digestorien
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (475, 64, NULL, 45, 100, true, false);
+
+-- Frontschieber
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (476, 66, 33, 46, 100, true, true);
+
+-- Abstellplatz
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (477, 66, 31, 47, 100, true, true);
+
+-- Gefahrstoffschrank
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote, isUsingMeasurementCheckbox) VALUES (478, 64, NULL, 48, 100, true, false);
 
 
 
