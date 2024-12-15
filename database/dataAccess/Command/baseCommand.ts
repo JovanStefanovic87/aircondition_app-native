@@ -130,13 +130,44 @@ export const executeInsertWithGuid = async <T extends DatabaseRecord>(
                 const values = Object.values(record).filter((value) => value !== undefined);
                 const placeholders = keys.map(() => '?').join(',');
 
-                console.log('Inserting record: ', placeholders);
-
                 tx.executeSql(
                     `INSERT INTO ${tableName} (id, ${keys.join(',')}) VALUES (?, ${placeholders})`,
                     [id, ...values],
                     () => {
                         resolve(id as string); // Return generated UUID
+                    },
+                    (error) => {
+                        console.log('Error inserting record: ', error);
+                        reject(error);
+                    },
+                );
+            });
+        });
+    } catch (error) {
+        console.error('Error opening database: ', error);
+        // TODO: LOG ERROR
+        // throw error;
+    }
+};
+
+export const executeInsert = async <T extends DatabaseRecord>(
+    tableName: string,
+    record: Partial<T>,
+): Promise<number | void> => {
+    try {
+        const db = getDatabase();
+
+        return new Promise<number | void>((resolve, reject) => {
+            db.transaction((tx) => {
+                const keys = Object.keys(record);
+                const values = Object.values(record).filter((value) => value !== undefined);
+                const placeholders = keys.map(() => '?').join(',');
+
+                tx.executeSql(
+                    `INSERT INTO ${tableName} (${keys.join(',')}) VALUES (${placeholders})`,
+                    values,
+                    (_, result) => {
+                        resolve(result.insertId as number); // Return the generated auto-increment ID
                     },
                     (error) => {
                         console.log('Error inserting record: ', error);

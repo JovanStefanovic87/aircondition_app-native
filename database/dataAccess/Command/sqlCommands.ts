@@ -1,5 +1,7 @@
 import {
     DeviceElementSortUpdate,
+    DeviceElementStateImageInsert,
+    DeviceStateImageInsert,
     ImageStorage,
     ImageStorageInsert,
     InspectionDeviceComponent,
@@ -11,6 +13,7 @@ import {
 import {
     executeDeleteByConditions,
     executeDeleteById,
+    executeInsert,
     executeInsertWithGuid,
     executeUpdate,
     executeUpdateArray,
@@ -75,6 +78,46 @@ export const saveInspectionImage = async (
     };
 
     await executeInsertWithGuid<InspectionImageInsert>('Inspection_Image', inspectionImageRecord);
+};
+
+export const saveDeviceStateImage = async (
+    titleId: number,
+    groupTypeId: number,
+    record: ImageStorageInsert,
+): Promise<void> => {
+    const imageId = await executeInsertWithGuid<ImageStorage>('ImageStorage', record);
+
+    if (!imageId) throw new Error('Error inserting image');
+
+    const imageRecord: DeviceStateImageInsert = {
+        titleComponentId: titleId,
+        groupTypeId: groupTypeId,
+        imageId: imageId,
+    };
+
+    console.log('imageRecord', imageRecord);
+
+    await executeInsert<DeviceStateImageInsert>('GroupType_Title_Image', imageRecord);
+};
+
+export const saveDeviceElementStateImage = async (
+    titleId: number,
+    groupTypeId: number,
+    deviceElementId: number,
+    record: ImageStorageInsert,
+): Promise<void> => {
+    const imageId = await executeInsertWithGuid<ImageStorage>('ImageStorage', record);
+
+    if (!imageId) throw new Error('Error inserting image');
+
+    const imageRecord: DeviceElementStateImageInsert = {
+        titleComponentId: titleId,
+        groupTypeId: groupTypeId,
+        deviceElementId: deviceElementId,
+        imageId: imageId,
+    };
+
+    await executeInsert<DeviceElementStateImageInsert>('DeviceElement_Title_Image', imageRecord);
 };
 
 export const saveInspectionDeviceElement = async (

@@ -137,6 +137,11 @@ export type InspectionDeviceStateUpdate = {
     note?: string | null;
 };
 
+export type ImageDeviceStateSave = {
+    titleId: number;
+    groupTypeId: number;
+};
+
 export type DeviceStateByInspection = {
     id: number;
     inspectionId: string;
@@ -195,6 +200,19 @@ export type TitleComponent = {
 
 export type InspectionImageInsert = {
     inspectionId: string;
+    imageId: string;
+};
+
+export type DeviceStateImageInsert = {
+    titleComponentId: number;
+    groupTypeId: number;
+    imageId: string;
+};
+
+export type DeviceElementStateImageInsert = {
+    titleComponentId: number;
+    groupTypeId: number;
+    deviceElementId: number;
     imageId: string;
 };
 

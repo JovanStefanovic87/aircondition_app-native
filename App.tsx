@@ -5,6 +5,7 @@ import TabNavigator from './src/navigators/TabNavigator';
 import { runDBUpdates } from './database/dbUpdates/runUpdates';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { dbConnectionExist, initDatabase } from './database/dbConnection/initDatabase';
+import PictureScreen from './src/screens-test/CameraTestingScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -29,6 +30,9 @@ const App = () => {
     }, []);
     return (
         <NavigationContainer>
+            {/* <Stack.Navigator initialRouteName="Picture">
+                <Stack.Screen name="Picture" component={PictureScreen} />
+            </Stack.Navigator> */}
             <Stack.Navigator screenOptions={{ headerShown: false }}>
                 <Stack.Screen
                     name="Tab"

@@ -7,14 +7,23 @@ import { customColors } from '../../assets/styles/customStyles';
 import InputNumber from '../input/InputNumeric';
 import AutoFitTableContainer from '../containers/AutoFitTableContainer';
 import RowContainerFlex from '../containers/RowContainerFlex';
+import IconButton from '../buttons/IconButton';
 
 interface Props {
     inspection: Inspection;
     setInspection: (inspection: Inspection) => void;
     saveInspection: (inspectionUpdate: Inspection) => void;
+    onPressCamera: () => void;
+    onPressGallery: () => void;
 }
 
-const DeviceParameters: React.FC<Props> = ({ inspection, saveInspection, setInspection }) => {
+const DeviceParameters: React.FC<Props> = ({
+    inspection,
+    saveInspection,
+    setInspection,
+    onPressCamera,
+    onPressGallery,
+}) => {
     const { constructionYear, lastMaintenance, airVolume } = inspection;
 
     const handleSaveInspection = () => {
@@ -55,6 +64,10 @@ const DeviceParameters: React.FC<Props> = ({ inspection, saveInspection, setInsp
                     />
                 </AutoFitTableContainer>
             </RowContainerFlex>
+            <View style={styles.cameraIconsContainer}>
+                <IconButton icon="camera" onPress={onPressCamera} />
+                <IconButton icon="image" onPress={onPressGallery} />
+            </View>
         </View>
     );
 };
@@ -78,6 +91,12 @@ const styles = StyleSheet.create({
         marginBottom: 8,
         color: customColors.black,
         width: '100%',
+    },
+    cameraIconsContainer: {
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        gap: 10,
+        maxWidth: '40%',
     },
 });
 

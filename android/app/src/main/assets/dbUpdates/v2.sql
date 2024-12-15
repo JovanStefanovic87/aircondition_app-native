@@ -33,10 +33,24 @@ CREATE TABLE IF NOT EXISTS TitleComponent (
   isUsingImage BOOL DEFAULT false
 );
 
-CREATE TABLE IF NOT EXISTS TitleComponent_Image (
+CREATE TABLE IF NOT EXISTS DeviceElement_Title_Image (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  titleComponentId INTEGER,
-  imageId TEXT,
+  groupTypeId INTEGER NOT NULL,
+  deviceElementId INTEGER NOT NULL,
+  titleComponentId INTEGER NOT NULL,
+  imageId TEXT NOT NULL,
+  FOREIGN KEY (groupTypeId) REFERENCES GroupType(id),
+  FOREIGN KEY (deviceElementId) REFERENCES DeviceElement(id),
+  FOREIGN KEY (titleComponentId) REFERENCES TitleComponent(id),
+  FOREIGN KEY (imageId) REFERENCES ImageStorage(id)
+);
+
+CREATE TABLE IF NOT EXISTS GroupType_Title_Image (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  groupTypeId INTEGER NOT NULL,
+  titleComponentId INTEGER NOT NULL,
+  imageId TEXT NOT NULL,
+  FOREIGN KEY (groupTypeId) REFERENCES GroupType(id),
   FOREIGN KEY (titleComponentId) REFERENCES TitleComponent(id),
   FOREIGN KEY (imageId) REFERENCES ImageStorage(id)
 );
@@ -78,7 +92,8 @@ CREATE TABLE IF NOT EXISTS Component_Element_Title (
 CREATE TABLE IF NOT EXISTS QuestionGroup (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT,
-  number INTEGER
+  groupSymbol TEXT,
+  groupReference TEXT
 );
 
 CREATE TABLE IF NOT EXISTS QuestionComponent (
@@ -88,6 +103,7 @@ CREATE TABLE IF NOT EXISTS QuestionComponent (
   questionGroupId INTEGER,
   fullDescription TEXT,
   displayOrder INTEGER,
+  questionNumber TEXT,
   FOREIGN KEY (inspectionTypeId) REFERENCES InspectionType(id),
   FOREIGN KEY (questionGroupId) REFERENCES QuestionGroup(id)
 );
@@ -153,6 +169,15 @@ CREATE TABLE IF NOT EXISTS Device_StateValue (
   FOREIGN KEY (componentElementTitleId) REFERENCES Component_Element_Title(id),
   FOREIGN KEY (stateValueId) REFERENCES StateValue(id)
 );
+
+CREATE TABLE IF NOT EXISTS InspectionQuestion_Image (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  inspectionQuestionId INTEGER,
+  imageId TEXT,
+  FOREIGN KEY (inspectionQuestionId) REFERENCES Inspection_Question(id),
+  FOREIGN KEY (imageId) REFERENCES ImageStorage(id)
+);
+
 
 INSERT INTO DeviceElementPosition (id, name) VALUES (1, 'BEFORE');
 INSERT INTO DeviceElementPosition (id, name) VALUES (2, 'BETWEEN');
@@ -267,3 +292,7 @@ INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (10
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (10, 4);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (11, 1);
 INSERT INTO Device_StateValue (componentElementTitleId, stateValueId) VALUES (11, 2);
+
+INSERT INTO AnswerType (id, name) VALUES (1, 'Yes');
+INSERT INTO AnswerType (id, name) VALUES (2, 'No');
+INSERT INTO AnswerType (id, name) VALUES (3, 'Not relevant');

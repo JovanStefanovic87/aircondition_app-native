@@ -9,8 +9,14 @@ import DeviceStateColumnContainer from '../components/containers/DeviceStateTabl
 import {
     getInspectionDeviceStateDetails,
     getInspectionById,
+    getInspectionImages,
+    getDeviceStateImages,
 } from '../../database/dataAccess/Query/sqlQueries';
-import { saveInspectionDeviceState } from '../../database/dataAccess/Command/sqlCommands';
+import {
+    saveDeviceStateImage,
+    saveInspectionDeviceState,
+    saveInspectionImage,
+} from '../../database/dataAccess/Command/sqlCommands';
 import { saveInspection } from '../../database/dataAccess/Command/sqlCommands';
 import { launchImageLibrary, MediaType, CameraOptions } from 'react-native-image-picker';
 import TakePicture from '../components/camera/TakePicture';
@@ -22,6 +28,7 @@ import {
     InspectionDeviceStateUpdate,
     TitleComponent,
     Inspection,
+    ImageDeviceStateSave,
 } from '../../database/types';
 import DeviceParamsTableContainer from '../components/containers/DeviceParamsTableContainer';
 import DeviceParameters from '../components/table/DeviceParameters';
@@ -41,6 +48,8 @@ const InspectionDeviceStateScreen = () => {
     const [isCameraVisible, setCameraVisible] = useState(false);
     const [allCompleted, setAllCompleted] = useState<boolean[]>([]);
     const [avatarSource, setAvatarSource] = useState(null);
+    const [isInspectionImage, setIsInspectionImage] = useState(false);
+    const [imageSaveParams, setImageSaveParams] = useState<ImageDeviceStateSave | null>(null);
 
     useEffect(() => {
         const fetchInspectionDetails = async () => {
@@ -56,8 +65,14 @@ const InspectionDeviceStateScreen = () => {
         fetchInspectionDetails();
     }, [newInspectionId]);
 
-    const toggleCamera = () => {
+    const toggleCameraInspection = () => {
         setCameraVisible(!isCameraVisible);
+        setIsInspectionImage(true);
+    };
+    const toggleCameraDevice = (titleId: number, groupTypeId: number) => {
+        setCameraVisible(!isCameraVisible);
+        setIsInspectionImage(false);
+        setImageSaveParams({ titleId: titleId, groupTypeId: groupTypeId });
     };
 
     const options: CameraOptions = {
@@ -83,20 +98,29 @@ const InspectionDeviceStateScreen = () => {
         setInspectionDeviceStateDetails(updatedInspection);
     };
 
-    const handleGalleryClick = () => {
-        launchImageLibrary(options, (response) => {
-            if (response.didCancel) {
-                console.log('User cancelled image picker');
-            } else if (response.errorCode) {
-                console.log('ImagePicker Error: ', response.errorCode);
-            } else {
-                if (response.assets && response.assets.length > 0) {
-                    const selectedImage = response.assets[0];
-                    const source = { uri: selectedImage.uri };
-                    setAvatarSource(source);
-                }
-            }
-        });
+    const handleGalleryClick = async () => {
+        const inspectionImages = await getInspectionImages(newInspectionId);
+        console.log('inspectionImages', JSON.stringify(inspectionImages));
+
+        const deviceImages = await getDeviceStateImages(
+            imageSaveParams.titleId,
+            imageSaveParams.groupTypeId,
+        );
+        console.log('deviceImages', JSON.stringify(deviceImages));
+
+        // launchImageLibrary(options, (response) => {
+        //     if (response.didCancel) {
+        //         console.log('User cancelled image picker');
+        //     } else if (response.errorCode) {
+        //         console.log('ImagePicker Error: ', response.errorCode);
+        //     } else {
+        //         if (response.assets && response.assets.length > 0) {
+        //             const selectedImage = response.assets[0];
+        //             const source = { uri: selectedImage.uri };
+        //             setAvatarSource(source);
+        //         }
+        //     }
+        // });
     };
 
     const handleCloseCamera = () => {
@@ -123,13 +147,40 @@ const InspectionDeviceStateScreen = () => {
         return completionValues.length > 0 && completionValues.every((status) => status === true);
     };
 
+    const handleSaveInspectionImage = (imagePath: string) => {
+        saveInspectionImage(newInspectionId, {
+            name: 'Inspection Device pictures',
+            storagePath: imagePath,
+        });
+    };
+
+    const handleSaveDeviceStateImage = (imagePath: string) => {
+        console.log('imageSaveParams', imageSaveParams);
+        imageSaveParams &&
+            saveDeviceStateImage(imageSaveParams.titleId, imageSaveParams.groupTypeId, {
+                name: 'Device pictures',
+                storagePath: imagePath,
+            });
+    };
+
+    const handleCameraToggleForDeviceState = (title: TitleComponent) => {
+        const titleId = title.deviceStateComponents[0].titleComponentId;
+        const groupTypeId = title.deviceStateComponents[0].groupTypeId;
+        toggleCameraDevice(titleId, groupTypeId);
+    };
+
     return (
         <KeyboardAvoidingView
             style={styles.container}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
             {isCameraVisible ? (
-                <TakePicture onClose={handleCloseCamera} />
+                <TakePicture
+                    onClose={handleCloseCamera}
+                    saveImage={
+                        isInspectionImage ? handleSaveInspectionImage : handleSaveDeviceStateImage
+                    }
+                />
             ) : (
                 <GestureHandlerRootView style={styles.scrollContainer}>
                     <ScrollView style={styles.scrollView}>
@@ -140,6 +191,8 @@ const InspectionDeviceStateScreen = () => {
                                         inspection={inspection}
                                         setInspection={setInspection}
                                         saveInspection={saveInspection}
+                                        onPressCamera={toggleCameraInspection}
+                                        onPressGallery={handleGalleryClick}
                                     />
                                 </DeviceParamsTableContainer>
                             )}
@@ -172,7 +225,11 @@ const InspectionDeviceStateScreen = () => {
                                                         >
                                                             <InspectionTitle
                                                                 title={title.name}
-                                                                onPressCamera={toggleCamera}
+                                                                onPressCamera={() =>
+                                                                    handleCameraToggleForDeviceState(
+                                                                        title,
+                                                                    )
+                                                                }
                                                                 onPressGallery={handleGalleryClick}
                                                             />
                                                             <View

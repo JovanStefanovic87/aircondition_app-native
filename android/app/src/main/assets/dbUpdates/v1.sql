@@ -14,7 +14,8 @@ CREATE TABLE IF NOT EXISTS DeviceType (
 
 CREATE TABLE IF NOT EXISTS InspectionType (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  name VARCHAR(50)
+  name VARCHAR(50),
+  sortOrder INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS UserRole (
@@ -66,17 +67,17 @@ INSERT INTO DeviceType (name) VALUES ('Laborabzung');
 INSERT INTO DeviceType (name) VALUES ('Nassabscheider');
 
 
-INSERT INTO InspectionType (name) VALUES ('Gefährdungsbeurteilung VDI 6022');
-INSERT INTO InspectionType (name) VALUES ('Hygieneerstinspektion VDI 6022');
-INSERT INTO InspectionType (name) VALUES ('Hygieneinspektion VDI 6022');
-INSERT INTO InspectionType (name) VALUES ('Routineprüfung nach DIN EN 14175 von Gefahrstoffschränken');
-INSERT INTO InspectionType (name) VALUES ('Routineprüfung nach DIN EN 14175 von Laborabzügen');
+INSERT INTO InspectionType (id, name, sortOrder) VALUES (1, 'Gefährdungsbeurteilung VDI 6022', 1);
+INSERT INTO InspectionType (id, name, sortOrder) VALUES (2, 'Hygieneerstinspektion VDI 6022', 2);
+INSERT INTO InspectionType (id, name, sortOrder) VALUES (3, 'Hygieneinspektion VDI 6022', 3);
+INSERT INTO InspectionType (id, name, sortOrder) VALUES (4, 'Routineprüfung nach DIN EN 14175 von Gefahrstoffschränken', 4);
+INSERT INTO InspectionType (id, name, sortOrder) VALUES (5, 'Routineprüfung nach DIN EN 14175 von Laborabzügen', 5);
 
 
-INSERT INTO InspectionStatus (name) VALUES ('Started');
-INSERT INTO InspectionStatus (name) VALUES ('Completed');
-INSERT INTO InspectionStatus (name) VALUES ('Finalized');
-INSERT INTO InspectionStatus (name) VALUES ('Locked');
+INSERT INTO InspectionStatus (id, name) VALUES (1, 'Started');
+INSERT INTO InspectionStatus (id, name) VALUES (2, 'Completed');
+INSERT INTO InspectionStatus (id, name) VALUES (3, 'Finalized');
+INSERT INTO InspectionStatus (id, name) VALUES (4, 'Locked');
 
 INSERT INTO UserRole (name) VALUES ('admin');
 INSERT INTO UserRole (name) VALUES ('user');

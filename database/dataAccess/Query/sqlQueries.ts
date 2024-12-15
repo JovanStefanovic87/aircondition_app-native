@@ -352,3 +352,34 @@ export const getDeviceElementCompletionState = async (
 
     return executeQuery<DeviceElementCompletionState>({ query });
 };
+
+export const getInspectionImages = async (inspectionId: string): Promise<ImageStorage[]> => {
+    const query = `
+        SELECT s.* FROM Inspection_Image ii
+        LEFT JOIN ImageStorage s ON s.id = ii.imageId
+        WHERE ii.inspectionId = '${inspectionId}'`;
+    return executeQuery<ImageStorage>({ query });
+};
+
+export const getDeviceStateImages = async (
+    titleId: number,
+    groupTypeId: number,
+): Promise<ImageStorage[]> => {
+    const query = `
+        SELECT s.* FROM GroupType_Title_Image g
+        LEFT JOIN ImageStorage s ON s.id = g.imageId
+        WHERE g.titleComponentId = ${titleId} AND g.groupTypeId = ${groupTypeId}`;
+    return executeQuery<ImageStorage>({ query });
+};
+
+export const getDeviceElementStateImages = async (
+    titleId: number,
+    groupTypeId: number,
+    deviceElementId: number,
+): Promise<ImageStorage[]> => {
+    const query = `
+        SELECT s.* FROM DeviceElement_Title_Image d
+        LEFT JOIN ImageStorage s ON s.id = d.imageId
+        WHERE d.titleComponentId = ${titleId} AND d.groupTypeId = ${groupTypeId} AND d.deviceElementId = ${deviceElementId}`;
+    return executeQuery<ImageStorage>({ query });
+};

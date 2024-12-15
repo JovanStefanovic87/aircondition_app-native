@@ -7,9 +7,10 @@ import ErrorInformationModal from '../modals/ErrorInformationModal';
 
 interface Props {
     onClose: () => void;
+    saveImage: (path: string) => void;
 }
 
-const TakePicture: React.FC<Props> = ({ onClose }) => {
+const TakePicture: React.FC<Props> = ({ onClose, saveImage }) => {
     const cameraRef = useRef(null);
     const device = useCameraDevice('back');
     const [hasPermission, setHasPermission] = useState(false);
@@ -19,7 +20,7 @@ const TakePicture: React.FC<Props> = ({ onClose }) => {
     const takePicture = async () => {
         if (cameraRef.current) {
             const photo = await cameraRef.current.takePhoto();
-            console.log('Photo taken:', photo);
+            saveImage(photo.path);
         }
     };
 
