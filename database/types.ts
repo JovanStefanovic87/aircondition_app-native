@@ -207,6 +207,7 @@ export type DeviceStateImageInsert = {
     titleComponentId: number;
     groupTypeId: number;
     imageId: string;
+    deviceElementId?: number | null;
 };
 
 export type DeviceElementStateImageInsert = {

@@ -33,10 +33,10 @@ CREATE TABLE IF NOT EXISTS TitleComponent (
   isUsingImage BOOL DEFAULT false
 );
 
-CREATE TABLE IF NOT EXISTS DeviceElement_Title_Image (
+CREATE TABLE IF NOT EXISTS DeviceState_Title_Group_Image (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   groupTypeId INTEGER NOT NULL,
-  deviceElementId INTEGER NOT NULL,
+  deviceElementId INTEGER,
   titleComponentId INTEGER NOT NULL,
   imageId TEXT NOT NULL,
   FOREIGN KEY (groupTypeId) REFERENCES GroupType(id),
@@ -45,15 +45,6 @@ CREATE TABLE IF NOT EXISTS DeviceElement_Title_Image (
   FOREIGN KEY (imageId) REFERENCES ImageStorage(id)
 );
 
-CREATE TABLE IF NOT EXISTS GroupType_Title_Image (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  groupTypeId INTEGER NOT NULL,
-  titleComponentId INTEGER NOT NULL,
-  imageId TEXT NOT NULL,
-  FOREIGN KEY (groupTypeId) REFERENCES GroupType(id),
-  FOREIGN KEY (titleComponentId) REFERENCES TitleComponent(id),
-  FOREIGN KEY (imageId) REFERENCES ImageStorage(id)
-);
 
 CREATE TABLE IF NOT EXISTS GroupType (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -106,14 +97,6 @@ CREATE TABLE IF NOT EXISTS QuestionComponent (
   questionNumber TEXT,
   FOREIGN KEY (inspectionTypeId) REFERENCES InspectionType(id),
   FOREIGN KEY (questionGroupId) REFERENCES QuestionGroup(id)
-);
-
-CREATE TABLE IF NOT EXISTS Question_Image (
-  id TEXT PRIMARY KEY,
-  questionId INTEGER,
-  imageId TEXT,
-  FOREIGN KEY (questionId) REFERENCES QuestionComponent(id),
-  FOREIGN KEY (imageId) REFERENCES ImageStorage(id)
 );
 
 CREATE TABLE IF NOT EXISTS AnswerType (
@@ -172,11 +155,20 @@ CREATE TABLE IF NOT EXISTS Device_StateValue (
 
 CREATE TABLE IF NOT EXISTS InspectionQuestion_Image (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  inspectionQuestionId INTEGER,
-  imageId TEXT,
+  inspectionQuestionId INTEGER NOT NULL,
+  imageId TEXT NOT NULL,
   FOREIGN KEY (inspectionQuestionId) REFERENCES Inspection_Question(id),
   FOREIGN KEY (imageId) REFERENCES ImageStorage(id)
 );
+
+CREATE TABLE IF NOT EXISTS DeviceElement_Image (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  deviceElementId INTEGER NOT NULL,
+  imageId TEXT NOT NULL,
+  FOREIGN KEY (deviceElementId) REFERENCES DeviceElement(id),
+  FOREIGN KEY (imageId) REFERENCES ImageStorage(id)
+);
+
 
 
 INSERT INTO DeviceElementPosition (id, name) VALUES (1, 'BEFORE');

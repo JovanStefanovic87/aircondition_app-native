@@ -366,9 +366,9 @@ export const getDeviceStateImages = async (
     groupTypeId: number,
 ): Promise<ImageStorage[]> => {
     const query = `
-        SELECT s.* FROM GroupType_Title_Image g
+        SELECT s.* FROM DeviceState_Title_Group_Image g
         LEFT JOIN ImageStorage s ON s.id = g.imageId
-        WHERE g.titleComponentId = ${titleId} AND g.groupTypeId = ${groupTypeId}`;
+        WHERE g.titleComponentId = ${titleId} AND g.groupTypeId = ${groupTypeId} AND g.deviceElementId IS NULL`;
     return executeQuery<ImageStorage>({ query });
 };
 
@@ -378,7 +378,7 @@ export const getDeviceElementStateImages = async (
     deviceElementId: number,
 ): Promise<ImageStorage[]> => {
     const query = `
-        SELECT s.* FROM DeviceElement_Title_Image d
+        SELECT s.* FROM DeviceState_Title_Group_Image d
         LEFT JOIN ImageStorage s ON s.id = d.imageId
         WHERE d.titleComponentId = ${titleId} AND d.groupTypeId = ${groupTypeId} AND d.deviceElementId = ${deviceElementId}`;
     return executeQuery<ImageStorage>({ query });

@@ -84,6 +84,7 @@ export const saveDeviceStateImage = async (
     titleId: number,
     groupTypeId: number,
     record: ImageStorageInsert,
+    deviceElementId?: number,
 ): Promise<void> => {
     const imageId = await executeInsertWithGuid<ImageStorage>('ImageStorage', record);
 
@@ -92,32 +93,11 @@ export const saveDeviceStateImage = async (
     const imageRecord: DeviceStateImageInsert = {
         titleComponentId: titleId,
         groupTypeId: groupTypeId,
+        deviceElementId: deviceElementId || null,
         imageId: imageId,
     };
 
-    console.log('imageRecord', imageRecord);
-
-    await executeInsert<DeviceStateImageInsert>('GroupType_Title_Image', imageRecord);
-};
-
-export const saveDeviceElementStateImage = async (
-    titleId: number,
-    groupTypeId: number,
-    deviceElementId: number,
-    record: ImageStorageInsert,
-): Promise<void> => {
-    const imageId = await executeInsertWithGuid<ImageStorage>('ImageStorage', record);
-
-    if (!imageId) throw new Error('Error inserting image');
-
-    const imageRecord: DeviceElementStateImageInsert = {
-        titleComponentId: titleId,
-        groupTypeId: groupTypeId,
-        deviceElementId: deviceElementId,
-        imageId: imageId,
-    };
-
-    await executeInsert<DeviceElementStateImageInsert>('DeviceElement_Title_Image', imageRecord);
+    await executeInsert<DeviceStateImageInsert>('DeviceState_Title_Group_Image', imageRecord);
 };
 
 export const saveInspectionDeviceElement = async (
