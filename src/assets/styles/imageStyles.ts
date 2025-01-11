@@ -96,8 +96,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     elementImage: {
-        width: windowWidth * 0.25,
-        height: windowWidth * 0.15,
+        width: windowWidth * 0.1,
+        height: windowWidth * 0.1,
         aspectRatio: 1,
     },
     name: {

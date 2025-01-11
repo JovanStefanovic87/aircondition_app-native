@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-view';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import {
     useInspectionStore,
@@ -91,7 +92,7 @@ const DeviceElementsScreen: React.FC = () => {
         <View style={styles.container}>
             <GestureHandlerRootView style={styles.scrollContainer}>
                 <ScrollView style={styles.scrollView}>
-                    <View style={styles.innerContainer}>
+                    <ReactNativeZoomableView style={styles.innerContainer}>
                         <View style={styles.deviceElement}>
                             <DeviceElements
                                 deviceElements={deviceElements}
@@ -113,7 +114,7 @@ const DeviceElementsScreen: React.FC = () => {
                                 </View>
                             );
                         })}
-                    </View>
+                    </ReactNativeZoomableView>
                 </ScrollView>
             </GestureHandlerRootView>
             <View style={styles.rightAlign}>
