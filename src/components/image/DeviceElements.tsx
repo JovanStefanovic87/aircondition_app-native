@@ -16,6 +16,11 @@ type Props = {
     deviceElementTypes: { id: number; name: string }[];
 };
 
+const calculateWidth = (selectedElementsCount: number) => {
+    const elementsPerRow = Math.min(Math.ceil(selectedElementsCount / 2), 8);
+    return windowWidth / elementsPerRow;
+};
+
 const DeviceElements: FC<Props> = ({
     deviceElements,
     selectedTypeId,
@@ -26,6 +31,7 @@ const DeviceElements: FC<Props> = ({
     const [currentIndex, setCurrentIndex] = useState(0);
     const [filteredElements, setFilteredElements] = useState<DeviceElement[]>(deviceElements);
     const [isTablet, setIsTablet] = useState(false);
+    const deviceElementsCount = filteredElements.length;
 
     useEffect(() => {
         const isTabletDevice = windowWidth >= tabletThreshold;
@@ -34,10 +40,7 @@ const DeviceElements: FC<Props> = ({
 
     const renderItem = (item: DeviceElement) => {
         return (
-            <View
-                key={item.id}
-                style={{ width: isTablet ? windowWidth * 0.25 : windowWidth * 0.33 }}
-            >
+            <View key={item.id} style={{ width: calculateWidth(deviceElementsCount) }}>
                 <DeviceElementImg
                     deviceElement={item}
                     options={[
@@ -46,6 +49,7 @@ const DeviceElements: FC<Props> = ({
                         { id: 3, value: 'Zonen Danach' },
                     ]}
                     isTablet={isTablet}
+                    selectedElementsCount={deviceElementsCount}
                 />
             </View>
         );
@@ -68,7 +72,7 @@ const DeviceElements: FC<Props> = ({
             const newIndex = currentIndex + 1;
             setCurrentIndex(newIndex);
             scrollViewRef.current?.scrollTo({
-                x: newIndex * (isTablet ? windowWidth * 0.25 : windowWidth),
+                x: newIndex * calculateWidth(deviceElementsCount),
                 animated: true,
             });
         }
@@ -79,7 +83,7 @@ const DeviceElements: FC<Props> = ({
             const newIndex = currentIndex - 1;
             setCurrentIndex(newIndex);
             scrollViewRef.current?.scrollTo({
-                x: newIndex * (isTablet ? windowWidth * 0.25 : windowWidth),
+                x: newIndex * calculateWidth(deviceElementsCount),
                 animated: true,
             });
         }
@@ -115,13 +119,10 @@ const DeviceElements: FC<Props> = ({
                         horizontal
                         showsHorizontalScrollIndicator={false}
                         onScroll={(event) => {
-                            const index = isTablet
-                                ? Math.round(
-                                      event.nativeEvent.contentOffset.x / (windowWidth * 0.25),
-                                  )
-                                : Math.round(
-                                      (event.nativeEvent.contentOffset.x / windowWidth) * 0.33,
-                                  );
+                            const index = Math.round(
+                                event.nativeEvent.contentOffset.x /
+                                    calculateWidth(deviceElementsCount),
+                            );
                             setCurrentIndex(index);
                         }}
                         scrollEventThrottle={16}

@@ -15,10 +15,16 @@ const windowWidth = Dimensions.get('window').width;
 type Props = {
     deviceElement: DeviceElement;
     options: { id: number; value: string }[];
+    selectedElementsCount: number;
     isTablet?: boolean;
 };
 
-const DeviceElementImg: FC<Props> = ({ deviceElement, options, isTablet }) => {
+const DeviceElementImg: FC<Props> = ({
+    deviceElement,
+    options,
+    selectedElementsCount,
+    isTablet,
+}) => {
     const [modalVisible, setModalVisible] = useState(false);
     const inspectionId = useInspectionStore((state) => state.inspectionId);
     const [errorModalVisible, setErrorModalVisible] = useState(false);
@@ -39,14 +45,14 @@ const DeviceElementImg: FC<Props> = ({ deviceElement, options, isTablet }) => {
     };
 
     const handleOptionSelect = async (option: { id: number; value: string }) => {
-        const deviceElelemtsByPosition = inspectionDeviceElements.filter(
+        const deviceElementsByPosition = inspectionDeviceElements.filter(
             (element) => element.elementPositionId === option.id,
         );
         try {
             const record: InspectionDeviceElementUpdate = {
                 inspectionId: inspectionId,
                 deviceElementId: deviceElement.id,
-                deviceOrder: deviceElelemtsByPosition.length + 1,
+                deviceOrder: deviceElementsByPosition.length + 1,
                 elementPositionId: option.id,
             };
             await saveInspectionDeviceElement(record);
@@ -58,13 +64,22 @@ const DeviceElementImg: FC<Props> = ({ deviceElement, options, isTablet }) => {
         }
     };
 
+    const calculateWidth = (selectedElementsCount: number) => {
+        const elementsPerRow = Math.min(Math.ceil(selectedElementsCount / 2), 8);
+        return windowWidth / elementsPerRow;
+    };
+
+    const calculateImageSize = (selectedElementsCount: number) => {
+        return calculateWidth(selectedElementsCount) * 0.75;
+    };
+
     return (
         <TouchableOpacity
             key={deviceElement.id}
             style={[
                 styles.elementContainer,
                 {
-                    width: isTablet ? windowWidth * 0.25 : windowWidth * 0.33,
+                    width: calculateWidth(selectedElementsCount),
                 },
             ]}
             onPress={showModal}
@@ -72,7 +87,11 @@ const DeviceElementImg: FC<Props> = ({ deviceElement, options, isTablet }) => {
             <View style={styles.elementImageContainer}>
                 {deviceElement.imageFileName && (
                     <Image
-                        style={styles.elementImage}
+                        style={{
+                            width: calculateImageSize(selectedElementsCount),
+                            height: windowWidth * 0.1,
+                            aspectRatio: 1,
+                        }}
                         source={DeviceElementImage.GetImage(deviceElement.imageFileName)}
                         resizeMode="contain"
                     />
