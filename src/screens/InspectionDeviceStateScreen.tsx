@@ -104,20 +104,6 @@ const InspectionDeviceStateScreen = () => {
         console.log('inspectionImages', JSON.stringify(inspectionImages));
         if (inspectionImages && inspectionImages.length > 0)
             setImagePath(inspectionImages[0].storagePath);
-
-        // launchImageLibrary(options, (response) => {
-        //     if (response.didCancel) {
-        //         console.log('User cancelled image picker');
-        //     } else if (response.errorCode) {
-        //         console.log('ImagePicker Error: ', response.errorCode);
-        //     } else {
-        //         if (response.assets && response.assets.length > 0) {
-        //             const selectedImage = response.assets[0];
-        //             const source = { uri: selectedImage.uri };
-        //             setAvatarSource(source);
-        //         }
-        //     }
-        // });
     };
 
     const handleDeviceStateGalleryClick = async (titleId, groupTypeId) => {
