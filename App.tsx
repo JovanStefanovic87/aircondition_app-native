@@ -30,6 +30,7 @@ const App = () => {
     }, []);
     return (
         <NavigationContainer>
+            {/* Example */}
             {/* <Stack.Navigator initialRouteName="Picture">
                 <Stack.Screen name="Picture" component={PictureScreen} />
             </Stack.Navigator> */}

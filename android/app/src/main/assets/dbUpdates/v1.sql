@@ -67,11 +67,12 @@ INSERT INTO DeviceType (name) VALUES ('Laborabzung');
 INSERT INTO DeviceType (name) VALUES ('Nassabscheider');
 
 
-INSERT INTO InspectionType (id, name, sortOrder) VALUES (1, 'Gefährdungsbeurteilung VDI 6022', 1);
-INSERT INTO InspectionType (id, name, sortOrder) VALUES (2, 'Hygieneerstinspektion VDI 6022', 2);
+INSERT INTO InspectionType (id, name, sortOrder) VALUES (1, 'Hygieneerstinspektion VDI 6022', 2);
+INSERT INTO InspectionType (id, name, sortOrder) VALUES (2, 'Gefährdungsbeurteilung VDI 6022', 1);
 INSERT INTO InspectionType (id, name, sortOrder) VALUES (3, 'Hygieneinspektion VDI 6022', 3);
 INSERT INTO InspectionType (id, name, sortOrder) VALUES (4, 'Routineprüfung nach DIN EN 14175 von Gefahrstoffschränken', 4);
 INSERT INTO InspectionType (id, name, sortOrder) VALUES (5, 'Routineprüfung nach DIN EN 14175 von Laborabzügen', 5);
+INSERT INTO InspectionType (id, name, sortOrder) VALUES (6, 'Hygieneerstinspektion und Gefährdungsbeurteilung', 6);
 
 
 INSERT INTO InspectionStatus (id, name) VALUES (1, 'Started');

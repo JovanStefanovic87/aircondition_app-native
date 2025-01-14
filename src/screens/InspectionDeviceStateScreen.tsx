@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useInspectionStore } from '../store/store';
-import { StyleSheet, View, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { StyleSheet, View, ScrollView, KeyboardAvoidingView, Platform, Image } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { calculateMinColumnWidth } from '../helpers/universalFunctions';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -50,6 +50,7 @@ const InspectionDeviceStateScreen = () => {
     const [avatarSource, setAvatarSource] = useState(null);
     const [isInspectionImage, setIsInspectionImage] = useState(false);
     const [imageSaveParams, setImageSaveParams] = useState<ImageDeviceStateSave | null>(null);
+    const [imagePath, setImagePath] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchInspectionDetails = async () => {
@@ -101,12 +102,8 @@ const InspectionDeviceStateScreen = () => {
     const handleGalleryClick = async () => {
         const inspectionImages = await getInspectionImages(newInspectionId);
         console.log('inspectionImages', JSON.stringify(inspectionImages));
-
-        const deviceImages = await getDeviceStateImages(
-            imageSaveParams.titleId,
-            imageSaveParams.groupTypeId,
-        );
-        console.log('deviceImages', JSON.stringify(deviceImages));
+        if (inspectionImages && inspectionImages.length > 0)
+            setImagePath(inspectionImages[0].storagePath);
 
         // launchImageLibrary(options, (response) => {
         //     if (response.didCancel) {
@@ -121,6 +118,13 @@ const InspectionDeviceStateScreen = () => {
         //         }
         //     }
         // });
+    };
+
+    const handleDeviceStateGalleryClick = async (titleId, groupTypeId) => {
+        const deviceImages = await getDeviceStateImages(titleId, groupTypeId);
+        console.log('deviceImages', JSON.stringify(deviceImages));
+
+        if (deviceImages && deviceImages.length > 0) setImagePath(deviceImages[0].storagePath);
     };
 
     const handleCloseCamera = () => {
@@ -155,7 +159,6 @@ const InspectionDeviceStateScreen = () => {
     };
 
     const handleSaveDeviceStateImage = (imagePath: string) => {
-        console.log('imageSaveParams', imageSaveParams);
         imageSaveParams &&
             saveDeviceStateImage(imageSaveParams.titleId, imageSaveParams.groupTypeId, {
                 name: 'Device pictures',
@@ -174,6 +177,8 @@ const InspectionDeviceStateScreen = () => {
             style={styles.container}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
+            {imagePath && <Image source={{ uri: imagePath }} style={styles.image} />}
+
             {isCameraVisible ? (
                 <TakePicture
                     onClose={handleCloseCamera}
@@ -230,7 +235,16 @@ const InspectionDeviceStateScreen = () => {
                                                                         title,
                                                                     )
                                                                 }
-                                                                onPressGallery={handleGalleryClick}
+                                                                onPressGallery={() =>
+                                                                    handleDeviceStateGalleryClick(
+                                                                        title
+                                                                            .deviceStateComponents[0]
+                                                                            .titleComponentId,
+                                                                        title
+                                                                            .deviceStateComponents[0]
+                                                                            .groupTypeId,
+                                                                    )
+                                                                }
                                                             />
                                                             <View
                                                                 style={styles.iconsGroupContainer}
@@ -311,5 +325,11 @@ const styles = StyleSheet.create({
     },
     iconsGroupContainer: {
         gap: 10,
+    },
+    image: {
+        width: 200,
+        height: 200,
+        marginBottom: 20,
+        borderRadius: 10,
     },
 });

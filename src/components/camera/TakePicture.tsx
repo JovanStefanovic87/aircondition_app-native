@@ -20,7 +20,7 @@ const TakePicture: React.FC<Props> = ({ onClose, saveImage }) => {
     const takePicture = async () => {
         if (cameraRef.current) {
             const photo = await cameraRef.current.takePhoto();
-            saveImage(photo.path);
+            if (photo && photo.path) saveImage('file://' + photo.path);
         }
     };
 

@@ -58,6 +58,8 @@ const PictureScreen: React.FC = () => {
         );
     };
 
+    console.log('imagePath:', imagePath);
+
     return (
         <View style={styles.container}>
             {imagePath ? (

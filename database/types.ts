@@ -203,6 +203,11 @@ export type InspectionImageInsert = {
     imageId: string;
 };
 
+export type DeviceElementImageInsert = {
+    deviceElementId: number;
+    imageId: string;
+};
+
 export type DeviceStateImageInsert = {
     titleComponentId: number;
     groupTypeId: number;
@@ -271,3 +276,30 @@ export type DeviceElementCompletionState = {
     inspectionDeviceElementId: string;
     isCompleted: boolean;
 };
+
+export interface QuestionComponent {
+    id: number;
+    name: string;
+    inspectionTypeId: number;
+    questionGroupId: number;
+    fullDescription: string;
+    displayOrder: number;
+    questionNumber: number;
+
+    // Fields from InspectionType
+    inspectionTypeName?: string;
+    inspectionTypeSortOrder?: number;
+
+    // Fields from QuestionGroup
+    questionGroupName?: string;
+    questionGroupSymbol?: string;
+    questionGroupReference?: string;
+}
+
+export interface InspectionQuestion {
+    id?: string;
+    inspectionId: string;
+    questionId: number;
+    answer?: string;
+    comment?: string;
+}

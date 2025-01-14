@@ -19,6 +19,7 @@ import {
     InspectionStatus,
     InspectionType,
     InspectionUpdate,
+    QuestionComponent,
     TitleComponent,
     User,
 } from '../../types';
@@ -372,14 +373,39 @@ export const getDeviceStateImages = async (
     return executeQuery<ImageStorage>({ query });
 };
 
+/**
+ * getDeviceElementStateImages - Function that retrieves images for general state of device elements
+ * @param deviceElementId - DeviceElement table
+ * @returns - records from ImageStorage table for general state images of device states in steps 2 and 4
+ */
+
 export const getDeviceElementStateImages = async (
-    titleId: number,
-    groupTypeId: number,
     deviceElementId: number,
 ): Promise<ImageStorage[]> => {
     const query = `
-        SELECT s.* FROM DeviceState_Title_Group_Image d
+        SELECT s.* FROM DeviceElement_Image d
         LEFT JOIN ImageStorage s ON s.id = d.imageId
-        WHERE d.titleComponentId = ${titleId} AND d.groupTypeId = ${groupTypeId} AND d.deviceElementId = ${deviceElementId}`;
+        WHERE d.deviceElementId = ${deviceElementId}`;
     return executeQuery<ImageStorage>({ query });
+};
+
+export const getQuestionComponents = async (
+    inspectionType: number,
+): Promise<QuestionComponent[]> => {
+    const query = `
+        SELECT 
+            qc.*,
+            it.Name AS InspectionTypeName,
+            it.SortOrder AS InspectionTypeSortOrder,
+            qg.Name AS QuestionGroupName,
+            qg.GroupSymbol AS QuestionGroupSymbol,
+            qg.GroupReference AS QuestionGroupReference
+        FROM QuestionComponent qc
+        LEFT JOIN InspectionType it ON qc.InspectionTypeId = it.Id
+        LEFT JOIN QuestionGroup qg ON qc.QuestionGroupId = qg.Id
+        WHERE it.Id = ${inspectionType}
+    `;
+    return executeQuery<QuestionComponent>({
+        query,
+    });
 };
