@@ -31,6 +31,8 @@ const InspectionDeviceElements: FC<Props> = ({ inspectionDeviceElements, positio
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [prevFilteredElementsLength, setPrevFilteredElementsLength] = useState(100);
     const mountedRef = useRef(false);
+    const selectedElementsCount = filteredElements.length;
+    const scrollViewPosition = useRef(0);
 
     useEffect(() => {
         setIsTablet(windowWidth >= tabletThreshold);
@@ -43,15 +45,18 @@ const InspectionDeviceElements: FC<Props> = ({ inspectionDeviceElements, positio
         }));
 
         const sortedElements = mappedDeviceElements.sort((a, b) => a.deviceOrder - b.deviceOrder);
-        setFilteredElements(sortedElements);
-    }, [inspectionDeviceElements, focusedDeviceId]);
+
+        if (JSON.stringify(sortedElements) !== JSON.stringify(filteredElements)) {
+            setFilteredElements(sortedElements);
+        }
+    }, [inspectionDeviceElements]);
 
     useEffect(() => {
         if (mountedRef.current) {
             if (filteredElements.length > prevFilteredElementsLength) {
                 const lastIndex = filteredElements.length - 1;
                 scrollViewRef.current?.scrollTo({
-                    x: lastIndex * (isTablet ? windowWidth * 0.33 : windowWidth * 0.33),
+                    x: lastIndex * (isTablet ? windowWidth * 0.1 : windowWidth * 0.33),
                     animated: true,
                 });
                 setCurrentIndex(lastIndex);
@@ -140,31 +145,66 @@ const InspectionDeviceElements: FC<Props> = ({ inspectionDeviceElements, positio
 
     const handleMove = useCallback(
         async (element: InspectionDeviceElement, direction: 'left' | 'right') => {
-            const currentIndex = element.deviceOrder;
-            const sibling = filteredElements.find(
-                (el) =>
-                    el.deviceOrder === (direction === 'left' ? currentIndex - 1 : currentIndex + 1),
-            );
+            const currentIndex = filteredElements.findIndex((el) => el.id === element.id);
+            if (currentIndex === -1) return;
 
-            if (sibling) {
-                try {
-                    saveDeviceElementsSortOrder([
-                        {
-                            id: element.id,
-                            deviceOrder: direction === 'left' ? currentIndex - 1 : currentIndex + 1,
-                        },
-                        { id: sibling.id, deviceOrder: currentIndex },
-                    ]);
-                    fetchUpdatedDeviceElements();
-                    direction === 'left' ? handleScrollLeft() : handleScrollRight();
-                } catch (error) {
-                    setErrorMessage(error.message);
-                    setErrorModalVisible(true);
+            const siblingIndex = direction === 'left' ? currentIndex - 1 : currentIndex + 1;
+
+            if (siblingIndex < 0 || siblingIndex >= filteredElements.length) return;
+
+            const sibling = filteredElements[siblingIndex];
+
+            try {
+                saveDeviceElementsSortOrder([
+                    {
+                        id: element.id,
+                        deviceOrder: sibling.deviceOrder,
+                    },
+                    {
+                        id: sibling.id,
+                        deviceOrder: element.deviceOrder,
+                    },
+                ]);
+
+                const updatedElements = [...filteredElements];
+                updatedElements[currentIndex] = { ...sibling, deviceOrder: element.deviceOrder };
+                updatedElements[siblingIndex] = { ...element, deviceOrder: sibling.deviceOrder };
+
+                setFilteredElements(updatedElements);
+
+                const elementWidth = isTablet ? windowWidth * 0.1 : windowWidth * 0.33;
+                const elementPosition = siblingIndex * elementWidth;
+                const currentScrollPosition = scrollViewPosition.current;
+                const endOfVisibleArea = currentScrollPosition + windowWidth;
+
+                // **Dodato**: Pomeranje ulevo ranije
+                if (
+                    (direction === 'left' && elementPosition < currentScrollPosition) ||
+                    (direction === 'right' && elementPosition + elementWidth)
+                ) {
+                    scrollViewRef.current?.scrollTo({
+                        x: elementPosition,
+                        animated: true,
+                    });
                 }
+
+                setCurrentIndex(siblingIndex);
+            } catch (error) {
+                setErrorMessage(error.message);
+                setErrorModalVisible(true);
             }
         },
-        [filteredElements],
+        [filteredElements, isTablet],
     );
+
+    const handleScroll = (event: any) => {
+        const scrollX = event.nativeEvent.contentOffset.x;
+        scrollViewPosition.current = scrollX;
+
+        // Sinhronizuje samo indeks bez promene redosleda
+        const newIndex = Math.round(scrollX / (windowWidth * 0.1));
+        setCurrentIndex(newIndex);
+    };
 
     const fetchUpdatedDeviceElements = useCallback(() => {
         fetchInspectionDeviceElements(inspectionId, setInspectionDeviceElements);
@@ -175,7 +215,7 @@ const InspectionDeviceElements: FC<Props> = ({ inspectionDeviceElements, positio
             const newIndex = currentIndex + 1;
             setCurrentIndex(newIndex);
             scrollViewRef.current?.scrollTo({
-                x: newIndex * (isTablet ? windowWidth * 0.33 : windowWidth * 0.33),
+                x: newIndex * (isTablet ? windowWidth * 0.1 : windowWidth * 0.33),
                 animated: true,
             });
         }
@@ -186,7 +226,7 @@ const InspectionDeviceElements: FC<Props> = ({ inspectionDeviceElements, positio
             const newIndex = currentIndex - 1;
             setCurrentIndex(newIndex);
             scrollViewRef.current?.scrollTo({
-                x: newIndex * (isTablet ? windowWidth * 0.33 : windowWidth * 0.33),
+                x: newIndex * (isTablet ? windowWidth * 0.1 : windowWidth * 0.33),
                 animated: true,
             });
         }
@@ -243,12 +283,8 @@ const InspectionDeviceElements: FC<Props> = ({ inspectionDeviceElements, positio
                         snapToInterval={snapInterval}
                         snapToAlignment="center"
                         decelerationRate="normal"
-                        onScroll={(event) => {
-                            const index = Math.round(
-                                event.nativeEvent.contentOffset.x / (windowWidth * 0.33),
-                            );
-                            setCurrentIndex(index);
-                        }}
+                        onScroll={handleScroll}
+                        scrollEventThrottle={16}
                     >
                         {filteredElements.map((element) => (
                             <InspectionDeviceElementImg
@@ -262,6 +298,7 @@ const InspectionDeviceElements: FC<Props> = ({ inspectionDeviceElements, positio
                                 isTablet={isTablet}
                                 currentIndex={currentIndex}
                                 index={filteredElements.indexOf(element)}
+                                selectedElementsCount={selectedElementsCount}
                             />
                         ))}
                     </ScrollView>

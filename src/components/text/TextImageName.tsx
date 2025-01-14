@@ -10,7 +10,7 @@ interface Props {
 const TextBold20: React.FC<Props> = ({ text, isTablet = true }) => {
     const styles = StyleSheet.create({
         text: {
-            fontSize: isTablet ? 20 : 12,
+            fontSize: isTablet ? 12 : 8,
             fontWeight: 'bold',
             color: customColors.black,
         },

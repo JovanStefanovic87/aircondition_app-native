@@ -23,6 +23,7 @@ type Props = {
     isTablet?: boolean;
     index: number;
     currentIndex: number;
+    selectedElementsCount: number;
 };
 
 const InspectionDeviceElementImg: FC<Props> = ({
@@ -35,6 +36,7 @@ const InspectionDeviceElementImg: FC<Props> = ({
     isTablet,
     index,
     currentIndex,
+    selectedElementsCount,
 }) => {
     const inspectionId = useInspectionStore((state) => state.inspectionId);
     const [modalVisible, setModalVisible] = useState(false);
@@ -77,13 +79,22 @@ const InspectionDeviceElementImg: FC<Props> = ({
         return substring.charAt(0).toUpperCase() + substring.slice(1);
     }
 
+    const calculateWidth = (selectedElementsCount: number) => {
+        const elementsPerRow = Math.min(Math.ceil(selectedElementsCount), 8);
+        return windowWidth / elementsPerRow;
+    };
+
+    const calculateImageSize = (selectedElementsCount: number) => {
+        return calculateWidth(selectedElementsCount) * 0.75;
+    };
+
     return (
         <TouchableOpacity
             key={deviceElement.id}
             style={[
                 styles.inspectionElementContainer,
                 {
-                    width: windowWidth * 0.33,
+                    width: calculateWidth(selectedElementsCount),
                     paddingTop: isTablet ? 0 : windowWidth * 0.05,
                     justifyContent: isTablet ? 'center' : 'flex-start',
                 },
@@ -97,7 +108,11 @@ const InspectionDeviceElementImg: FC<Props> = ({
             <View style={styles.elementImageContainer}>
                 {deviceElement.imageFileName && (
                     <Image
-                        style={[styles.elementImage, isFocused && styles.imageFocused]}
+                        style={[
+                            styles.elementImage,
+                            isFocused && styles.imageFocused,
+                            { width: calculateImageSize(selectedElementsCount) },
+                        ]}
                         source={DeviceElementImage.GetImage(deviceElement.imageFileName)}
                         resizeMode="contain"
                     />

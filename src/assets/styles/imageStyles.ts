@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
     },
     containerImagesDouble: {
         backgroundColor: customColors.blueDarker,
-        height: windowWidth * 0.5,
+        height: windowWidth * 0.4,
     },
     Head: {
         width: '100%',
@@ -62,8 +62,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
         elevation: 5,
-        height: isTablet ? windowWidth * 0.25 : windowWidth * 0.25,
-        maxWidth: isTablet ? windowWidth * 0.25 : windowWidth * 0.33,
+        height: isTablet ? windowWidth * 0.2 : windowWidth * 0.2,
         borderTopWidth: 2,
         borderBottomWidth: 2,
         borderLeftWidth: 6,
@@ -97,8 +96,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     elementImage: {
-        width: windowWidth * 0.25,
-        height: windowWidth * 0.15,
+        width: windowWidth * 0.1,
+        height: windowWidth * 0.1,
         aspectRatio: 1,
     },
     name: {
@@ -128,7 +127,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         width: '100%',
-        paddingHorizontal: windowWidth * 0.019,
         bottom: 10,
     },
     elementArrowButton: {
