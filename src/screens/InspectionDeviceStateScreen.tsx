@@ -36,6 +36,7 @@ import RowContainerFlex from '../components/containers/RowContainerFlex';
 import AutoFitTableContainer from '../components/containers/AutoFitTableContainer';
 import { customColors } from '../assets/styles/customStyles';
 import { NON_VERIFICATION_GROUP_TYPES } from '../helpers/constants';
+import GalleryModal from '../components/modals/GalleryModal';
 
 type NewInspectionScreenNavigationProp = NavigationProp<Record<string, object>, string>;
 
@@ -50,7 +51,10 @@ const InspectionDeviceStateScreen = () => {
     const [avatarSource, setAvatarSource] = useState(null);
     const [isInspectionImage, setIsInspectionImage] = useState(false);
     const [imageSaveParams, setImageSaveParams] = useState<ImageDeviceStateSave | null>(null);
-    const [imagePath, setImagePath] = useState<string | null>(null);
+    const [galleryType, setGalleryType] = useState<string | null>(null);
+    const [galleryImages, setGalleryImages] = useState<string[]>([]);
+    const [isGalleryVisible, setGalleryVisible] = useState(false);
+    const [galeryTitle, setGalleryTitle] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchInspectionDetails = async () => {
@@ -101,16 +105,81 @@ const InspectionDeviceStateScreen = () => {
 
     const handleGalleryClick = async () => {
         const inspectionImages = await getInspectionImages(newInspectionId);
-        console.log('inspectionImages', JSON.stringify(inspectionImages));
-        if (inspectionImages && inspectionImages.length > 0)
-            setImagePath(inspectionImages[0].storagePath);
+        if (inspectionImages && inspectionImages.length > 0) {
+            const imagePaths = inspectionImages.map((image) => image.storagePath);
+            setGalleryImages(imagePaths); // Postavi slike iz inspekcije
+            setGalleryType('inspection'); // Označi da su slike iz inspekcije
+            setGalleryVisible(true);
+        }
     };
 
-    const handleDeviceStateGalleryClick = async (titleId, groupTypeId) => {
-        const deviceImages = await getDeviceStateImages(titleId, groupTypeId);
-        console.log('deviceImages', JSON.stringify(deviceImages));
+    const handleDeviceStateGalleryClick = async (titleId: number, groupTypeId: number) => {
+        if (!inspectionDeviceStateDetails) {
+            console.error('InspectionDeviceStateDetails is not loaded.');
+            return;
+        }
 
-        if (deviceImages && deviceImages.length > 0) setImagePath(deviceImages[0].storagePath);
+        console.log('TitleId:', titleId, 'GroupTypeId:', groupTypeId);
+        console.log('InspectionDeviceStateDetails:', inspectionDeviceStateDetails);
+
+        // Pronađi tačan `group` koji sadrži prosleđeni `titleId`
+        const group = inspectionDeviceStateDetails.find((group) =>
+            group.titleComponents.some((title) =>
+                title.deviceStateComponents.some(
+                    (deviceState) =>
+                        deviceState.titleComponentId === titleId &&
+                        deviceState.groupTypeId === groupTypeId,
+                ),
+            ),
+        );
+
+        if (!group) {
+            console.error(
+                `Group containing titleId: ${titleId} and groupTypeId: ${groupTypeId} not found`,
+            );
+            return;
+        }
+
+        console.log('Found Group:', group);
+
+        // Pronađi tačan `title` unutar pronađenog `group`
+        const title = group.titleComponents.find((title) =>
+            title.deviceStateComponents.some(
+                (deviceState) =>
+                    deviceState.titleComponentId === titleId &&
+                    deviceState.groupTypeId === groupTypeId,
+            ),
+        );
+
+        if (!title) {
+            console.error(
+                `Title with titleId: ${titleId} and groupTypeId: ${groupTypeId} not found`,
+            );
+            return;
+        }
+
+        console.log('Found Title:', title);
+
+        // Sačuvaj kombinaciju `groupTypeName` i `title.name`
+        const galleryTitle = `${group.groupTypeName} - ${title.name}`;
+        setGalleryTitle(galleryTitle); // Postavi naslov za modal
+
+        console.log(`Gallery Title: ${galleryTitle}`);
+
+        // Dohvatanje slika
+        const deviceImages = await getDeviceStateImages(titleId, groupTypeId);
+        if (deviceImages && deviceImages.length > 0) {
+            const imagePaths = deviceImages.map((image) => image.storagePath);
+            setGalleryImages(imagePaths); // Postavi slike
+            setGalleryVisible(true); // Prikaži modal
+        } else {
+            console.log('No images found for this titleId and groupTypeId.');
+        }
+    };
+
+    const handleCloseGallery = () => {
+        setGalleryVisible(false);
+        setGalleryType(null); // Resetuj tip galerije
     };
 
     const handleCloseCamera = () => {
@@ -157,14 +226,18 @@ const InspectionDeviceStateScreen = () => {
         const groupTypeId = title.deviceStateComponents[0].groupTypeId;
         toggleCameraDevice(titleId, groupTypeId);
     };
-
+    console.log('inspectionDeviceStateDetails', inspectionDeviceStateDetails);
     return (
         <KeyboardAvoidingView
             style={styles.container}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
-            {imagePath && <Image source={{ uri: imagePath }} style={styles.image} />}
-
+            <GalleryModal
+                visible={isGalleryVisible}
+                images={galleryImages}
+                title={galeryTitle || 'ANLAGE -- ANLAGE'}
+                onClose={handleCloseGallery}
+            />
             {isCameraVisible ? (
                 <TakePicture
                     onClose={handleCloseCamera}

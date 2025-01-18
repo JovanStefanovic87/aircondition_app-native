@@ -29,7 +29,8 @@ const DeviceParamsTableContainer: React.FC<Props> = ({
             setIsCompleted(
                 parameters.airVolume !== null &&
                     parameters.constructionYear !== null &&
-                    parameters.lastMaintenance !== (null || ''),
+                    parameters.lastMaintenance !== null &&
+                    parameters.lastMaintenance !== '',
             );
         };
 
