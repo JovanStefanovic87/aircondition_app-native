@@ -78,7 +78,7 @@ const ElementsStateScreen: React.FC = () => {
         mediaType: 'photo' as MediaType,
         presentationStyle: 'fullScreen',
     };
-
+    console.log('allCompleted', allCompleted);
     const saveDeviceStateAndUpdateInspection = (deviceState: InspectionDeviceStateUpdate) => {
         saveInspectionDeviceState(deviceState);
         const updatedInspection = inspectionDeviceStateDetails.map(
@@ -118,7 +118,7 @@ const ElementsStateScreen: React.FC = () => {
     };
 
     const submit = async () => {
-        const isPageCompleted = await isAllCompleted();
+        const isPageCompleted = isAllCompletedSync();
 
         if (isPageCompleted) {
             navigation.navigate('AllInspectionsScreen');
@@ -156,6 +156,10 @@ const ElementsStateScreen: React.FC = () => {
             );
         });
         setAllCompleted(updatedStatus);
+    };
+
+    const isAllCompletedSync = (): boolean => {
+        return Object.values(allCompleted).every((status) => status === true);
     };
 
     const isAllCompleted = async (): Promise<boolean> => {
@@ -254,7 +258,7 @@ const ElementsStateScreen: React.FC = () => {
                 <PrimaryButton
                     title="Nächster Schritt"
                     onPress={submit}
-                    isDisabled={!isAllCompleted()} // Disable button if not all completed
+                    isDisabled={!isAllCompletedSync()} // Disable button if not all completed
                 />
             </View>
             <ErrorInformationModal
