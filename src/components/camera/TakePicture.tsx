@@ -36,16 +36,16 @@ const TakePicture: React.FC<Props> = ({ onClose, saveImage }) => {
     const handleAcceptPhoto = () => {
         if (photoPreview) {
             saveImage(photoPreview);
-            setPhotoPreview(null); // Resetuje preview i omogućava dalje slikanje
+            setPhotoPreview(null);
         }
     };
 
     const handleRejectPhoto = () => {
-        setPhotoPreview(null); // Resetuje preview i omogućava dalje slikanje
+        setPhotoPreview(null);
     };
 
     const handleCloseCamera = () => {
-        onClose(); // Neposredno zatvori kameru
+        onClose();
     };
 
     useEffect(() => {
@@ -94,7 +94,7 @@ const TakePicture: React.FC<Props> = ({ onClose, saveImage }) => {
                         ref={cameraRef}
                         style={StyleSheet.absoluteFillObject}
                         device={device}
-                        isActive={true} // Kamera uvek aktivna dok ne izađemo
+                        isActive={true}
                         photo={true}
                     />
                 )

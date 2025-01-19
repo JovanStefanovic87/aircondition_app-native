@@ -11,7 +11,6 @@ import {
     getDeviceElementCompletionState,
     getInspectionDeviceElements,
     getInspectionElementStateDetails,
-    getInspectionImages,
     getDeviceStateImages,
 } from '../../database/dataAccess/Query/sqlQueries';
 import {
@@ -24,10 +23,8 @@ import {
 } from '../../database/types';
 import InspectionDeviceElementsMerged from '../components/image/InspectionDeviceElementsMerged';
 import {
-    saveDeviceElementImage,
     saveDeviceStateImage,
     saveInspectionDeviceState,
-    saveInspectionImage,
 } from '../../database/dataAccess/Command/sqlCommands';
 import { customColors } from '../assets/styles/customStyles';
 import PrimaryButton from '../components/buttons/PrimaryButton';
@@ -36,7 +33,6 @@ import RowContainerFlex from '../components/containers/RowContainerFlex';
 import AutoFitTableContainer from '../components/containers/AutoFitTableContainer';
 import DeviceStateColumnContainer from '../components/containers/DeviceStateTableContainer';
 import InspectionTitle from '../components/text/DeviceStateTitle';
-import { launchImageLibrary, MediaType, CameraOptions } from 'react-native-image-picker';
 import { calculateMinColumnWidth } from '../helpers/universalFunctions';
 import DeviceStateMerged from '../components/table/DeviceStateMerged';
 import GalleryModal from '../components/modals/GalleryModal';
@@ -45,7 +41,6 @@ import TakePicture from '../components/camera/TakePicture';
 type NavScreenNavigationProp = NavigationProp<any, any>;
 
 const ElementsStateScreen: React.FC = () => {
-    const newInspectionId = useInspectionStore((state) => state.inspectionId);
     const setInspectionDeviceElements = useInspectionDeviceElementsStore(
         (state) => state.setInspectionDeviceElements,
     );
@@ -61,9 +56,7 @@ const ElementsStateScreen: React.FC = () => {
     const [errorModalVisible, setErrorModalVisible] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [allCompleted, setAllCompleted] = useState<{ [key: string]: boolean }>({});
-    const [isInspectionImage, setIsInspectionImage] = useState(false);
     const [imageSaveParams, setImageSaveParams] = useState<ImageDeviceStateSave | null>(null);
-    const [imagesByElement, setImagesByElement] = useState<Record<string, string[]>>({});
     const [galleryImages, setGalleryImages] = useState<string[]>([]);
     const [isGalleryVisible, setGalleryVisible] = useState(false);
     const [galeryTitle, setGalleryTitle] = useState<string | null>(null);
@@ -86,23 +79,9 @@ const ElementsStateScreen: React.FC = () => {
         fetchInitialData();
     }, [selectedElementId, inspectionId, selectedDeviceElementId]);
 
-    const toggleCamera = () => {
-        setCameraVisible(!isCameraVisible);
-    };
-
-    const toggleCameraInspection = () => {
-        setCameraVisible(!isCameraVisible);
-        setIsInspectionImage(true);
-    };
     const toggleCameraDevice = (titleId: number, groupTypeId: number) => {
         setCameraVisible(!isCameraVisible);
-        setIsInspectionImage(false);
         setImageSaveParams({ titleId: titleId, groupTypeId: groupTypeId });
-    };
-
-    const options: CameraOptions = {
-        mediaType: 'photo' as MediaType,
-        presentationStyle: 'fullScreen',
     };
 
     const saveDeviceStateAndUpdateInspection = (deviceState: InspectionDeviceStateUpdate) => {
@@ -124,44 +103,7 @@ const ElementsStateScreen: React.FC = () => {
         checkAndUpdateCompletionStatus(updatedInspection);
     };
 
-    /* const handleGalleryClick = async () => {
-        if (!selectedElementId) {
-            setErrorMessage('No element selected. Please select an element to view its images.');
-            setErrorModalVisible(true);
-            return;
-        }
-    
-        try {
-            const inspectionImages = await getInspectionImages(newInspectionId);
-    
-            if (inspectionImages && inspectionImages.length > 0) {
-                // Filtriraj slike koje su vezane za selectedElementId
-                const filteredImages = inspectionImages.filter(
-                    (image) => image.elementId === parseInt(selectedElementId)
-                );
-    
-                if (filteredImages.length > 0) {
-                    const imagePaths = filteredImages.map((image) => image.storagePath);
-                    setGalleryImages(imagePaths);
-                    setGalleryVisible(true);
-                } else {
-                    setErrorMessage('No images found for the selected element.');
-                    setErrorModalVisible(true);
-                }
-            } else {
-                setErrorMessage('No images available.');
-                setErrorModalVisible(true);
-            }
-        } catch (error) {
-            console.error('Error fetching inspection images:', error);
-            setErrorMessage('Error fetching images. Please try again later.');
-            setErrorModalVisible(true);
-        }
-    }; */
-
     const handleDeviceStateGalleryClick = async (titleId: number, groupTypeId: number) => {
-        console.log('titleId', titleId);
-        console.log('groupTypeId', groupTypeId);
         if (!inspectionDeviceStateDetails) {
             console.error('InspectionDeviceStateDetails is not loaded.');
             return;
@@ -202,13 +144,19 @@ const ElementsStateScreen: React.FC = () => {
         const galleryTitle = `${group.groupTypeName} - ${title.name}`;
         setGalleryTitle(galleryTitle);
 
-        const deviceImages = await getDeviceStateImages(titleId, groupTypeId);
-        if (deviceImages && deviceImages.length > 0) {
-            const imagePaths = deviceImages.map((image) => image.storagePath);
-            setGalleryImages(imagePaths);
-            setGalleryVisible(true);
-        } else {
-            console.log('No images found for this titleId and groupTypeId.');
+        if (selectedElementId) {
+            const deviceImages = await getDeviceStateImages(
+                titleId,
+                groupTypeId,
+                parseInt(selectedElementId),
+            );
+            if (deviceImages && deviceImages.length > 0) {
+                const imagePaths = deviceImages.map((image) => image.storagePath);
+                setGalleryImages(imagePaths);
+                setGalleryVisible(true);
+            } else {
+                console.log('No images found for this titleId and groupTypeId.');
+            }
         }
     };
 
@@ -292,36 +240,32 @@ const ElementsStateScreen: React.FC = () => {
         }));
     };
 
-    const handleSaveDeviceStateImage = (imagePath: string) => {
-        if (imageSaveParams && selectedElementId) {
-            setImagesByElement((prev) => {
-                const updatedImages = prev[selectedElementId]
-                    ? [...prev[selectedElementId], imagePath]
-                    : [imagePath];
-                return { ...prev, [selectedElementId]: updatedImages };
-            });
-        }
-    };
-
     const handleCameraToggleForDeviceState = (title: TitleComponent) => {
         const titleId = title.deviceStateComponents[0].titleComponentId;
         const groupTypeId = title.deviceStateComponents[0].groupTypeId;
         toggleCameraDevice(titleId, groupTypeId);
     };
 
-    const handleSaveDeviceElementImage = (path: string) => {
-        const record = {
-            storagePath: path,
-            name: 'Device Image',
-        };
+    const handleSaveDeviceElementImage = async (
+        path: string,
+        titleId: number,
+        groupTypeId: number,
+        deviceElementId?: number,
+    ) => {
+        try {
+            const record = {
+                storagePath: path,
+                name: 'Device Image',
+            };
 
-        saveDeviceElementImage(parseInt(selectedElementId), record)
-            .then(() => {
-                console.log('Image saved successfully');
-            })
-            .catch((error) => {
-                console.error('Error saving device element image:', error);
-            });
+            // Save the image record with the updated API
+            await saveDeviceStateImage(titleId, groupTypeId, record, deviceElementId);
+            console.log('Image saved successfully');
+        } catch (error) {
+            console.error('Error saving device element image:', error);
+            setErrorMessage('Failed to save the image. Please try again.');
+            setErrorModalVisible(true);
+        }
     };
 
     return (
@@ -333,7 +277,17 @@ const ElementsStateScreen: React.FC = () => {
                 onClose={handleCloseGallery}
             />
             {isCameraVisible ? (
-                <TakePicture onClose={handleCloseCamera} saveImage={handleSaveDeviceElementImage} />
+                <TakePicture
+                    onClose={handleCloseCamera}
+                    saveImage={(path) =>
+                        handleSaveDeviceElementImage(
+                            path,
+                            imageSaveParams?.titleId!,
+                            imageSaveParams?.groupTypeId!,
+                            selectedDeviceElementId ? parseInt(selectedDeviceElementId) : undefined,
+                        )
+                    }
+                />
             ) : (
                 <GestureHandlerRootView style={styles.scrollContainer}>
                     <ScrollView style={styles.scrollView}>
