@@ -21,9 +21,14 @@ const TakePicture: React.FC<Props> = ({ onClose, saveImage }) => {
 
     const takePicture = async () => {
         if (cameraRef.current) {
-            const photo = await cameraRef.current.takePhoto();
-            if (photo && photo.path) {
-                setPhotoPreview('file://' + photo.path);
+            try {
+                const photo = await cameraRef.current.takePhoto();
+                console.log('Photo:', photo);
+                if (photo && photo.path) {
+                    setPhotoPreview('file://' + photo.path);
+                }
+            } catch (error) {
+                console.error('Error taking photo:', error);
             }
         }
     };

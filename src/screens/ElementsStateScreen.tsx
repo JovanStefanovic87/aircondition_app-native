@@ -24,6 +24,7 @@ import {
 } from '../../database/types';
 import InspectionDeviceElementsMerged from '../components/image/InspectionDeviceElementsMerged';
 import {
+    saveDeviceElementImage,
     saveDeviceStateImage,
     saveInspectionDeviceState,
     saveInspectionImage,
@@ -123,14 +124,40 @@ const ElementsStateScreen: React.FC = () => {
         checkAndUpdateCompletionStatus(updatedInspection);
     };
 
-    const handleGalleryClick = async () => {
-        const inspectionImages = await getInspectionImages(newInspectionId);
-        if (inspectionImages && inspectionImages.length > 0) {
-            const imagePaths = inspectionImages.map((image) => image.storagePath);
-            setGalleryImages(imagePaths);
-            setGalleryVisible(true);
+    /* const handleGalleryClick = async () => {
+        if (!selectedElementId) {
+            setErrorMessage('No element selected. Please select an element to view its images.');
+            setErrorModalVisible(true);
+            return;
         }
-    };
+    
+        try {
+            const inspectionImages = await getInspectionImages(newInspectionId);
+    
+            if (inspectionImages && inspectionImages.length > 0) {
+                // Filtriraj slike koje su vezane za selectedElementId
+                const filteredImages = inspectionImages.filter(
+                    (image) => image.elementId === parseInt(selectedElementId)
+                );
+    
+                if (filteredImages.length > 0) {
+                    const imagePaths = filteredImages.map((image) => image.storagePath);
+                    setGalleryImages(imagePaths);
+                    setGalleryVisible(true);
+                } else {
+                    setErrorMessage('No images found for the selected element.');
+                    setErrorModalVisible(true);
+                }
+            } else {
+                setErrorMessage('No images available.');
+                setErrorModalVisible(true);
+            }
+        } catch (error) {
+            console.error('Error fetching inspection images:', error);
+            setErrorMessage('Error fetching images. Please try again later.');
+            setErrorModalVisible(true);
+        }
+    }; */
 
     const handleDeviceStateGalleryClick = async (titleId: number, groupTypeId: number) => {
         console.log('titleId', titleId);
@@ -282,11 +309,19 @@ const ElementsStateScreen: React.FC = () => {
         toggleCameraDevice(titleId, groupTypeId);
     };
 
-    const handleSaveInspectionImage = (imagePath: string) => {
-        saveInspectionImage(newInspectionId, {
-            name: 'Inspection Device pictures',
-            storagePath: imagePath,
-        });
+    const handleSaveDeviceElementImage = (path: string) => {
+        const record = {
+            storagePath: path,
+            name: 'Device Image',
+        };
+
+        saveDeviceElementImage(parseInt(selectedElementId), record)
+            .then(() => {
+                console.log('Image saved successfully');
+            })
+            .catch((error) => {
+                console.error('Error saving device element image:', error);
+            });
     };
 
     return (
@@ -298,12 +333,7 @@ const ElementsStateScreen: React.FC = () => {
                 onClose={handleCloseGallery}
             />
             {isCameraVisible ? (
-                <TakePicture
-                    onClose={handleCloseCamera}
-                    saveImage={
-                        isInspectionImage ? handleSaveInspectionImage : handleSaveDeviceStateImage
-                    }
-                />
+                <TakePicture onClose={handleCloseCamera} saveImage={handleSaveDeviceElementImage} />
             ) : (
                 <GestureHandlerRootView style={styles.scrollContainer}>
                     <ScrollView style={styles.scrollView}>
