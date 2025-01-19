@@ -303,3 +303,43 @@ export interface InspectionQuestion {
     answer?: string;
     comment?: string;
 }
+
+export interface Question {
+    questionId: number;
+    answerId: number;
+    comment: string;
+    fullDescription: string;
+    displayOrder: number;
+    questionNumber: string;
+}
+
+export interface QuestionGroup {
+    questionGroupId: number;
+    questionGroupName: string;
+    groupSymbol: string;
+    groupReference: string;
+    questions: Question[];
+}
+
+export interface QuestionByInspectionType {
+    inspectionTypeName: string;
+    inspectionTypeId: number;
+    questions: QuestionGroup[];
+}
+
+export type QuestionsByInspectionType = QuestionByInspectionType[];
+
+export interface InspectionQuestionWithDetails {
+    inspectionTypeName: string;
+    inspectionTypeId: number;
+    questionGroupId: number;
+    questionGroupName: string;
+    groupSymbol: string;
+    groupReference: string;
+    questionId: number;
+    fullDescription: string;
+    displayOrder: number;
+    questionNumber: string;
+    answerId: number;
+    comment: string;
+}

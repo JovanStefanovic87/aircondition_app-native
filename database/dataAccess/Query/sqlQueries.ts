@@ -16,14 +16,16 @@ import {
     InspectionAndImageStorage,
     InspectionDeviceComponent,
     InspectionDeviceElement,
+    InspectionQuestionWithDetails,
     InspectionStatus,
     InspectionType,
     InspectionUpdate,
     QuestionComponent,
+    QuestionsByInspectionType,
     TitleComponent,
     User,
 } from '../../types';
-import { executeQuery, executeQuerySingle } from './baseQuery';
+import { executeQuery, executeQuerySimple, executeQuerySingle } from './baseQuery';
 
 export const getDBVersionTable = async (): Promise<DatabaseVersionType[]> => {
     const query = `SELECT * FROM DatabaseVersion`;
@@ -38,6 +40,11 @@ export const getDeviceTypes = async (): Promise<DeviceType[]> => {
 export const getInspectionTypes = async (): Promise<InspectionType[]> => {
     const query = `SELECT * FROM InspectionType`;
     return executeQuery<InspectionType>({ query });
+};
+
+export const getInspectionType = async (inspectionId: string): Promise<string> => {
+    const query = `SELECT * FROM Inspection WHERE id = '${inspectionId}'`;
+    return executeQuerySimple<string>(query);
 };
 
 export const getInspectionStatus = async (): Promise<InspectionStatus[]> => {
@@ -408,4 +415,43 @@ export const getQuestionComponents = async (
     return executeQuery<QuestionComponent>({
         query,
     });
+};
+
+export const getInspectionQuestionsByType = async (
+    inspectionType: number,
+): Promise<InspectionQuestionWithDetails[]> => {
+    const query = `
+        SELECT 
+            it.Name AS inspectionTypeName,
+            it.Id AS inspectionTypeId,
+            qg.Id AS questionGroupId,
+            qg.Name AS questionGroupName,
+            qg.GroupSymbol AS groupSymbol,
+            qg.GroupReference AS groupReference,
+            qc.Id AS questionId,
+            qc.fullDescription,
+            qc.displayOrder,
+            qc.questionNumber,
+            iq.answerId,
+            iq.comment
+        FROM Inspection_Question iq
+        INNER JOIN QuestionComponent qc ON iq.questionId = qc.Id
+        INNER JOIN QuestionGroup qg ON qc.QuestionGroupId = qg.Id
+        INNER JOIN InspectionType it ON qc.InspectionTypeId = it.Id
+        WHERE it.Id = ${inspectionType}
+    `;
+    return executeQuery<InspectionQuestionWithDetails>({
+        query,
+    });
+};
+
+export const getInspectionQuestions = async (inspectionId: string): Promise<void> => {
+    console.log('Inspection ID: ', inspectionId);
+    const inspectionTypeId = await getInspectionType(inspectionId);
+    //QuestionsByInspectionType[]
+
+    // console.log('Inspection Type: ', inspectionTypeId);
+    // const questions = await getInspectionQuestionsByType(inspectionTypeId.id);
+
+    // console.log('Questions: ', questions);
 };

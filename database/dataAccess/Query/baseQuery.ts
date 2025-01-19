@@ -113,3 +113,53 @@ export const executeQuerySingle = async <T extends object>(
         attempt++;
     }
 };
+
+/**
+ * Function same as executeQuerySingle but with a return type of string or number
+ * @param query - SQL query to execute
+ * @returns single value of type string or number
+ */
+
+export const executeQuerySimple = async <T extends string | number>(
+    query: string,
+): Promise<T | null> => {
+    let attempt = 1;
+
+    while (attempt <= maxRetries) {
+        try {
+            const db = getDatabase();
+
+            return new Promise<T | null>((resolve, reject) => {
+                db.transaction((tx) => {
+                    tx.executeSql(
+                        query,
+                        [],
+                        (_, result) => {
+                            const rows = result.rows;
+
+                            if (rows.length > 0) {
+                                const record = rows.item(0);
+                                const firstValue = Object.values(record)[0] as T;
+                                resolve(firstValue);
+                            } else {
+                                console.log('No record found');
+                                resolve(null);
+                            }
+                        },
+                        (error) => {
+                            console.log('Error selecting record: ', error);
+                            reject(error);
+                        },
+                    );
+                });
+            });
+        } catch (error) {
+            console.log('Query attempt failed, retrying...', error);
+            await new Promise((resolve) => setTimeout(resolve, retryDelay));
+        }
+        attempt++;
+    }
+
+    console.log('Max retries reached. Query failed.');
+    return null;
+};

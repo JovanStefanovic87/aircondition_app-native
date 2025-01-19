@@ -12,6 +12,7 @@ import {
     getDeviceStateComponentsElementDevice,
     getInspectionDeviceElements,
     getInspectionDeviceStateByGroupType,
+    getInspectionQuestions,
     getInspections,
 } from '../../database/dataAccess/Query/sqlQueries';
 import { deleteAllTables } from '../../database/dataAccess/helpers';
@@ -145,6 +146,10 @@ const NavScreen: React.FC = () => {
         console.log('deviceElementComponents: ', deviceElementComponents);
     };
 
+    const handleGetInspectionQuestions = async () => {
+        await getInspectionQuestions('7d2bf1cb-efc0-441d-a115-360ea7f0a700');
+    };
+
     return (
         <GestureHandlerRootView style={styles.scrollContainer}>
             <ScrollView style={styles.scrollView}>
@@ -244,6 +249,13 @@ const NavScreen: React.FC = () => {
                         iconName="database"
                         iconColor="blue"
                         buttonText="Get Device Element Components"
+                    />
+
+                    <NavButton
+                        onPress={() => handleGetInspectionQuestions()}
+                        iconName="database"
+                        iconColor="blue"
+                        buttonText="Get Inspection Questions"
                     />
                 </View>
                 <ErrorInformationModal
