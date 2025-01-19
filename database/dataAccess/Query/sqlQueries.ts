@@ -370,8 +370,8 @@ export const getDeviceStateImages = async (
     const query = `
         SELECT s.* FROM DeviceState_Title_Group_Image g
         LEFT JOIN ImageStorage s ON s.id = g.imageId
-        WHERE g.titleComponentId = ${titleId} AND g.groupTypeId = ${groupTypeId} AND g.deviceElementId=${
-        elementId ? elementId : 'IS NULL'
+        WHERE g.titleComponentId = ${titleId} AND g.groupTypeId = ${groupTypeId} AND g.deviceElementId ${
+        elementId ? '=' + elementId : 'IS NULL'
     }`;
     return executeQuery<ImageStorage>({ query });
 };
