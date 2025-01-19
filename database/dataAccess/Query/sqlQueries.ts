@@ -365,11 +365,14 @@ export const getInspectionImages = async (inspectionId: string): Promise<ImageSt
 export const getDeviceStateImages = async (
     titleId: number,
     groupTypeId: number,
+    elementId?: number,
 ): Promise<ImageStorage[]> => {
     const query = `
         SELECT s.* FROM DeviceState_Title_Group_Image g
         LEFT JOIN ImageStorage s ON s.id = g.imageId
-        WHERE g.titleComponentId = ${titleId} AND g.groupTypeId = ${groupTypeId} AND g.deviceElementId IS NULL`;
+        WHERE g.titleComponentId = ${titleId} AND g.groupTypeId = ${groupTypeId} AND g.deviceElementId=${
+        elementId ? elementId : 'IS NULL'
+    }`;
     return executeQuery<ImageStorage>({ query });
 };
 
