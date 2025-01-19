@@ -18,7 +18,7 @@ import {
     saveInspectionImage,
 } from '../../database/dataAccess/Command/sqlCommands';
 import { saveInspection } from '../../database/dataAccess/Command/sqlCommands';
-import { launchImageLibrary, MediaType, CameraOptions } from 'react-native-image-picker';
+import { MediaType, CameraOptions } from 'react-native-image-picker';
 import TakePicture from '../components/camera/TakePicture';
 import InspectionTitle from '../components/text/DeviceStateTitle';
 import PrimaryButton from '../components/buttons/PrimaryButton';
@@ -51,7 +51,6 @@ const InspectionDeviceStateScreen = () => {
     const [avatarSource, setAvatarSource] = useState(null);
     const [isInspectionImage, setIsInspectionImage] = useState(false);
     const [imageSaveParams, setImageSaveParams] = useState<ImageDeviceStateSave | null>(null);
-    const [galleryType, setGalleryType] = useState<string | null>(null);
     const [galleryImages, setGalleryImages] = useState<string[]>([]);
     const [isGalleryVisible, setGalleryVisible] = useState(false);
     const [galeryTitle, setGalleryTitle] = useState<string | null>(null);
@@ -107,8 +106,7 @@ const InspectionDeviceStateScreen = () => {
         const inspectionImages = await getInspectionImages(newInspectionId);
         if (inspectionImages && inspectionImages.length > 0) {
             const imagePaths = inspectionImages.map((image) => image.storagePath);
-            setGalleryImages(imagePaths); // Postavi slike iz inspekcije
-            setGalleryType('inspection'); // Označi da su slike iz inspekcije
+            setGalleryImages(imagePaths);
             setGalleryVisible(true);
         }
     };
@@ -119,10 +117,6 @@ const InspectionDeviceStateScreen = () => {
             return;
         }
 
-        console.log('TitleId:', titleId, 'GroupTypeId:', groupTypeId);
-        console.log('InspectionDeviceStateDetails:', inspectionDeviceStateDetails);
-
-        // Pronađi tačan `group` koji sadrži prosleđeni `titleId`
         const group = inspectionDeviceStateDetails.find((group) =>
             group.titleComponents.some((title) =>
                 title.deviceStateComponents.some(
@@ -140,9 +134,6 @@ const InspectionDeviceStateScreen = () => {
             return;
         }
 
-        console.log('Found Group:', group);
-
-        // Pronađi tačan `title` unutar pronađenog `group`
         const title = group.titleComponents.find((title) =>
             title.deviceStateComponents.some(
                 (deviceState) =>
@@ -158,20 +149,14 @@ const InspectionDeviceStateScreen = () => {
             return;
         }
 
-        console.log('Found Title:', title);
-
-        // Sačuvaj kombinaciju `groupTypeName` i `title.name`
         const galleryTitle = `${group.groupTypeName} - ${title.name}`;
-        setGalleryTitle(galleryTitle); // Postavi naslov za modal
+        setGalleryTitle(galleryTitle);
 
-        console.log(`Gallery Title: ${galleryTitle}`);
-
-        // Dohvatanje slika
         const deviceImages = await getDeviceStateImages(titleId, groupTypeId);
         if (deviceImages && deviceImages.length > 0) {
             const imagePaths = deviceImages.map((image) => image.storagePath);
-            setGalleryImages(imagePaths); // Postavi slike
-            setGalleryVisible(true); // Prikaži modal
+            setGalleryImages(imagePaths);
+            setGalleryVisible(true);
         } else {
             console.log('No images found for this titleId and groupTypeId.');
         }
@@ -179,7 +164,6 @@ const InspectionDeviceStateScreen = () => {
 
     const handleCloseGallery = () => {
         setGalleryVisible(false);
-        setGalleryType(null); // Resetuj tip galerije
     };
 
     const handleCloseCamera = () => {
@@ -226,7 +210,7 @@ const InspectionDeviceStateScreen = () => {
         const groupTypeId = title.deviceStateComponents[0].groupTypeId;
         toggleCameraDevice(titleId, groupTypeId);
     };
-    console.log('inspectionDeviceStateDetails', inspectionDeviceStateDetails);
+
     return (
         <KeyboardAvoidingView
             style={styles.container}
