@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     Modal,
     View,
@@ -19,12 +19,15 @@ interface Props {
 }
 
 const GalleryModal: React.FC<Props> = ({ visible, images, onClose, title }) => {
-    const numColumns = 3; // Broj kolona u mreži
+    const [selectedImage, setSelectedImage] = useState<string | null>(null);
+    const numColumns = 3;
 
     const renderImage = ({ item }: { item: string }) => (
-        <View style={styles.imageWrapper}>
-            <Image source={{ uri: item }} style={styles.gridImage} resizeMode="cover" />
-        </View>
+        <TouchableOpacity onPress={() => setSelectedImage(item)}>
+            <View style={styles.imageWrapper}>
+                <Image source={{ uri: item }} style={styles.gridImage} resizeMode="cover" />
+            </View>
+        </TouchableOpacity>
     );
 
     return (
@@ -43,12 +46,33 @@ const GalleryModal: React.FC<Props> = ({ visible, images, onClose, title }) => {
                                 data={images}
                                 renderItem={renderImage}
                                 keyExtractor={(_, index) => index.toString()}
-                                numColumns={numColumns} // Prikaži slike u mreži
+                                numColumns={numColumns}
                                 contentContainerStyle={styles.gridContainer}
                                 showsVerticalScrollIndicator={false}
                             />
                         </View>
                     </TouchableWithoutFeedback>
+
+                    {/* Modal za prikaz slike u punoj veličini */}
+                    {selectedImage && (
+                        <Modal visible={true} transparent={true} animationType="fade">
+                            <TouchableWithoutFeedback onPress={() => setSelectedImage(null)}>
+                                <View style={styles.fullScreenOverlay}>
+                                    <Image
+                                        source={{ uri: selectedImage }}
+                                        style={styles.fullScreenImage}
+                                        resizeMode="contain"
+                                    />
+                                    <TouchableOpacity
+                                        onPress={() => setSelectedImage(null)}
+                                        style={styles.fullScreenCloseButton}
+                                    >
+                                        <Text style={styles.fullScreenCloseButtonText}>✕</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </TouchableWithoutFeedback>
+                        </Modal>
+                    )}
                 </View>
             </TouchableWithoutFeedback>
         </Modal>
@@ -58,7 +82,7 @@ const GalleryModal: React.FC<Props> = ({ visible, images, onClose, title }) => {
 export default GalleryModal;
 
 const { width } = Dimensions.get('window');
-const imageSize = (width * 0.9) / 3 - 10; // Prilagođena veličina slike za mrežu sa 3 kolone
+const imageSize = (width * 0.9) / 3 - 10;
 
 const styles = StyleSheet.create({
     modalOverlay: {
@@ -119,5 +143,30 @@ const styles = StyleSheet.create({
     gridImage: {
         width: '100%',
         height: '100%',
+    },
+    fullScreenOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.9)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    fullScreenImage: {
+        width: '90%',
+        height: '80%',
+    },
+    fullScreenCloseButton: {
+        position: 'absolute',
+        top: 20,
+        right: 20,
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+        padding: 10,
+        borderRadius: 25,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    fullScreenCloseButtonText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#fff',
     },
 });

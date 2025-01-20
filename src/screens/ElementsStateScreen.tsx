@@ -8,7 +8,6 @@ import {
     useDeviceElementSortStore,
 } from '../store/store';
 import {
-    getDeviceElementCompletionState,
     getInspectionDeviceElements,
     getInspectionElementStateDetails,
     getDeviceStateImages,
@@ -78,6 +77,19 @@ const ElementsStateScreen: React.FC = () => {
         };
         fetchInitialData();
     }, [selectedElementId, inspectionId, selectedDeviceElementId]);
+
+    console.log(
+        'inspectionDeviceStateDetails',
+        JSON.stringify(
+            inspectionDeviceStateDetails.map((group) =>
+                group.titleComponents.map((title) =>
+                    title.deviceStateComponents.map((state) => state),
+                ),
+            ),
+            null, // Zamena za replacer
+            2, // Indentacija za lep format
+        ),
+    );
 
     const toggleCameraDevice = (titleId: number, groupTypeId: number) => {
         setCameraVisible(!isCameraVisible);
@@ -207,17 +219,6 @@ const ElementsStateScreen: React.FC = () => {
             );
         });
         setAllCompleted(updatedStatus);
-    };
-
-    const isDeviceStateComplete = (deviceStateComponents) => {
-        return deviceStateComponents.every((state) => {
-            // Proveri da li je state value validna ili je deviceStateValues prazan niz
-            return (
-                state.value !== null &&
-                state.value !== undefined &&
-                (state.deviceStateValues.length === 0 || state.value !== null)
-            );
-        });
     };
 
     const isAllCompleted = (): boolean => {

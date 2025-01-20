@@ -2,13 +2,11 @@ import React, { FC, useState } from 'react';
 import { InspectionDeviceElement } from '../../../database/types';
 import { View, Image, TouchableOpacity, Dimensions } from 'react-native';
 import { DeviceElementImage } from '../../resources/deviceElementImages';
-import Icon from 'react-native-vector-icons/Feather';
-import { deleteInspectionDeviceElement } from '../../../database/dataAccess/Command/sqlCommands';
-import { fetchInspectionDeviceElements } from '../../helpers/api';
-import { useInspectionDeviceElementsStore, useInspectionStore } from '../../store/store';
+import CheckedIcon from '../icons/svg/Checked';
+import DangerIcon from '../icons/svg/DangerIcon';
 import TextImageName from '../text/TextImageName';
-import styles from '../../assets/styles/imageStyles';
 import { customColors } from '../../assets/styles/customStyles';
+import styles from '../../assets/styles/imageStyles';
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -29,16 +27,6 @@ const InspectionDeviceElementImgMerged: FC<Props> = ({
     index,
     currentIndex,
 }) => {
-    const inspectionId = useInspectionStore((state) => state.inspectionId);
-    const [modalVisible, setModalVisible] = useState(false);
-    const setInspectionDeviceElements = useInspectionDeviceElementsStore(
-        (state) => state.setInspectionDeviceElements,
-    );
-
-    const hideModal = () => {
-        setModalVisible(false);
-    };
-
     const handlePressIn = () => {
         onFocusChange(deviceElement.id.toString(), true, deviceElement.id);
     };
@@ -47,19 +35,9 @@ const InspectionDeviceElementImgMerged: FC<Props> = ({
         onFocusChange(deviceElement.id.toString(), false, deviceElement.id);
     };
 
-    const handleDeleteInspectionElements = async (inspectionId: string) => {
-        await deleteInspectionDeviceElement(inspectionId);
+    const checkCompletionStatus = (): boolean => {
+        return false;
     };
-
-    const fetchUpdatedDeviceElements = () => {
-        fetchInspectionDeviceElements(inspectionId, setInspectionDeviceElements);
-    };
-
-    function capitalizeFirstLetter(str = '') {
-        const firstDotIndex = str.indexOf('.');
-        const substring = firstDotIndex !== -1 ? str.substring(0, firstDotIndex) : str;
-        return substring.charAt(0).toUpperCase() + substring.slice(1);
-    }
 
     return (
         <TouchableOpacity
@@ -78,6 +56,9 @@ const InspectionDeviceElementImgMerged: FC<Props> = ({
             onBlur={handlePressOut}
             activeOpacity={1}
         >
+            {/* <View style={{ position: 'absolute', top: 5, right: 5 }}>
+                {checkCompletionStatus() ? <CheckedIcon /> : <DangerIcon />}
+            </View> */}
             <View style={styles.elementImageContainer}>
                 {deviceElement.imageFileName && (
                     <Image
@@ -88,7 +69,7 @@ const InspectionDeviceElementImgMerged: FC<Props> = ({
                 )}
             </View>
             <TextImageName
-                text={capitalizeFirstLetter(deviceElement.imageFileName)}
+                text={deviceElement.imageFileName?.split('.')[0]?.toUpperCase()}
                 isTablet={isTablet}
             />
         </TouchableOpacity>
