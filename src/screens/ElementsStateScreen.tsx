@@ -209,10 +209,44 @@ const ElementsStateScreen: React.FC = () => {
         setAllCompleted(updatedStatus);
     };
 
-    const isAllCompleted = async (): Promise<boolean> => {
-        const elementsState = await getDeviceElementCompletionState(inspectionId);
-        const allCompleted = elementsState.every((element) => element.isCompleted);
+    const isDeviceStateComplete = (deviceStateComponents) => {
+        return deviceStateComponents.every((state) => {
+            // Proveri da li je state value validna ili je deviceStateValues prazan niz
+            return (
+                state.value !== null &&
+                state.value !== undefined &&
+                (state.deviceStateValues.length === 0 || state.value !== null)
+            );
+        });
+    };
 
+    const isAllCompleted = (): boolean => {
+        const incompleteStates = [];
+
+        const allCompleted = inspectionDeviceStateDetails.every((group) =>
+            group.titleComponents.every((title) =>
+                title.deviceStateComponents.every((state) => {
+                    // Provera: ako je `deviceStateValues` prazan, smatra se kompletnim
+                    const isComplete = state.deviceStateValues.length === 0 || state.value !== null;
+
+                    if (!isComplete) {
+                        incompleteStates.push({
+                            groupTypeName: group.groupTypeName,
+                            titleName: title.name,
+                            deviceState: state,
+                        });
+                    }
+
+                    return isComplete;
+                }),
+            ),
+        );
+
+        if (incompleteStates.length > 0) {
+            console.log('Incomplete states:', JSON.stringify(incompleteStates, null, 2));
+        }
+
+        console.log('All completed:', allCompleted);
         return allCompleted;
     };
 
