@@ -6,6 +6,8 @@ import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { useInspectionStore } from '../store/store';
 import NavButton from '../components/buttons/NavButton';
 import {
+    getAllInspectionQuestions,
+    getAllQuestions,
     getDeviceElementPositions,
     getDeviceElementTypes,
     getDeviceElements,
@@ -14,6 +16,7 @@ import {
     getInspectionDeviceStateByGroupType,
     getInspectionQuestions,
     getInspections,
+    getQuestionGroups,
 } from '../../database/dataAccess/Query/sqlQueries';
 import { deleteAllTables } from '../../database/dataAccess/helpers';
 import {
@@ -147,7 +150,29 @@ const NavScreen: React.FC = () => {
     };
 
     const handleGetInspectionQuestions = async () => {
-        await getInspectionQuestions('7d2bf1cb-efc0-441d-a115-360ea7f0a700');
+        const questions = await getInspectionQuestions('055eb975-830c-4dca-848e-b812b9791895'); //e1ee1bb5-ee71-4e53-86df-362216ac17f7');
+        console.log(
+            '----------------------------------------------------------------------------------------------------',
+        );
+        console.log('questions: ', JSON.stringify(questions));
+    };
+
+    const handleGetAllInspectionQuestions = async () => {
+        const inspectionQuestions = await getAllInspectionQuestions();
+        console.log('----------------------------------------------------');
+        console.log('inspectionQuestions: ', inspectionQuestions);
+    };
+
+    const handleAllQuestions = async () => {
+        const questions = await getAllQuestions();
+        console.log('----------------------------------------------------');
+        console.log('questions: ', questions);
+    };
+
+    const handleGetQuestionGroups = async () => {
+        const questionGroups = await getQuestionGroups();
+        console.log('----------------------------------------------------');
+        console.log('questionGroups: ', questionGroups);
     };
 
     return (
@@ -178,7 +203,6 @@ const NavScreen: React.FC = () => {
                         iconColor="red"
                         buttonText="Ausloggen"
                     />
-
                     <NavButton
                         onPress={handleDeviceByGroupType}
                         iconName="microchip"
@@ -243,19 +267,36 @@ const NavScreen: React.FC = () => {
                         iconColor="red"
                         buttonText="Element Positions"
                     />
-
                     <NavButton
                         onPress={() => handleGetDeviceElementComponents()}
                         iconName="database"
                         iconColor="blue"
                         buttonText="Get Device Element Components"
                     />
-
                     <NavButton
                         onPress={() => handleGetInspectionQuestions()}
                         iconName="database"
                         iconColor="blue"
-                        buttonText="Get Inspection Questions"
+                        buttonText="Get Questions per specific Inspection"
+                    />
+                    <NavButton
+                        onPress={() => handleGetAllInspectionQuestions()}
+                        iconName="database"
+                        iconColor="blue"
+                        buttonText="Get All Inspection Questions"
+                    />
+                    <NavButton
+                        onPress={() => handleAllQuestions()}
+                        iconName="database"
+                        iconColor="blue"
+                        buttonText="Get All Questions"
+                    />
+
+                    <NavButton
+                        onPress={() => handleGetQuestionGroups()}
+                        iconName="database"
+                        iconColor="blue"
+                        buttonText="Get All Question Groups"
                     />
                 </View>
                 <ErrorInformationModal

@@ -330,6 +330,8 @@ export interface QuestionByInspectionType {
 export type QuestionsByInspectionType = QuestionByInspectionType[];
 
 export interface InspectionQuestionWithDetails {
+    inspectionQuestionId: string;
+    inspectionId: string;
     inspectionTypeName: string;
     inspectionTypeId: number;
     questionGroupId: number;
@@ -342,4 +344,29 @@ export interface InspectionQuestionWithDetails {
     questionNumber: string;
     answerId: number;
     comment: string;
+}
+
+export interface QuestionGroupForUI {
+    groupId: number | undefined;
+    name: string;
+    groupSymbol: string | undefined;
+    groupReference: string | undefined;
+    questions: InspectionQuestionForUI[];
+}
+
+export interface InspectionQuestionForUI {
+    inspectionQuestionId: string;
+    inspectionId: string;
+    questionId: number;
+    fullDescription: string;
+    displayOrder: number;
+    questionNumber: string;
+    answerId: number;
+    comment: string;
+}
+
+export interface TypedQuestionGroupForUI {
+    inspectionTypeId: number;
+    inspectionTypeName: string;
+    questionsByGroup: QuestionGroupForUI[];
 }

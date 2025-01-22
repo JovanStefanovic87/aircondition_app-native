@@ -99,7 +99,7 @@ const fillQuestions = async (inspectionId: string, inspectionTypeId: number): Pr
             questionId: question.id,
         };
 
-        await executeUpdateOrInsertWithGuid<InspectionQuestion>('Inspection_DeviceState', record);
+        await executeUpdateOrInsertWithGuid<InspectionQuestion>('Inspection_Question', record);
     }
 };
 

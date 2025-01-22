@@ -16,16 +16,20 @@ import {
     InspectionAndImageStorage,
     InspectionDeviceComponent,
     InspectionDeviceElement,
+    InspectionQuestion,
     InspectionQuestionWithDetails,
     InspectionStatus,
     InspectionType,
     InspectionUpdate,
     QuestionComponent,
-    QuestionsByInspectionType,
+    QuestionGroup,
+    QuestionGroupForUI,
     TitleComponent,
+    TypedQuestionGroupForUI,
     User,
 } from '../../types';
 import { executeQuery, executeQuerySimple, executeQuerySingle } from './baseQuery';
+import { inspectionTypeLookup } from '../../constants';
 
 export const getDBVersionTable = async (): Promise<DatabaseVersionType[]> => {
     const query = `SELECT * FROM DatabaseVersion`;
@@ -38,13 +42,13 @@ export const getDeviceTypes = async (): Promise<DeviceType[]> => {
 };
 
 export const getInspectionTypes = async (): Promise<InspectionType[]> => {
-    const query = `SELECT * FROM InspectionType`;
+    const query = `SELECT * FROM InspectionType order by sortOrder`;
     return executeQuery<InspectionType>({ query });
 };
 
-export const getInspectionType = async (inspectionId: string): Promise<string> => {
-    const query = `SELECT * FROM Inspection WHERE id = '${inspectionId}'`;
-    return executeQuerySimple<string>(query);
+export const getInspectionType = async (inspectionId: string): Promise<number> => {
+    const query = `SELECT inspectionTypeId FROM Inspection WHERE id = '${inspectionId}'`;
+    return executeQuerySimple<number>(query);
 };
 
 export const getInspectionStatus = async (): Promise<InspectionStatus[]> => {
@@ -418,40 +422,108 @@ export const getQuestionComponents = async (
 };
 
 export const getInspectionQuestionsByType = async (
-    inspectionType: number,
+    inspectionId: string,
+    inspectionTypeId: number,
 ): Promise<InspectionQuestionWithDetails[]> => {
     const query = `
         SELECT 
-            it.Name AS inspectionTypeName,
-            it.Id AS inspectionTypeId,
-            qg.Id AS questionGroupId,
-            qg.Name AS questionGroupName,
-            qg.GroupSymbol AS groupSymbol,
-            qg.GroupReference AS groupReference,
-            qc.Id AS questionId,
+            iq.Id AS inspectionQuestionId,
+            iq.inspectionId,
+            iq.answerId,
+            iq.comment,
+            it.name AS inspectionTypeName,
+            it.id AS inspectionTypeId,
+            qg.id AS questionGroupId,
+            qg.name AS questionGroupName,
+            qg.groupSymbol,
+            qg.groupReference,
+            qc.id AS questionId,
             qc.fullDescription,
             qc.displayOrder,
-            qc.questionNumber,
-            iq.answerId,
-            iq.comment
+            qc.questionNumber
         FROM Inspection_Question iq
-        INNER JOIN QuestionComponent qc ON iq.questionId = qc.Id
-        INNER JOIN QuestionGroup qg ON qc.QuestionGroupId = qg.Id
-        INNER JOIN InspectionType it ON qc.InspectionTypeId = it.Id
-        WHERE it.Id = ${inspectionType}
+        LEFT JOIN QuestionComponent qc ON iq.questionId = qc.Id
+        LEFT JOIN QuestionGroup qg ON qc.QuestionGroupId = qg.Id
+        LEFT JOIN InspectionType it ON qc.InspectionTypeId = it.Id
+        WHERE qc.inspectionTypeId = ${inspectionTypeId} and iq.inspectionId = '${inspectionId}'
     `;
     return executeQuery<InspectionQuestionWithDetails>({
         query,
     });
 };
 
-export const getInspectionQuestions = async (inspectionId: string): Promise<void> => {
-    console.log('Inspection ID: ', inspectionId);
+export const getInspectionQuestions = async (
+    inspectionId: string,
+): Promise<TypedQuestionGroupForUI[]> => {
     const inspectionTypeId = await getInspectionType(inspectionId);
-    //QuestionsByInspectionType[]
+    const relatedInspectionTypeIds = inspectionTypeLookup[inspectionTypeId] || [inspectionTypeId];
+    console.log('relatedInspectionTypeIds', relatedInspectionTypeIds);
 
-    // console.log('Inspection Type: ', inspectionTypeId);
-    // const questions = await getInspectionQuestionsByType(inspectionTypeId.id);
+    const allQuestions: InspectionQuestionWithDetails[] = [];
 
-    // console.log('Questions: ', questions);
+    for (const typeId of relatedInspectionTypeIds) {
+        const questionsForType = await getInspectionQuestionsByType(inspectionId, typeId);
+        allQuestions.push(...questionsForType);
+    }
+
+    // Group questions by inspectionTypeId
+    const questionsByType: Record<number, QuestionGroupForUI[]> = {};
+
+    for (const typeId of relatedInspectionTypeIds) {
+        const typeQuestions = allQuestions.filter((q) => q.inspectionTypeId === typeId);
+
+        const uniqueGroupNames = [...new Set(typeQuestions.map((q) => q.questionGroupName))];
+        const questionGroups: QuestionGroupForUI[] = uniqueGroupNames.map((groupName) => {
+            const groupItems = typeQuestions.filter((q) => q.questionGroupName === groupName);
+            const groupObject = groupItems[0];
+
+            return {
+                groupId: groupObject?.questionGroupId,
+                name: groupName,
+                groupSymbol: groupObject?.groupSymbol,
+                groupReference: groupObject?.groupReference,
+                questions: groupItems.map((q) => ({
+                    inspectionQuestionId: q.inspectionQuestionId,
+                    inspectionId: q.inspectionId,
+                    questionId: q.questionId,
+                    fullDescription: q.fullDescription,
+                    displayOrder: q.displayOrder,
+                    questionNumber: q.questionNumber,
+                    answerId: q.answerId,
+                    comment: q.comment,
+                })),
+            };
+        });
+
+        questionsByType[typeId] = questionGroups;
+    }
+
+    const result: TypedQuestionGroupForUI[] = relatedInspectionTypeIds.map((typeId) => {
+        const inspectionTypeName =
+            allQuestions.find((q) => q.inspectionTypeId === typeId)?.inspectionTypeName ||
+            `Type ${typeId}`;
+
+        return {
+            inspectionTypeId: typeId,
+            inspectionTypeName,
+            questionsByGroup: questionsByType[typeId] || [],
+        };
+    });
+
+    return result;
+};
+
+export const getAllInspectionQuestions = async (): Promise<InspectionQuestion[]> => {
+    const query = `SELECT * FROM Inspection_Question`;
+    return executeQuery<InspectionQuestion>({ query });
+};
+
+export const getAllQuestions = async (): Promise<QuestionComponent[]> => {
+    const query = `SELECT * FROM QuestionComponent`;
+    return executeQuery<QuestionComponent>({ query });
+};
+
+export const getQuestionGroups = async (): Promise<QuestionGroup[]> => {
+    const query = `SELECT * FROM QuestionGroup`;
+    return executeQuery<QuestionGroup>({ query });
 };
