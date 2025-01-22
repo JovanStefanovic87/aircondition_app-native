@@ -18,7 +18,7 @@ import {
     saveInspectionImage,
 } from '../../database/dataAccess/Command/sqlCommands';
 import { saveInspection } from '../../database/dataAccess/Command/sqlCommands';
-import { launchImageLibrary, MediaType, CameraOptions } from 'react-native-image-picker';
+import { MediaType, CameraOptions } from 'react-native-image-picker';
 import TakePicture from '../components/camera/TakePicture';
 import InspectionTitle from '../components/text/DeviceStateTitle';
 import PrimaryButton from '../components/buttons/PrimaryButton';
@@ -36,6 +36,7 @@ import RowContainerFlex from '../components/containers/RowContainerFlex';
 import AutoFitTableContainer from '../components/containers/AutoFitTableContainer';
 import { customColors } from '../assets/styles/customStyles';
 import { NON_VERIFICATION_GROUP_TYPES } from '../helpers/constants';
+import GalleryModal from '../components/modals/GalleryModal';
 
 type NewInspectionScreenNavigationProp = NavigationProp<Record<string, object>, string>;
 
@@ -50,7 +51,9 @@ const InspectionDeviceStateScreen = () => {
     const [avatarSource, setAvatarSource] = useState(null);
     const [isInspectionImage, setIsInspectionImage] = useState(false);
     const [imageSaveParams, setImageSaveParams] = useState<ImageDeviceStateSave | null>(null);
-    const [imagePath, setImagePath] = useState<string | null>(null);
+    const [galleryImages, setGalleryImages] = useState<string[]>([]);
+    const [isGalleryVisible, setGalleryVisible] = useState(false);
+    const [galeryTitle, setGalleryTitle] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchInspectionDetails = async () => {
@@ -101,16 +104,66 @@ const InspectionDeviceStateScreen = () => {
 
     const handleGalleryClick = async () => {
         const inspectionImages = await getInspectionImages(newInspectionId);
-        console.log('inspectionImages', JSON.stringify(inspectionImages));
-        if (inspectionImages && inspectionImages.length > 0)
-            setImagePath(inspectionImages[0].storagePath);
+        if (inspectionImages && inspectionImages.length > 0) {
+            const imagePaths = inspectionImages.map((image) => image.storagePath);
+            setGalleryImages(imagePaths);
+            setGalleryVisible(true);
+        }
     };
 
-    const handleDeviceStateGalleryClick = async (titleId, groupTypeId) => {
-        const deviceImages = await getDeviceStateImages(titleId, groupTypeId);
-        console.log('deviceImages', JSON.stringify(deviceImages));
+    const handleDeviceStateGalleryClick = async (titleId: number, groupTypeId: number) => {
+        if (!inspectionDeviceStateDetails) {
+            console.error('InspectionDeviceStateDetails is not loaded.');
+            return;
+        }
 
-        if (deviceImages && deviceImages.length > 0) setImagePath(deviceImages[0].storagePath);
+        const group = inspectionDeviceStateDetails.find((group) =>
+            group.titleComponents.some((title) =>
+                title.deviceStateComponents.some(
+                    (deviceState) =>
+                        deviceState.titleComponentId === titleId &&
+                        deviceState.groupTypeId === groupTypeId,
+                ),
+            ),
+        );
+
+        if (!group) {
+            console.error(
+                `Group containing titleId: ${titleId} and groupTypeId: ${groupTypeId} not found`,
+            );
+            return;
+        }
+
+        const title = group.titleComponents.find((title) =>
+            title.deviceStateComponents.some(
+                (deviceState) =>
+                    deviceState.titleComponentId === titleId &&
+                    deviceState.groupTypeId === groupTypeId,
+            ),
+        );
+
+        if (!title) {
+            console.error(
+                `Title with titleId: ${titleId} and groupTypeId: ${groupTypeId} not found`,
+            );
+            return;
+        }
+
+        const galleryTitle = `${group.groupTypeName} - ${title.name}`;
+        setGalleryTitle(galleryTitle);
+
+        const deviceImages = await getDeviceStateImages(titleId, groupTypeId);
+        if (deviceImages && deviceImages.length > 0) {
+            const imagePaths = deviceImages.map((image) => image.storagePath);
+            setGalleryImages(imagePaths);
+            setGalleryVisible(true);
+        } else {
+            console.log('No images found for this titleId and groupTypeId.');
+        }
+    };
+
+    const handleCloseGallery = () => {
+        setGalleryVisible(false);
     };
 
     const handleCloseCamera = () => {
@@ -163,8 +216,12 @@ const InspectionDeviceStateScreen = () => {
             style={styles.container}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
-            {imagePath && <Image source={{ uri: imagePath }} style={styles.image} />}
-
+            <GalleryModal
+                visible={isGalleryVisible}
+                images={galleryImages}
+                title={galeryTitle || 'ANLAGE -- ANLAGE'}
+                onClose={handleCloseGallery}
+            />
             {isCameraVisible ? (
                 <TakePicture
                     onClose={handleCloseCamera}
