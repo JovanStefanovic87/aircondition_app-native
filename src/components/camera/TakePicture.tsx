@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, Image, PermissionsAndroid } from 'react-native';
+import { View, StyleSheet, Image, PermissionsAndroid, Modal } from 'react-native';
 import { Camera, useCameraDevice } from 'react-native-vision-camera';
 import CameraButton from '../buttons/CameraButton';
 import CloseCameraButton from '../buttons/CloseCameraButton';
@@ -7,17 +7,25 @@ import PrimaryButton from '../buttons/PrimaryButton';
 import ErrorInformationModal from '../modals/ErrorInformationModal';
 
 interface Props {
+    visible: boolean;
     onClose: () => void;
     saveImage: (path: string) => void;
+    photoPreview: string;
+    setPhotoPreview: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
-const TakePicture: React.FC<Props> = ({ onClose, saveImage }) => {
+const TakePicture: React.FC<Props> = ({
+    visible,
+    onClose,
+    saveImage,
+    photoPreview,
+    setPhotoPreview,
+}) => {
     const cameraRef = useRef<Camera>(null);
     const device = useCameraDevice('back');
     const [hasPermission, setHasPermission] = useState(false);
     const [errorModalVisible, setErrorModalVisible] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
-    const [photoPreview, setPhotoPreview] = useState<string | null>(null);
 
     const takePicture = async () => {
         if (cameraRef.current) {
@@ -78,13 +86,13 @@ const TakePicture: React.FC<Props> = ({ onClose, saveImage }) => {
     };
 
     return (
-        <View style={styles.container}>
+        <Modal visible={visible} style={styles.container} transparent={true} animationType="fade">
             {photoPreview ? (
                 <View style={styles.previewContainer}>
                     <Image source={{ uri: photoPreview }} style={styles.previewImage} />
                     <View style={styles.buttonContainer}>
-                        <PrimaryButton title="Save" onPress={handleAcceptPhoto} />
-                        <PrimaryButton title="Retake" onPress={handleRejectPhoto} />
+                        <PrimaryButton title="speichern" onPress={handleAcceptPhoto} />
+                        <PrimaryButton title="Wiederholung" onPress={handleRejectPhoto} />
                     </View>
                 </View>
             ) : (
@@ -106,7 +114,7 @@ const TakePicture: React.FC<Props> = ({ onClose, saveImage }) => {
                 message={errorMessage}
                 onClose={() => setErrorModalVisible(false)}
             />
-        </View>
+        </Modal>
     );
 };
 

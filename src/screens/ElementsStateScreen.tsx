@@ -59,6 +59,7 @@ const ElementsStateScreen: React.FC = () => {
     const [galleryImages, setGalleryImages] = useState<string[]>([]);
     const [isGalleryVisible, setGalleryVisible] = useState(false);
     const [galeryTitle, setGalleryTitle] = useState<string | null>(null);
+    const [photoPreview, setPhotoPreview] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchInitialData = async () => {
@@ -199,7 +200,11 @@ const ElementsStateScreen: React.FC = () => {
                 title.deviceStateComponents.every(
                     (state) =>
                         state.value !== null &&
-                        (typeof state.value === 'string' ? state.value !== '' : state.value !== 0),
+                        (typeof state.value === 'string'
+                            ? typeof state.value === 'string' &&
+                              state.value !== null &&
+                              (state.value as string).trim() !== ''
+                            : state.value !== 0),
                 ),
             );
         });
@@ -227,7 +232,6 @@ const ElementsStateScreen: React.FC = () => {
         const allCompleted = inspectionDeviceStateDetails.every((group) =>
             group.titleComponents.every((title) =>
                 title.deviceStateComponents.every((state) => {
-                    // Provera: ako je `deviceStateValues` prazan, smatra se kompletnim
                     const isComplete = state.deviceStateValues.length === 0 || state.value !== null;
 
                     if (!isComplete) {
@@ -311,104 +315,89 @@ const ElementsStateScreen: React.FC = () => {
                 title={galeryTitle || 'ANLAGE -- ANLAGE'}
                 onClose={handleCloseGallery}
             />
-            {isCameraVisible ? (
-                <TakePicture
-                    onClose={handleCloseCamera}
-                    saveImage={(path) =>
-                        handleSaveDeviceElementImage(
-                            path,
-                            imageSaveParams?.titleId!,
-                            imageSaveParams?.groupTypeId!,
-                            selectedDeviceElementId ? parseInt(selectedDeviceElementId) : undefined,
-                        )
-                    }
-                />
-            ) : (
-                <GestureHandlerRootView style={styles.scrollContainer}>
-                    <ScrollView style={styles.scrollView}>
-                        <View>
-                            <View style={styles.deviceElement}>
-                                <InspectionDeviceElementsMerged
-                                    selectedElementId={selectedElementId}
-                                    setSelectedElementId={setSelectedElementId}
-                                    setSelectedDeviceElementId={setSelectedDeviceElementId}
-                                />
-                            </View>
+            <TakePicture
+                visible={isCameraVisible}
+                onClose={handleCloseCamera}
+                saveImage={(path) =>
+                    handleSaveDeviceElementImage(
+                        path,
+                        imageSaveParams?.titleId!,
+                        imageSaveParams?.groupTypeId!,
+                        selectedDeviceElementId ? parseInt(selectedDeviceElementId) : undefined,
+                    )
+                }
+                photoPreview={photoPreview}
+                setPhotoPreview={setPhotoPreview}
+            />
+            <GestureHandlerRootView style={styles.scrollContainer}>
+                <ScrollView style={styles.scrollView}>
+                    <View>
+                        <View style={styles.deviceElement}>
+                            <InspectionDeviceElementsMerged
+                                selectedElementId={selectedElementId}
+                                setSelectedElementId={setSelectedElementId}
+                                setSelectedDeviceElementId={setSelectedDeviceElementId}
+                            />
                         </View>
-                        <RowContainerFlex>
-                            {inspectionDeviceStateDetails &&
-                                inspectionDeviceStateDetails.map(
-                                    (
-                                        group: DeviceStateComponentsForInspection,
-                                        groupIndex: number,
-                                    ) => (
-                                        <React.Fragment key={groupIndex}>
-                                            {group.titleComponents.map(
-                                                (title: TitleComponent, j) => (
-                                                    <AutoFitTableContainer
-                                                        key={j}
-                                                        minColumnWidth={calculateMinColumnWidth(49)}
-                                                    >
-                                                        <DeviceStateColumnContainer
-                                                            title={group.groupTypeName}
-                                                            group={group}
-                                                            setIsGroupCompleted={(isCompleted) =>
-                                                                updateCompletionStatus(
-                                                                    `${group.groupTypeName}-${groupIndex}`,
-                                                                    isCompleted,
-                                                                )
-                                                            }
-                                                        >
-                                                            <InspectionTitle
-                                                                title={title.name}
-                                                                onPressCamera={() =>
-                                                                    handleCameraToggleForDeviceState(
-                                                                        title,
-                                                                    )
-                                                                }
-                                                                onPressGallery={() =>
-                                                                    handleDeviceStateGalleryClick(
-                                                                        title
-                                                                            .deviceStateComponents[0]
-                                                                            ?.titleComponentId,
-                                                                        title
-                                                                            .deviceStateComponents[0]
-                                                                            ?.groupTypeId,
-                                                                    )
-                                                                }
-                                                            />
+                    </View>
+                    <RowContainerFlex>
+                        {inspectionDeviceStateDetails &&
+                            inspectionDeviceStateDetails.map(
+                                (group: DeviceStateComponentsForInspection, groupIndex: number) => (
+                                    <React.Fragment key={groupIndex}>
+                                        {group.titleComponents.map((title: TitleComponent, j) => (
+                                            <AutoFitTableContainer
+                                                key={j}
+                                                minColumnWidth={calculateMinColumnWidth(49)}
+                                            >
+                                                <DeviceStateColumnContainer
+                                                    title={group.groupTypeName}
+                                                    group={group}
+                                                    setIsGroupCompleted={(isCompleted) =>
+                                                        updateCompletionStatus(
+                                                            `${group.groupTypeName}-${groupIndex}`,
+                                                            isCompleted,
+                                                        )
+                                                    }
+                                                >
+                                                    <InspectionTitle
+                                                        title={title.name}
+                                                        onPressCamera={() =>
+                                                            handleCameraToggleForDeviceState(title)
+                                                        }
+                                                        onPressGallery={() =>
+                                                            handleDeviceStateGalleryClick(
+                                                                title.deviceStateComponents[0]
+                                                                    ?.titleComponentId,
+                                                                title.deviceStateComponents[0]
+                                                                    ?.groupTypeId,
+                                                            )
+                                                        }
+                                                    />
 
-                                                            <View
-                                                                style={styles.iconsGroupContainer}
-                                                            >
-                                                                {title.deviceStateComponents.map(
-                                                                    (
-                                                                        deviceState: DeviceStateComponent,
-                                                                    ) => (
-                                                                        <DeviceStateMerged
-                                                                            deviceState={
-                                                                                deviceState
-                                                                            }
-                                                                            saveInspectionDeviceState={
-                                                                                saveDeviceStateAndUpdateInspection
-                                                                            }
-                                                                            key={deviceState.id}
-                                                                        />
-                                                                    ),
-                                                                )}
-                                                            </View>
-                                                        </DeviceStateColumnContainer>
-                                                    </AutoFitTableContainer>
-                                                ),
-                                            )}
-                                        </React.Fragment>
-                                    ),
-                                )}
-                        </RowContainerFlex>
-                    </ScrollView>
-                    <View style={styles.horizontalLine}></View>
-                </GestureHandlerRootView>
-            )}
+                                                    <View style={styles.iconsGroupContainer}>
+                                                        {title.deviceStateComponents.map(
+                                                            (deviceState: DeviceStateComponent) => (
+                                                                <DeviceStateMerged
+                                                                    deviceState={deviceState}
+                                                                    saveInspectionDeviceState={
+                                                                        saveDeviceStateAndUpdateInspection
+                                                                    }
+                                                                    key={deviceState.id}
+                                                                />
+                                                            ),
+                                                        )}
+                                                    </View>
+                                                </DeviceStateColumnContainer>
+                                            </AutoFitTableContainer>
+                                        ))}
+                                    </React.Fragment>
+                                ),
+                            )}
+                    </RowContainerFlex>
+                </ScrollView>
+                <View style={styles.horizontalLine}></View>
+            </GestureHandlerRootView>
             <View style={styles.rightAlign}>
                 <PrimaryButton
                     title="Nächster Schritt"
