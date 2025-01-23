@@ -11,6 +11,7 @@ import {
     InspectionDeviceStateUpdate,
     InspectionImageInsert,
     InspectionQuestion,
+    InspectionQuestionUpdate,
     InspectionUpdate,
     QuestionComponent,
 } from '../../types';
@@ -278,4 +279,12 @@ const fillDeviceStateByElementsToInspection = async (inspectionId: string): Prom
             inspectionDeviceElementId: device,
         });
     }
+};
+
+/**
+ * saveInspectionQuestion - Function that saves the question answer in step 5 and 6
+ * @param record - Question record
+ */
+export const saveInspectionQuestion = async (record: InspectionQuestionUpdate): Promise<void> => {
+    await executeUpdate<InspectionQuestionUpdate>('Inspection_Question', record);
 };

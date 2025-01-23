@@ -370,3 +370,9 @@ export interface TypedQuestionGroupForUI {
     inspectionTypeName: string;
     questionsByGroup: QuestionGroupForUI[];
 }
+
+export interface InspectionQuestionUpdate {
+    id: string;
+    answer: string;
+    comment: string;
+}
