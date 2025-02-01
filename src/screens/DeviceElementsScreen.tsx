@@ -1,3 +1,8 @@
+/**
+ * THIRD PAGE OF INSPECTION
+ * Selecting elements contained in the device
+ */
+
 import React, { useEffect, useState } from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';

@@ -1,3 +1,8 @@
+/**
+ * FOURTH PAGE OF INSPECTION
+ * Editing the state of the elements
+ */
+
 import React, { useEffect, useState } from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -11,6 +16,7 @@ import {
     getInspectionDeviceElements,
     getInspectionElementStateDetails,
     getDeviceStateImages,
+    getDeviceElementCompletionState,
 } from '../../database/dataAccess/Query/sqlQueries';
 import {
     DeviceStateComponent,
@@ -36,6 +42,7 @@ import { calculateMinColumnWidth } from '../helpers/universalFunctions';
 import DeviceStateMerged from '../components/table/DeviceStateMerged';
 import GalleryModal from '../components/modals/GalleryModal';
 import TakePicture from '../components/camera/TakePicture';
+import NavButton from '../components/buttons/NavButton';
 
 type NavScreenNavigationProp = NavigationProp<any, any>;
 
@@ -78,6 +85,13 @@ const ElementsStateScreen: React.FC = () => {
         };
         fetchInitialData();
     }, [selectedElementId, inspectionId, selectedDeviceElementId]);
+
+    const isCompleteCheckPerElement = async () => {
+        const elementCheck = await getDeviceElementCompletionState(inspectionId);
+        console.log('elementCheck', elementCheck);
+    };
+
+    console.log('selectedElementId', selectedElementId);
 
     console.log(
         'inspectionDeviceStateDetails',
@@ -251,7 +265,6 @@ const ElementsStateScreen: React.FC = () => {
             console.log('Incomplete states:', JSON.stringify(incompleteStates, null, 2));
         }
 
-        console.log('All completed:', allCompleted);
         return allCompleted;
     };
 
@@ -341,6 +354,12 @@ const ElementsStateScreen: React.FC = () => {
                         </View>
                     </View>
                     <RowContainerFlex>
+                        <NavButton
+                            onPress={isCompleteCheckPerElement}
+                            iconName="microchip"
+                            iconColor="red"
+                            buttonText="Element Check"
+                        />
                         {inspectionDeviceStateDetails &&
                             inspectionDeviceStateDetails.map(
                                 (group: DeviceStateComponentsForInspection, groupIndex: number) => (

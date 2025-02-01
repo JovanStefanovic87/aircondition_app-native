@@ -351,15 +351,25 @@ export const getDeviceElementCompletionState = async (
 ): Promise<DeviceElementCompletionState[]> => {
     const query = `
       SELECT 
-        inspectionDeviceElementId,
-        COUNT(CASE WHEN value IS NOT NULL THEN 1 END) = COUNT(*) AS isCompleted
+        ids.inspectionDeviceElementId,
+        COUNT(CASE WHEN ids.value IS NOT NULL THEN 1 END) = COUNT(*) AS isCompleted
       FROM 
-        Inspection_DeviceState
+        Inspection_DeviceState AS ids
+      LEFT JOIN 
+        Component_Element_Title AS cet
+        ON ids.componentElementTitleId = cet.id
+      LEFT JOIN 
+        DeviceStateComponent AS dsc
+        ON cet.deviceStateComponentId = dsc.id
+      LEFT JOIN 
+        GroupType AS gt
+        ON dsc.groupTypeId = gt.id
       WHERE 
-        inspectionId = '${inspectionId}' 
-        AND inspectionDeviceElementId IS NOT NULL
+        ids.inspectionId = '${inspectionId}'
+        AND ids.inspectionDeviceElementId IS NOT NULL
+        AND gt.name IN ('PHYSIKALISCH', 'KONSTRUKTIV')
       GROUP BY 
-        inspectionDeviceElementId
+        ids.inspectionDeviceElementId
     `;
 
     return executeQuery<DeviceElementCompletionState>({ query });

@@ -1,3 +1,9 @@
+/**
+ * FIRST PAGE OF INSPECTION
+ * Creating a new inspection with basic details
+ * Input fields for barcode, device type, facility name, location, inspection type, contract number
+ */
+
 import React, { useState, useEffect } from 'react';
 import {
     StyleSheet,

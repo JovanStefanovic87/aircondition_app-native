@@ -1,3 +1,8 @@
+/**
+ * SECOND PAGE OF INSPECTION
+ * General device state editing screen.
+ */
+
 import React, { useState, useEffect } from 'react';
 import { useInspectionStore } from '../store/store';
 import { StyleSheet, View, ScrollView, KeyboardAvoidingView, Platform, Image } from 'react-native';
