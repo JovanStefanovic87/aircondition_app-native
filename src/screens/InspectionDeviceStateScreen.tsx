@@ -273,6 +273,7 @@ const InspectionDeviceStateScreen = () => {
                                                             ) || isCompleted,
                                                         )
                                                     }
+                                                    isSingleElement={true}
                                                 >
                                                     <InspectionTitle
                                                         title={title.name}

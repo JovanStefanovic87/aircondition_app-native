@@ -40,7 +40,7 @@ const DeviceParamsTableContainer: React.FC<Props> = ({
     return (
         <View style={styles.outerContainer}>
             <View style={styles.innerContainer}>
-                <CollapsibleTableHead title={title} isCompleted={isCompleted} />
+                <CollapsibleTableHead title={title} isCompleted={isCompleted} groupName="ANLAGE" />
                 <CollapsibleTableBody isOpen={isOpen} marginTop={isOpen ? 10 : 0}>
                     {children}
                 </CollapsibleTableBody>

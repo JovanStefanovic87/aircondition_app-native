@@ -1,0 +1,2 @@
+./gradlew clean - For clean project before build
+./gradlew assembleRelease - Create apk

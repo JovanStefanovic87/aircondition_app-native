@@ -16,6 +16,7 @@ interface Props {
     children: React.ReactNode;
     group: DeviceStateComponentsForInspection;
     setIsGroupCompleted: (value: boolean) => void;
+    isSingleElement?: boolean;
 }
 
 const DeviceStateTableContainer: React.FC<Props> = ({
@@ -23,25 +24,23 @@ const DeviceStateTableContainer: React.FC<Props> = ({
     children,
     group,
     setIsGroupCompleted,
+    isSingleElement = false,
 }) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
 
     const checkIsGroupCompleted = () => {
         return (
             NON_VERIFICATION_GROUP_TYPES.includes(title) ||
-            !deviceState.some((group) =>
-                group.some((deviceStateValue) => deviceStateValue === null),
+            group.titleComponents.every((title: TitleComponent) =>
+                title.deviceStateComponents.every(
+                    (deviceState: DeviceStateComponent) =>
+                        deviceState.value !== null && deviceState.value !== undefined,
+                ),
             )
         );
     };
 
     useEffect(() => {
-        const deviceState = group.titleComponents.map((title: TitleComponent) =>
-            title.deviceStateComponents.map(
-                (deviceState: DeviceStateComponent) => deviceState.value,
-            ),
-        );
-
         const isCompleted = checkIsGroupCompleted();
 
         setIsGroupCompleted(isCompleted);
@@ -51,10 +50,6 @@ const DeviceStateTableContainer: React.FC<Props> = ({
         setIsOpen(!isOpen);
     };
 
-    const deviceState = group.titleComponents.map((title: TitleComponent) =>
-        title.deviceStateComponents.map((deviceState: DeviceStateComponent) => deviceState.value),
-    );
-
     const isCompleted = checkIsGroupCompleted();
 
     const groupName = group.titleComponents.length > 0 ? group.titleComponents[0].name : 'No Name';
@@ -62,7 +57,13 @@ const DeviceStateTableContainer: React.FC<Props> = ({
     return (
         <View style={styles.outerContainer}>
             <View style={styles.innerContainer}>
-                <CollapsibleTableHead title={title} name={groupName} isCompleted={isCompleted} />
+                <CollapsibleTableHead
+                    title={title}
+                    name={groupName}
+                    isCompleted={isCompleted}
+                    isSingleElement={isSingleElement}
+                    groupName={group.groupTypeName}
+                />
                 <CollapsibleTableBody isOpen={isOpen}>{children}</CollapsibleTableBody>
             </View>
             <TouchableOpacity onPress={handleToggleHeight} style={styles.toggleButton}>

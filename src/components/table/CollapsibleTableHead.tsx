@@ -3,7 +3,23 @@ import { View, Text, StyleSheet } from 'react-native';
 import CheckedIcon from '../icons/svg/Checked';
 import DangerIcon from '../icons/svg/DangerIcon';
 
-const CollapsibleTableBody = ({ title = 'Anlage', isCompleted = false, name = 'Anlage' }) => {
+interface Props {
+    title?: string;
+    isCompleted?: boolean;
+    name?: string;
+    isSingleElement?: boolean;
+    groupName?: string;
+}
+
+const CollapsibleTableHead: React.FC<Props> = ({
+    title = 'Anlage',
+    isCompleted = false,
+    name = 'Anlage',
+    isSingleElement,
+    groupName,
+}) => {
+    const showIcon =
+        groupName === 'PHYSIKALISCH' || groupName === 'KONSTRUKTIV' || groupName === 'ANLAGE';
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -11,10 +27,11 @@ const CollapsibleTableBody = ({ title = 'Anlage', isCompleted = false, name = 'A
                     <View style={styles.avatarContainer}>
                         <Text style={styles.avatarText}>{title[0]?.toUpperCase()}</Text>
                     </View>
-                    <Text style={styles.title}>{`${title?.toUpperCase()} ---`}</Text>
-                    <Text style={styles.title}>{name?.toUpperCase()}</Text>
+                    <Text style={styles.title}>{`${title?.toUpperCase()}`}</Text>
+                    {isSingleElement && <Text style={styles.title}>{`---`}</Text>}
+                    {isSingleElement && <Text style={styles.title}>{name?.toUpperCase()}</Text>}
                 </View>
-                {isCompleted ? <CheckedIcon /> : <DangerIcon />}
+                {showIcon && (isCompleted ? <CheckedIcon /> : <DangerIcon />)}
             </View>
         </View>
     );
@@ -63,4 +80,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default CollapsibleTableBody;
+export default CollapsibleTableHead;

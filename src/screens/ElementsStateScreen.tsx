@@ -19,7 +19,6 @@ import {
     getDeviceElementCompletionState,
 } from '../../database/dataAccess/Query/sqlQueries';
 import {
-    DeviceStateComponent,
     DeviceStateComponentsForInspection,
     ImageDeviceStateSave,
     InspectionDeviceElement,
@@ -42,7 +41,6 @@ import { calculateMinColumnWidth } from '../helpers/universalFunctions';
 import DeviceStateMerged from '../components/table/DeviceStateMerged';
 import GalleryModal from '../components/modals/GalleryModal';
 import TakePicture from '../components/camera/TakePicture';
-import NavButton from '../components/buttons/NavButton';
 
 type NavScreenNavigationProp = NavigationProp<any, any>;
 
@@ -61,7 +59,8 @@ const ElementsStateScreen: React.FC = () => {
     const [isCameraVisible, setCameraVisible] = useState(false);
     const [errorModalVisible, setErrorModalVisible] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
-    const [allCompleted, setAllCompleted] = useState<{ [key: string]: boolean }>({});
+    const [elementCompleted, setElementCompleted] = useState<{ [key: string]: boolean }>({});
+    const [allElementsCompleted, setAllElementsCompleted] = useState<boolean>(false);
     const [imageSaveParams, setImageSaveParams] = useState<ImageDeviceStateSave | null>(null);
     const [galleryImages, setGalleryImages] = useState<string[]>([]);
     const [isGalleryVisible, setGalleryVisible] = useState(false);
@@ -88,23 +87,13 @@ const ElementsStateScreen: React.FC = () => {
 
     const isCompleteCheckPerElement = async () => {
         const elementCheck = await getDeviceElementCompletionState(inspectionId);
-        console.log('elementCheck', elementCheck);
+        const elementsCompleted = elementCheck.every((element) => element.isCompleted);
+        setAllElementsCompleted(elementsCompleted);
     };
 
-    console.log('selectedElementId', selectedElementId);
-
-    console.log(
-        'inspectionDeviceStateDetails',
-        JSON.stringify(
-            inspectionDeviceStateDetails.map((group) =>
-                group.titleComponents.map((title) =>
-                    title.deviceStateComponents.map((state) => state),
-                ),
-            ),
-            null, // Zamena za replacer
-            2, // Indentacija za lep format
-        ),
-    );
+    useEffect(() => {
+        isCompleteCheckPerElement();
+    }, [elementCompleted]);
 
     const toggleCameraDevice = (titleId: number, groupTypeId: number) => {
         setCameraVisible(!isCameraVisible);
@@ -208,27 +197,39 @@ const ElementsStateScreen: React.FC = () => {
 
     const initializeCompletionStatus = (details: DeviceStateComponentsForInspection[]) => {
         const initialStatus: { [key: string]: boolean } = {};
+
         details.forEach((group, groupIndex) => {
-            const groupId = `${group.groupTypeName}-${groupIndex}`;
-            initialStatus[groupId] = group.titleComponents.every((title) =>
-                title.deviceStateComponents.every(
-                    (state) =>
-                        state.value !== null &&
-                        (typeof state.value === 'string'
-                            ? typeof state.value === 'string' &&
-                              state.value !== null &&
-                              (state.value as string).trim() !== ''
-                            : state.value !== 0),
-                ),
-            );
+            group.titleComponents.forEach((title, titleIndex) => {
+                const titleComponentId =
+                    title.deviceStateComponents.length > 0
+                        ? title.deviceStateComponents[0].titleComponentId
+                        : null;
+
+                const groupId = `${group.groupTypeName}-${
+                    titleComponentId || titleIndex
+                }-${groupIndex}`;
+
+                initialStatus[groupId] =
+                    title.deviceStateComponents.length > 0 &&
+                    title.deviceStateComponents.every((state) => {
+                        const value = state.value as unknown;
+
+                        if (state.deviceStateValues.length === 0) return true;
+                        if (value === null || value === undefined) return false;
+                        if (typeof value === 'string') return value.trim() !== '';
+                        if (typeof value === 'number') return value !== 0;
+
+                        return Boolean(value);
+                    });
+            });
         });
-        setAllCompleted(initialStatus);
+        setElementCompleted(initialStatus);
     };
 
     const checkAndUpdateCompletionStatus = (
         updatedDetails: DeviceStateComponentsForInspection[],
     ) => {
-        const updatedStatus = { ...allCompleted };
+        const updatedStatus = { ...elementCompleted };
         updatedDetails.forEach((group, groupIndex) => {
             const groupId = `${group.groupTypeName}-${groupIndex}`;
             updatedStatus[groupId] = group.titleComponents.every((title) =>
@@ -237,7 +238,7 @@ const ElementsStateScreen: React.FC = () => {
                 ),
             );
         });
-        setAllCompleted(updatedStatus);
+        setElementCompleted(updatedStatus);
     };
 
     const isAllCompleted = (): boolean => {
@@ -261,10 +262,6 @@ const ElementsStateScreen: React.FC = () => {
             ),
         );
 
-        if (incompleteStates.length > 0) {
-            console.log('Incomplete states:', JSON.stringify(incompleteStates, null, 2));
-        }
-
         return allCompleted;
     };
 
@@ -286,10 +283,16 @@ const ElementsStateScreen: React.FC = () => {
     };
 
     const updateCompletionStatus = (groupId: string, isCompleted: boolean): void => {
-        setAllCompleted((prevStatus) => ({
-            ...prevStatus,
-            [groupId]: isCompleted,
-        }));
+        setElementCompleted((prevStatus) => {
+            if (prevStatus[groupId] === isCompleted) {
+                return prevStatus;
+            }
+
+            return {
+                ...prevStatus,
+                [groupId]: isCompleted,
+            };
+        });
     };
 
     const handleCameraToggleForDeviceState = (title: TitleComponent) => {
@@ -354,65 +357,64 @@ const ElementsStateScreen: React.FC = () => {
                         </View>
                     </View>
                     <RowContainerFlex>
-                        <NavButton
-                            onPress={isCompleteCheckPerElement}
-                            iconName="microchip"
-                            iconColor="red"
-                            buttonText="Element Check"
-                        />
-                        {inspectionDeviceStateDetails &&
-                            inspectionDeviceStateDetails.map(
-                                (group: DeviceStateComponentsForInspection, groupIndex: number) => (
-                                    <React.Fragment key={groupIndex}>
-                                        {group.titleComponents.map((title: TitleComponent, j) => (
-                                            <AutoFitTableContainer
-                                                key={j}
-                                                minColumnWidth={calculateMinColumnWidth(49)}
+                        {inspectionDeviceStateDetails.map((group, groupIndex) => (
+                            <React.Fragment key={groupIndex}>
+                                {group.titleComponents.map((title, titleIndex) => {
+                                    // Pravilna identifikacija title-a
+                                    const titleName = title.name?.trim() || ``;
+                                    const groupId = `${group.groupTypeName}-${titleName}-${titleIndex}`;
+
+                                    // Proveravamo da li title zaista pripada ovom groupTypeName
+                                    const filteredComponents = title.deviceStateComponents.filter(
+                                        (component) => component.groupTypeId === groupIndex + 1,
+                                    );
+
+                                    if (filteredComponents.length === 0) return null; // Ako nema podataka, preskačemo render
+
+                                    return (
+                                        <AutoFitTableContainer
+                                            key={groupId}
+                                            minColumnWidth={calculateMinColumnWidth(49)}
+                                        >
+                                            <DeviceStateColumnContainer
+                                                title={`${group.groupTypeName} - ${titleName}`}
+                                                group={{ ...group, titleComponents: [title] }} // Osiguravamo da je title tačan
+                                                setIsGroupCompleted={(isCompleted) =>
+                                                    updateCompletionStatus(groupId, isCompleted)
+                                                }
                                             >
-                                                <DeviceStateColumnContainer
-                                                    title={group.groupTypeName}
-                                                    group={group}
-                                                    setIsGroupCompleted={(isCompleted) =>
-                                                        updateCompletionStatus(
-                                                            `${group.groupTypeName}-${groupIndex}`,
-                                                            isCompleted,
+                                                <InspectionTitle
+                                                    title={titleName}
+                                                    onPressCamera={() =>
+                                                        handleCameraToggleForDeviceState(title)
+                                                    }
+                                                    onPressGallery={() =>
+                                                        handleDeviceStateGalleryClick(
+                                                            title.deviceStateComponents[0]
+                                                                ?.titleComponentId,
+                                                            title.deviceStateComponents[0]
+                                                                ?.groupTypeId,
                                                         )
                                                     }
-                                                >
-                                                    <InspectionTitle
-                                                        title={title.name}
-                                                        onPressCamera={() =>
-                                                            handleCameraToggleForDeviceState(title)
-                                                        }
-                                                        onPressGallery={() =>
-                                                            handleDeviceStateGalleryClick(
-                                                                title.deviceStateComponents[0]
-                                                                    ?.titleComponentId,
-                                                                title.deviceStateComponents[0]
-                                                                    ?.groupTypeId,
-                                                            )
-                                                        }
-                                                    />
+                                                />
 
-                                                    <View style={styles.iconsGroupContainer}>
-                                                        {title.deviceStateComponents.map(
-                                                            (deviceState: DeviceStateComponent) => (
-                                                                <DeviceStateMerged
-                                                                    deviceState={deviceState}
-                                                                    saveInspectionDeviceState={
-                                                                        saveDeviceStateAndUpdateInspection
-                                                                    }
-                                                                    key={deviceState.id}
-                                                                />
-                                                            ),
-                                                        )}
-                                                    </View>
-                                                </DeviceStateColumnContainer>
-                                            </AutoFitTableContainer>
-                                        ))}
-                                    </React.Fragment>
-                                ),
-                            )}
+                                                <View style={styles.iconsGroupContainer}>
+                                                    {filteredComponents.map((deviceState) => (
+                                                        <DeviceStateMerged
+                                                            key={deviceState.id}
+                                                            deviceState={deviceState}
+                                                            saveInspectionDeviceState={
+                                                                saveDeviceStateAndUpdateInspection
+                                                            }
+                                                        />
+                                                    ))}
+                                                </View>
+                                            </DeviceStateColumnContainer>
+                                        </AutoFitTableContainer>
+                                    );
+                                })}
+                            </React.Fragment>
+                        ))}
                     </RowContainerFlex>
                 </ScrollView>
                 <View style={styles.horizontalLine}></View>
@@ -421,7 +423,7 @@ const ElementsStateScreen: React.FC = () => {
                 <PrimaryButton
                     title="Nächster Schritt"
                     onPress={submit}
-                    isDisabled={!isAllCompleted()} // Disable button if not all completed
+                    isDisabled={!allElementsCompleted}
                 />
             </View>
             <ErrorInformationModal
