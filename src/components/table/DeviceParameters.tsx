@@ -8,6 +8,7 @@ import InputNumber from '../input/InputNumeric';
 import AutoFitTableContainer from '../containers/AutoFitTableContainer';
 import RowContainerFlex from '../containers/RowContainerFlex';
 import IconButton from '../buttons/IconButton';
+import InputNumberNullToString from '../input/InputNumberNullToString';
 
 interface Props {
     inspection: Inspection;
@@ -24,7 +25,7 @@ const DeviceParameters: React.FC<Props> = ({
     onPressCamera,
     onPressGallery,
 }) => {
-    const { constructionYear, lastMaintenance, airVolume } = inspection;
+    const { constructionYear, lastMaintenance, airVolume, note } = inspection;
 
     const handleSaveInspection = () => {
         saveInspection(inspection);
@@ -37,7 +38,7 @@ const DeviceParameters: React.FC<Props> = ({
             <RowContainerFlex>
                 <AutoFitTableContainer minColumnWidth={minColWidth}>
                     <Text style={styles.title}>{'Buajahr'}</Text>
-                    <InputNumber
+                    <InputNumberNullToString
                         value={constructionYear}
                         setValue={(value) =>
                             setInspection({ ...inspection, constructionYear: value })
@@ -47,17 +48,17 @@ const DeviceParameters: React.FC<Props> = ({
                 </AutoFitTableContainer>
                 <AutoFitTableContainer minColumnWidth={minColWidth}>
                     <Text style={styles.title}>{'Letzte Wartung'}</Text>
-                    <InputText
+                    <InputNumberNullToString
                         value={lastMaintenance}
                         setValue={(value) =>
-                            setInspection({ ...inspection, lastMaintenance: value })
+                            setInspection({ ...inspection, lastMaintenance: value.toString() })
                         }
                         onBlur={handleSaveInspection}
                     />
                 </AutoFitTableContainer>
                 <AutoFitTableContainer minColumnWidth={minColWidth}>
                     <Text style={styles.title}>{'Volumentstrom (m3/h)'}</Text>
-                    <InputNumber
+                    <InputNumberNullToString
                         value={airVolume}
                         setValue={(value) => setInspection({ ...inspection, airVolume: value })}
                         onBlur={handleSaveInspection}
@@ -67,6 +68,12 @@ const DeviceParameters: React.FC<Props> = ({
             <View style={styles.cameraIconsContainer}>
                 <IconButton icon="camera" onPress={onPressCamera} />
                 <IconButton icon="image" onPress={onPressGallery} />
+                <InputText
+                    value={note}
+                    setValue={(value) => setInspection({ ...inspection, note: value })}
+                    onBlur={handleSaveInspection}
+                    placeholder="Notiz"
+                />
             </View>
         </View>
     );
@@ -96,7 +103,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'flex-start',
         gap: 10,
-        maxWidth: '40%',
     },
 });
 
