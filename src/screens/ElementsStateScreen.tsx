@@ -19,6 +19,7 @@ import {
     getDeviceElementCompletionState,
 } from '../../database/dataAccess/Query/sqlQueries';
 import {
+    DeviceElementCompletionState,
     DeviceStateComponentsForInspection,
     ImageDeviceStateSave,
     InspectionDeviceElement,
@@ -59,8 +60,13 @@ const ElementsStateScreen: React.FC = () => {
     const [isCameraVisible, setCameraVisible] = useState(false);
     const [errorModalVisible, setErrorModalVisible] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
-    const [elementCompleted, setElementCompleted] = useState<{ [key: string]: boolean }>({});
+    const [elementCompleted, setElementCompleted] = useState<{ [key: string]: boolean } | null>(
+        null,
+    );
     const [allElementsCompleted, setAllElementsCompleted] = useState<boolean>(false);
+    const [deviceElementCompleted, setDeviceElementCompleted] = useState<
+        DeviceElementCompletionState[]
+    >([]);
     const [imageSaveParams, setImageSaveParams] = useState<ImageDeviceStateSave | null>(null);
     const [galleryImages, setGalleryImages] = useState<string[]>([]);
     const [isGalleryVisible, setGalleryVisible] = useState(false);
@@ -87,6 +93,7 @@ const ElementsStateScreen: React.FC = () => {
 
     const isCompleteCheckPerElement = async () => {
         const elementCheck = await getDeviceElementCompletionState(inspectionId);
+        setDeviceElementCompleted(elementCheck);
         const elementsCompleted = elementCheck.every((element) => element.isCompleted);
         setAllElementsCompleted(elementsCompleted);
     };
@@ -353,6 +360,7 @@ const ElementsStateScreen: React.FC = () => {
                                 selectedElementId={selectedElementId}
                                 setSelectedElementId={setSelectedElementId}
                                 setSelectedDeviceElementId={setSelectedDeviceElementId}
+                                elementCompleted={elementCompleted}
                             />
                         </View>
                     </View>

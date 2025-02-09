@@ -1,6 +1,6 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { InspectionDeviceElement } from '../../../database/types';
-import { View, Image, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Image, TouchableOpacity, Dimensions, Text } from 'react-native';
 import { DeviceElementImage } from '../../resources/deviceElementImages';
 import CheckedIcon from '../icons/svg/Checked';
 import DangerIcon from '../icons/svg/DangerIcon';
@@ -17,6 +17,7 @@ type Props = {
     isTablet?: boolean;
     index: number;
     currentIndex: number;
+    elementCompleted: { [key: string]: boolean };
 };
 
 const InspectionDeviceElementImgMerged: FC<Props> = ({
@@ -26,7 +27,10 @@ const InspectionDeviceElementImgMerged: FC<Props> = ({
     isTablet,
     index,
     currentIndex,
+    elementCompleted,
 }) => {
+    const [isCompleted, setIsCompleted] = useState(false);
+
     const handlePressIn = () => {
         onFocusChange(deviceElement.id.toString(), true, deviceElement.id);
     };
@@ -36,8 +40,31 @@ const InspectionDeviceElementImgMerged: FC<Props> = ({
     };
 
     const checkCompletionStatus = (): boolean => {
-        return false;
+        if (!elementCompleted) {
+            return false;
+        }
+
+        // Proveri da li postoji direktan ključ za ovaj element
+        if (typeof elementCompleted === 'object' && elementCompleted[deviceElement.id]) {
+            return elementCompleted[deviceElement.id];
+        }
+
+        // Ako nije pronađeno direktno, pokušaj pronaći preko imena slike
+        const elementKey = deviceElement.imageFileName?.split('.')[0]?.toUpperCase().trim();
+        if (!elementKey) {
+            return false;
+        }
+
+        const relevantKeys = Object.keys(elementCompleted).filter((key) =>
+            key.includes(elementKey),
+        );
+
+        return relevantKeys.length > 0 && relevantKeys.every((key) => elementCompleted[key]);
     };
+
+    useEffect(() => {
+        setIsCompleted(checkCompletionStatus());
+    }, [deviceElement, elementCompleted]);
 
     return (
         <TouchableOpacity
@@ -56,9 +83,6 @@ const InspectionDeviceElementImgMerged: FC<Props> = ({
             onBlur={handlePressOut}
             activeOpacity={1}
         >
-            {/* <View style={{ position: 'absolute', top: 5, right: 5 }}>
-                {checkCompletionStatus() ? <CheckedIcon /> : <DangerIcon />}
-            </View> */}
             <View style={styles.elementImageContainer}>
                 {deviceElement.imageFileName && (
                     <Image
@@ -68,10 +92,12 @@ const InspectionDeviceElementImgMerged: FC<Props> = ({
                     />
                 )}
             </View>
+            {isCompleted ? <CheckedIcon /> : <DangerIcon />}
             <TextImageName
                 text={deviceElement.imageFileName?.split('.')[0]?.toUpperCase()}
                 isTablet={isTablet}
             />
+            <Text style={{ color: 'white', fontSize: 12 }}>{`ID: ${deviceElement.id}`}</Text>
         </TouchableOpacity>
     );
 };
