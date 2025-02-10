@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, Image, PermissionsAndroid, Modal } from 'react-native';
-import { Camera, useCameraDevice } from 'react-native-vision-camera';
+import { View, StyleSheet, Image, PermissionsAndroid, Modal, Dimensions } from 'react-native';
+import { Camera, CameraDevice, useCameraDevice } from 'react-native-vision-camera';
 import CameraButton from '../buttons/CameraButton';
 import CloseCameraButton from '../buttons/CloseCameraButton';
 import PrimaryButton from '../buttons/PrimaryButton';
@@ -26,6 +26,7 @@ const TakePicture: React.FC<Props> = ({
     const [hasPermission, setHasPermission] = useState(false);
     const [errorModalVisible, setErrorModalVisible] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const { width, height } = Dimensions.get('window');
 
     const takePicture = async () => {
         if (cameraRef.current) {
@@ -84,11 +85,27 @@ const TakePicture: React.FC<Props> = ({
         }
     };
 
+    // Pronađi format sa najvećom rezolucijom
+    const findBestFormat = (device: CameraDevice) => {
+        return device?.formats
+            ?.filter((f) => Math.abs(f.photoWidth / f.photoHeight - 16 / 9) < 0.01) // Filtriraj samo 16:9
+            ?.sort((a, b) => b.photoWidth - a.photoWidth)[0]; // Najveća dostupna rezolucija
+    };
+
+    const format = device ? findBestFormat(device) : null;
+    console.log('photoPreview', photoPreview);
     return (
-        <Modal visible={visible} style={styles.container} transparent={true} animationType="fade">
+        <Modal visible={visible} style={styles.container} animationType="fade">
             {photoPreview ? (
                 <View style={styles.previewContainer}>
-                    <Image source={{ uri: photoPreview }} style={styles.previewImage} />
+                    <Image
+                        source={{ uri: photoPreview }}
+                        style={{
+                            width: width,
+                            height: width * (16 / 9),
+                        }}
+                        resizeMode="cover"
+                    />
                     <View style={styles.buttonContainer}>
                         <PrimaryButton title="speichern" onPress={handleAcceptPhoto} />
                         <PrimaryButton title="Wiederholung" onPress={handleRejectPhoto} />
@@ -99,7 +116,10 @@ const TakePicture: React.FC<Props> = ({
                 hasPermission && (
                     <Camera
                         ref={cameraRef}
-                        style={StyleSheet.absoluteFillObject}
+                        style={{
+                            width: width,
+                            height: width * (16 / 9),
+                        }}
                         device={device}
                         isActive={true}
                         photo={true}
@@ -140,6 +160,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-around',
         width: '80%',
+        position: 'absolute',
+        bottom: 20,
     },
 });
 
