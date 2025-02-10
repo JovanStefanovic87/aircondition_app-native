@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Modal,
     View,
@@ -10,6 +10,7 @@ import {
     Dimensions,
     TouchableWithoutFeedback,
 } from 'react-native';
+import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-view';
 
 interface Props {
     visible: boolean;
@@ -18,17 +19,59 @@ interface Props {
     title: string;
 }
 
-const GalleryModal: React.FC<Props> = ({ visible, images, onClose, title }) => {
-    const [selectedImage, setSelectedImage] = useState<string | null>(null);
-    const numColumns = 3;
+const { width } = Dimensions.get('window'); // Širina ekrana
 
-    const renderImage = ({ item }: { item: string }) => (
-        <TouchableOpacity onPress={() => setSelectedImage(item)}>
-            <View style={styles.imageWrapper}>
-                <Image source={{ uri: item }} style={styles.gridImage} resizeMode="cover" />
-            </View>
-        </TouchableOpacity>
-    );
+const GalleryModal: React.FC<Props> = ({ visible, images, onClose, title }) => {
+    const [imageDimensions, setImageDimensions] = useState<{ width: number; height: number }[]>([]);
+
+    // Funkcija za dobavljanje originalnih dimenzija slike
+    const getImageDimensions = (uri: string, index: number) => {
+        Image.getSize(uri, (width, height) => {
+            setImageDimensions((prevState) => {
+                const updatedDimensions = [...prevState];
+                updatedDimensions[index] = { width, height };
+                return updatedDimensions;
+            });
+        });
+    };
+
+    useEffect(() => {
+        images.forEach((image, index) => {
+            getImageDimensions(image, index);
+        });
+    }, [images]);
+
+    const renderImage = ({ item, index }: { item: string; index: number }) => {
+        const dimensions = imageDimensions[index];
+        const aspectRatio = dimensions ? dimensions.width / dimensions.height : 1;
+
+        return (
+            <ReactNativeZoomableView
+                style={styles.modalContainer}
+                minZoom={1}
+                maxZoom={7}
+                zoomStep={0.5}
+            >
+                <TouchableOpacity onPress={() => {}} activeOpacity={1}>
+                    <View
+                        style={[
+                            styles.imageWrapper,
+                            {
+                                width: width - 30, // Širina wrapper-a
+                                height: (width - 30) / aspectRatio, // Visina wrapper-a na osnovu odnosa širine i visine
+                            },
+                        ]}
+                    >
+                        <Image
+                            source={{ uri: item }}
+                            style={styles.gridImage}
+                            resizeMode="contain"
+                        />
+                    </View>
+                </TouchableOpacity>
+            </ReactNativeZoomableView>
+        );
+    };
 
     return (
         <Modal visible={visible} transparent={true} animationType="fade">
@@ -46,33 +89,12 @@ const GalleryModal: React.FC<Props> = ({ visible, images, onClose, title }) => {
                                 data={images}
                                 renderItem={renderImage}
                                 keyExtractor={(_, index) => index.toString()}
-                                numColumns={numColumns}
+                                numColumns={1}
                                 contentContainerStyle={styles.gridContainer}
                                 showsVerticalScrollIndicator={false}
                             />
                         </View>
                     </TouchableWithoutFeedback>
-
-                    {/* Modal za prikaz slike u punoj veličini */}
-                    {selectedImage && (
-                        <Modal visible={true} transparent={true} animationType="fade">
-                            <TouchableWithoutFeedback onPress={() => setSelectedImage(null)}>
-                                <View style={styles.fullScreenOverlay}>
-                                    <Image
-                                        source={{ uri: selectedImage }}
-                                        style={styles.fullScreenImage}
-                                        resizeMode="contain"
-                                    />
-                                    <TouchableOpacity
-                                        onPress={() => setSelectedImage(null)}
-                                        style={styles.fullScreenCloseButton}
-                                    >
-                                        <Text style={styles.fullScreenCloseButtonText}>✕</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </TouchableWithoutFeedback>
-                        </Modal>
-                    )}
                 </View>
             </TouchableWithoutFeedback>
         </Modal>
@@ -80,9 +102,6 @@ const GalleryModal: React.FC<Props> = ({ visible, images, onClose, title }) => {
 };
 
 export default GalleryModal;
-
-const { width } = Dimensions.get('window');
-const imageSize = (width * 0.9) / 3 - 10;
 
 const styles = StyleSheet.create({
     modalOverlay: {
@@ -92,10 +111,9 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.7)',
     },
     modalContainer: {
-        width: '92%',
-        height: '80%',
+        width: '100%',
+        height: '100%',
         backgroundColor: 'white',
-        borderRadius: 15,
         overflow: 'hidden',
     },
     header: {
@@ -128,9 +146,7 @@ const styles = StyleSheet.create({
         padding: 10,
     },
     imageWrapper: {
-        width: imageSize,
-        height: imageSize,
-        margin: 5,
+        marginVertical: 5,
         borderRadius: 10,
         overflow: 'hidden',
         backgroundColor: '#f0f0f0',
@@ -140,33 +156,12 @@ const styles = StyleSheet.create({
         shadowRadius: 5,
         elevation: 3,
     },
-    gridImage: {
+    zoomableImageContainer: {
         width: '100%',
         height: '100%',
     },
-    fullScreenOverlay: {
-        flex: 1,
-        backgroundColor: 'rgba(0, 0, 0, 0.9)',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    fullScreenImage: {
-        width: '90%',
-        height: '80%',
-    },
-    fullScreenCloseButton: {
-        position: 'absolute',
-        top: 20,
-        right: 20,
-        backgroundColor: 'rgba(0, 0, 0, 0.7)',
-        padding: 10,
-        borderRadius: 25,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    fullScreenCloseButtonText: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#fff',
+    gridImage: {
+        width: '100%',
+        height: '100%',
     },
 });
