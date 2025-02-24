@@ -294,22 +294,44 @@ export const saveInspectionQuestion = async (record: InspectionQuestionUpdate): 
 };
 
 /**
- * deleteInspectionImage - Function that deletes selected image of general overall device in step 2
- * @param inspectionId - Inspection table
+ * deleteImage - Function that deletes image by Id and table name
  * @param imageId - ImageStorage table
  */
-export const deleteInspectionImage = async (
-    inspectionId: string,
-    imageId: string,
-): Promise<void> => {
-    const inspectionImages = await getInspectionImages(inspectionId);
-    await executeDeleteByConditions('Inspection_Image', {
-        inspectionId,
-        imageId: imageId || inspectionImages[0]?.id,
+export const deleteImage = async (imageId: string, tableName: string): Promise<void> => {
+    if (!imageId) {
+        console.log('Image ID is missing. Image Not deleted');
+        return;
+    }
+    await executeDeleteByConditions(tableName, {
+        imageId: imageId,
     });
     const image = await getImageStorageById(imageId);
 
-    deleteFile(image?.storagePath || inspectionImages[0]?.storagePath || '');
+    deleteFile(image?.storagePath || '');
 
     await executeDeleteById('ImageStorage', imageId);
+};
+
+/**
+ * deleteInspectionImage - Function that deletes selected image of general overall device in step 2
+ * @param imageId - ImageStorage table
+ */
+export const deleteInspectionImage = async (imageId: string): Promise<void> => {
+    await deleteImage(imageId, 'Inspection_Image');
+};
+
+/**
+ * deleteDeviceStateImage - Function that deletes selected image in step 2 and 4 of device state
+ * @param imageId - ImageStorage table
+ */
+export const deleteDeviceStateImage = async (imageId: string): Promise<void> => {
+    await deleteImage(imageId, 'DeviceState_Title_Group_Image');
+};
+
+/**
+ * deleteDeviceElementImage - Function that deletes selected image in step 4 of element images
+ * @param imageId - ImageStorage table
+ */
+export const deleteDeviceElementImage = async (imageId: string): Promise<void> => {
+    await deleteImage(imageId, 'DeviceElement_Image');
 };

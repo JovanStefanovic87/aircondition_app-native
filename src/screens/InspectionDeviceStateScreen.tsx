@@ -34,6 +34,8 @@ import {
     TitleComponent,
     Inspection,
     ImageDeviceStateSave,
+    ImageGallery,
+    ImageTypesByDbTable,
 } from '../../database/types';
 import DeviceParamsTableContainer from '../components/containers/DeviceParamsTableContainer';
 import DeviceParameters from '../components/table/DeviceParameters';
@@ -56,7 +58,7 @@ const InspectionDeviceStateScreen = () => {
     const [avatarSource, setAvatarSource] = useState(null);
     const [isInspectionImage, setIsInspectionImage] = useState(false);
     const [imageSaveParams, setImageSaveParams] = useState<ImageDeviceStateSave | null>(null);
-    const [galleryImages, setGalleryImages] = useState<string[]>([]);
+    const [galleryImages, setGalleryImages] = useState<ImageGallery[]>([]);
     const [isGalleryVisible, setGalleryVisible] = useState(false);
     const [galeryTitle, setGalleryTitle] = useState<string | null>(null);
     const [photoPreview, setPhotoPreview] = useState<string | null>(null);
@@ -111,8 +113,13 @@ const InspectionDeviceStateScreen = () => {
     const handleGalleryClick = async () => {
         const inspectionImages = await getInspectionImages(newInspectionId);
         if (inspectionImages && inspectionImages.length > 0) {
-            const imagePaths = inspectionImages.map((image) => image.storagePath);
-            setGalleryImages(imagePaths);
+            const images = inspectionImages.map((image) => ({
+                imageId: image.id,
+                imagePath: image.storagePath,
+                imageType: 'inspectionImage' as ImageTypesByDbTable,
+            }));
+
+            setGalleryImages(images);
             setGalleryVisible(true);
         }
     };
@@ -160,8 +167,12 @@ const InspectionDeviceStateScreen = () => {
 
         const deviceImages = await getDeviceStateImages(titleId, groupTypeId);
         if (deviceImages && deviceImages.length > 0) {
-            const imagePaths = deviceImages.map((image) => image.storagePath);
-            setGalleryImages(imagePaths);
+            const images = deviceImages.map((image) => ({
+                imageId: image.id,
+                imagePath: image.storagePath,
+                imageType: 'DeviceState_Title_Group_Image' as ImageTypesByDbTable,
+            }));
+            setGalleryImages(images);
             setGalleryVisible(true);
         } else {
             console.log('No images found for this titleId and groupTypeId.');

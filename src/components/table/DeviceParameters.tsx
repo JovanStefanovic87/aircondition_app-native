@@ -75,12 +75,6 @@ const DeviceParameters: React.FC<Props> = ({
                     onBlur={handleSaveInspection}
                     placeholder="Notiz"
                 />
-                <IconButton
-                    icon="trash"
-                    onPress={() =>
-                        deleteInspectionImage(inspection.id, '15ab0771-2c19-4d5c-8ff2-34e2afabd334')
-                    }
-                />
             </View>
         </View>
     );

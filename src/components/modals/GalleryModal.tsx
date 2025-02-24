@@ -11,10 +11,17 @@ import {
     TouchableWithoutFeedback,
 } from 'react-native';
 import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-view';
+import { ImageGallery } from '../../../database/types';
+import {
+    deleteDeviceElementImage,
+    deleteDeviceStateImage,
+    deleteInspectionImage,
+} from '../../../database/dataAccess/Command/sqlCommands';
+import IconOverImageButton from '../buttons/IconOverImageButton';
 
 interface Props {
     visible: boolean;
-    images: string[];
+    images: ImageGallery[];
     onClose: () => void;
     title: string;
 }
@@ -37,11 +44,25 @@ const GalleryModal: React.FC<Props> = ({ visible, images, onClose, title }) => {
 
     useEffect(() => {
         images.forEach((image, index) => {
-            getImageDimensions(image, index);
+            getImageDimensions(image.imagePath, index);
         });
     }, [images]);
 
-    const renderImage = ({ item, index }: { item: string; index: number }) => {
+    const deleteImage = (image: ImageGallery) => {
+        switch (image.imageType) {
+            case 'Inspection_Image':
+                deleteInspectionImage(image.imageId);
+                return;
+            case 'DeviceElement_Image':
+                deleteDeviceElementImage(image.imageId);
+                return;
+            case 'DeviceState_Title_Group_Image':
+                deleteDeviceStateImage(image.imageId);
+                return;
+        }
+    };
+
+    const renderImage = ({ item, index }: { item: ImageGallery; index: number }) => {
         const dimensions = imageDimensions[index];
         const aspectRatio = dimensions ? dimensions.width / dimensions.height : 1;
 
@@ -63,9 +84,14 @@ const GalleryModal: React.FC<Props> = ({ visible, images, onClose, title }) => {
                         ]}
                     >
                         <Image
-                            source={{ uri: item }}
+                            source={{ uri: item.imagePath }}
                             style={styles.gridImage}
                             resizeMode="contain"
+                        />
+                        <IconOverImageButton
+                            icon="trash"
+                            onPress={() => deleteImage(item)}
+                            style={styles.trashIcon}
                         />
                     </View>
                 </TouchableOpacity>
@@ -155,6 +181,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.2,
         shadowRadius: 5,
         elevation: 3,
+        position: 'relative',
     },
     zoomableImageContainer: {
         width: '100%',
@@ -163,5 +190,14 @@ const styles = StyleSheet.create({
     gridImage: {
         width: '100%',
         height: '100%',
+    },
+    trashIcon: {
+        position: 'absolute',
+        top: 10,
+        right: 10,
+        zIndex: 100,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        padding: 5,
+        borderRadius: 20,
     },
 });

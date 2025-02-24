@@ -142,6 +142,17 @@ export type ImageDeviceStateSave = {
     groupTypeId: number;
 };
 
+export type ImageGallery = {
+    imageId: string;
+    imagePath: string;
+    imageType: ImageTypesByDbTable;
+};
+
+export type ImageTypesByDbTable =
+    | 'Inspection_Image'
+    | 'DeviceElement_Image'
+    | 'DeviceState_Title_Group_Image';
+
 export type DeviceStateByInspection = {
     id: number;
     inspectionId: string;
