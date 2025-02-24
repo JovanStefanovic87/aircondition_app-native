@@ -8,6 +8,7 @@ import InputNumber from '../input/InputNumeric';
 import AutoFitTableContainer from '../containers/AutoFitTableContainer';
 import RowContainerFlex from '../containers/RowContainerFlex';
 import IconButton from '../buttons/IconButton';
+import { deleteInspectionImage } from '../../../database/dataAccess/Command/sqlCommands';
 
 interface Props {
     inspection: Inspection;
@@ -67,6 +68,12 @@ const DeviceParameters: React.FC<Props> = ({
             <View style={styles.cameraIconsContainer}>
                 <IconButton icon="camera" onPress={onPressCamera} />
                 <IconButton icon="image" onPress={onPressGallery} />
+                <IconButton
+                    icon="trash"
+                    onPress={() =>
+                        deleteInspectionImage(inspection.id, '15ab0771-2c19-4d5c-8ff2-34e2afabd334')
+                    }
+                />
             </View>
         </View>
     );

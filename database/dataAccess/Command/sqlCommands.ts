@@ -1,4 +1,5 @@
 import { INSPECTION_TYPES } from '../../../src/helpers/constants';
+import { deleteFile } from '../../../src/helpers/universalFunctions';
 import {
     DeviceElementImageInsert,
     DeviceElementSortUpdate,
@@ -27,9 +28,12 @@ import {
 import {
     getComponentElementTitleIds,
     getDeviceStateComponentsWholeDevice,
+    getImageStorageById,
+    getImageStorageByInspectionId,
     getInspectionDeviceElements,
     getInspectionDeviceStateByDeviceElements,
     getInspectionDeviceStateForElements,
+    getInspectionImages,
     getQuestionComponents,
 } from '../Query/sqlQueries';
 
@@ -287,4 +291,25 @@ const fillDeviceStateByElementsToInspection = async (inspectionId: string): Prom
  */
 export const saveInspectionQuestion = async (record: InspectionQuestionUpdate): Promise<void> => {
     await executeUpdate<InspectionQuestionUpdate>('Inspection_Question', record);
+};
+
+/**
+ * deleteInspectionImage - Function that deletes selected image of general overall device in step 2
+ * @param inspectionId - Inspection table
+ * @param imageId - ImageStorage table
+ */
+export const deleteInspectionImage = async (
+    inspectionId: string,
+    imageId: string,
+): Promise<void> => {
+    const inspectionImages = await getInspectionImages(inspectionId);
+    await executeDeleteByConditions('Inspection_Image', {
+        inspectionId,
+        imageId: imageId || inspectionImages[0]?.id,
+    });
+    const image = await getImageStorageById(imageId);
+
+    deleteFile(image?.storagePath || inspectionImages[0]?.storagePath || '');
+
+    await executeDeleteById('ImageStorage', imageId);
 };
