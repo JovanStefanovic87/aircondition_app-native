@@ -227,6 +227,12 @@ export const getImageStorageByInspectionId = async (
     return executeQuery<InspectionAndImageStorage>({ query });
 };
 
+export const getImageStorageById = async (imageId: string): Promise<ImageStorage> => {
+    const query = `
+        SELECT * FROM ImageStorage WHERE id = '${imageId}'`;
+    return executeQuerySingle<ImageStorage>({ query });
+};
+
 export const getDeviceElements = async (): Promise<DeviceElement[]> => {
     const query = `SELECT * FROM DeviceElement`;
     return executeQuery<DeviceElement>({ query });

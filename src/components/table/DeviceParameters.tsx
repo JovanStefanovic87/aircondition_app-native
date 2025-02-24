@@ -9,6 +9,7 @@ import AutoFitTableContainer from '../containers/AutoFitTableContainer';
 import RowContainerFlex from '../containers/RowContainerFlex';
 import IconButton from '../buttons/IconButton';
 import InputNumberNullToString from '../input/InputNumberNullToString';
+import { deleteInspectionImage } from '../../../database/dataAccess/Command/sqlCommands';
 
 interface Props {
     inspection: Inspection;
@@ -73,6 +74,12 @@ const DeviceParameters: React.FC<Props> = ({
                     setValue={(value) => setInspection({ ...inspection, note: value })}
                     onBlur={handleSaveInspection}
                     placeholder="Notiz"
+                />
+                <IconButton
+                    icon="trash"
+                    onPress={() =>
+                        deleteInspectionImage(inspection.id, '15ab0771-2c19-4d5c-8ff2-34e2afabd334')
+                    }
                 />
             </View>
         </View>
