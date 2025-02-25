@@ -18,18 +18,23 @@ import {
     deleteInspectionImage,
 } from '../../../database/dataAccess/Command/sqlCommands';
 import IconOverImageButton from '../buttons/IconOverImageButton';
+import { IMAGE_TYPES } from '../../helpers/constants';
+import ConfirmDeleteModal from './ConfirmDeleteModal';
 
 interface Props {
     visible: boolean;
     images: ImageGallery[];
     onClose: () => void;
     title: string;
+    setGalleryImages: React.Dispatch<React.SetStateAction<ImageGallery[]>>;
 }
 
 const { width } = Dimensions.get('window'); // Širina ekrana
 
-const GalleryModal: React.FC<Props> = ({ visible, images, onClose, title }) => {
+const GalleryModal: React.FC<Props> = ({ visible, images, onClose, title, setGalleryImages }) => {
     const [imageDimensions, setImageDimensions] = useState<{ width: number; height: number }[]>([]);
+    const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
+    const [selectedImage, setSelectedImage] = useState<ImageGallery | null>(null);
 
     // Funkcija za dobavljanje originalnih dimenzija slike
     const getImageDimensions = (uri: string, index: number) => {
@@ -47,20 +52,6 @@ const GalleryModal: React.FC<Props> = ({ visible, images, onClose, title }) => {
             getImageDimensions(image.imagePath, index);
         });
     }, [images]);
-
-    const deleteImage = (image: ImageGallery) => {
-        switch (image.imageType) {
-            case 'Inspection_Image':
-                deleteInspectionImage(image.imageId);
-                return;
-            case 'DeviceElement_Image':
-                deleteDeviceElementImage(image.imageId);
-                return;
-            case 'DeviceState_Title_Group_Image':
-                deleteDeviceStateImage(image.imageId);
-                return;
-        }
-    };
 
     const renderImage = ({ item, index }: { item: ImageGallery; index: number }) => {
         const dimensions = imageDimensions[index];
@@ -90,13 +81,46 @@ const GalleryModal: React.FC<Props> = ({ visible, images, onClose, title }) => {
                         />
                         <IconOverImageButton
                             icon="trash"
-                            onPress={() => deleteImage(item)}
+                            onPress={() => handleDeleteRequest(item)}
                             style={styles.trashIcon}
                         />
                     </View>
                 </TouchableOpacity>
             </ReactNativeZoomableView>
         );
+    };
+
+    const handleDeleteRequest = (image: ImageGallery) => {
+        setSelectedImage(image);
+        setDeleteModalVisible(true);
+    };
+
+    const confirmDeleteImage = async () => {
+        if (!selectedImage) return;
+
+        try {
+            switch (selectedImage.imageType) {
+                case IMAGE_TYPES.Inspection_Image:
+                    await deleteInspectionImage(selectedImage.imageId);
+                    break;
+                case IMAGE_TYPES.DeviceElement_Image:
+                    await deleteDeviceElementImage(selectedImage.imageId);
+                    break;
+                case IMAGE_TYPES.DeviceState_Title_Group_Image:
+                    await deleteDeviceStateImage(selectedImage.imageId);
+                    break;
+                default:
+                    return;
+            }
+
+            // Osveži slike nakon brisanja
+            setGalleryImages((prev) => prev.filter((img) => img.imageId !== selectedImage.imageId));
+        } catch (error) {
+            console.error('Error deleting image:', error);
+        } finally {
+            setDeleteModalVisible(false);
+            setSelectedImage(null);
+        }
     };
 
     return (
@@ -123,6 +147,12 @@ const GalleryModal: React.FC<Props> = ({ visible, images, onClose, title }) => {
                     </TouchableWithoutFeedback>
                 </View>
             </TouchableWithoutFeedback>
+
+            <ConfirmDeleteModal
+                modalVisible={isDeleteModalVisible}
+                hideModal={() => setDeleteModalVisible(false)}
+                handleConfirmDelete={confirmDeleteImage}
+            />
         </Modal>
     );
 };

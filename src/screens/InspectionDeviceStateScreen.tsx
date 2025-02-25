@@ -42,7 +42,7 @@ import DeviceParameters from '../components/table/DeviceParameters';
 import RowContainerFlex from '../components/containers/RowContainerFlex';
 import AutoFitTableContainer from '../components/containers/AutoFitTableContainer';
 import { customColors } from '../assets/styles/customStyles';
-import { NON_VERIFICATION_GROUP_TYPES } from '../helpers/constants';
+import { NON_VERIFICATION_GROUP_TYPES, IMAGE_TYPES } from '../helpers/constants';
 import GalleryModal from '../components/modals/GalleryModal';
 
 type NewInspectionScreenNavigationProp = NavigationProp<Record<string, object>, string>;
@@ -116,7 +116,7 @@ const InspectionDeviceStateScreen = () => {
             const images = inspectionImages.map((image) => ({
                 imageId: image.id,
                 imagePath: image.storagePath,
-                imageType: 'inspectionImage' as ImageTypesByDbTable,
+                imageType: IMAGE_TYPES.Inspection_Image as ImageTypesByDbTable,
             }));
 
             setGalleryImages(images);
@@ -170,7 +170,7 @@ const InspectionDeviceStateScreen = () => {
             const images = deviceImages.map((image) => ({
                 imageId: image.id,
                 imagePath: image.storagePath,
-                imageType: 'DeviceState_Title_Group_Image' as ImageTypesByDbTable,
+                imageType: IMAGE_TYPES.DeviceState_Title_Group_Image as ImageTypesByDbTable,
             }));
             setGalleryImages(images);
             setGalleryVisible(true);
@@ -236,6 +236,7 @@ const InspectionDeviceStateScreen = () => {
             <GalleryModal
                 visible={isGalleryVisible}
                 images={galleryImages}
+                setGalleryImages={setGalleryImages}
                 title={galeryTitle || 'ANLAGE -- ANLAGE'}
                 onClose={handleCloseGallery}
             />

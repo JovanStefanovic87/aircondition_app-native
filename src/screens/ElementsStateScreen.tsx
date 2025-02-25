@@ -22,6 +22,8 @@ import {
     DeviceElementCompletionState,
     DeviceStateComponentsForInspection,
     ImageDeviceStateSave,
+    ImageGallery,
+    ImageTypesByDbTable,
     InspectionDeviceElement,
     InspectionDeviceStateUpdate,
     TitleComponent,
@@ -42,6 +44,7 @@ import { calculateMinColumnWidth } from '../helpers/universalFunctions';
 import DeviceStateMerged from '../components/table/DeviceStateMerged';
 import GalleryModal from '../components/modals/GalleryModal';
 import TakePicture from '../components/camera/TakePicture';
+import { IMAGE_TYPES } from '../helpers/constants';
 
 type NavScreenNavigationProp = NavigationProp<any, any>;
 
@@ -68,7 +71,7 @@ const ElementsStateScreen: React.FC = () => {
         DeviceElementCompletionState[]
     >([]);
     const [imageSaveParams, setImageSaveParams] = useState<ImageDeviceStateSave | null>(null);
-    const [galleryImages, setGalleryImages] = useState<string[]>([]);
+    const [galleryImages, setGalleryImages] = useState<ImageGallery[]>([]);
     const [isGalleryVisible, setGalleryVisible] = useState(false);
     const [galeryTitle, setGalleryTitle] = useState<string | null>(null);
     const [photoPreview, setPhotoPreview] = useState<string | null>(null);
@@ -174,8 +177,14 @@ const ElementsStateScreen: React.FC = () => {
                 parseInt(selectedElementId),
             );
             if (deviceImages && deviceImages.length > 0) {
-                const imagePaths = deviceImages.map((image) => image.storagePath);
-                setGalleryImages(imagePaths);
+                setGalleryImages(
+                    deviceImages.map((image) => ({
+                        imageId: image.id,
+                        imagePath: image.storagePath,
+                        imageType: IMAGE_TYPES.DeviceState_Title_Group_Image as ImageTypesByDbTable,
+                    })),
+                );
+
                 setGalleryVisible(true);
             } else {
                 console.log('No images found for this titleId and groupTypeId.');
@@ -337,6 +346,7 @@ const ElementsStateScreen: React.FC = () => {
                 images={galleryImages}
                 title={galeryTitle || 'ANLAGE -- ANLAGE'}
                 onClose={handleCloseGallery}
+                setGalleryImages={setGalleryImages}
             />
             <TakePicture
                 visible={isCameraVisible}
