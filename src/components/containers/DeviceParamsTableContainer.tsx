@@ -28,9 +28,10 @@ const DeviceParamsTableContainer: React.FC<Props> = ({
         const checkCompletion = () => {
             setIsCompleted(
                 parameters.airVolume !== null &&
-                    parameters.airVolume !== 'N/A' &&
+                    parameters.airVolume !== null &&
                     parameters.constructionYear !== null &&
-                    parameters.constructionYear !== 'N/A' &&
+                    parameters.constructionYear !== null &&
+                    parameters.constructionYear.toString() !== 'N/A' &&
                     parameters.lastMaintenance !== null &&
                     parameters.lastMaintenance !== 'N/A' &&
                     parameters.lastMaintenance !== '',

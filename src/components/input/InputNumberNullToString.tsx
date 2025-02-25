@@ -18,7 +18,7 @@ interface Props {
 
 const InputNumberNullToString: React.FC<Props> = ({
     value,
-    placeholder,
+    placeholder = 'z.A.',
     setValue,
     onBlur,
     width = '100%',
@@ -36,9 +36,9 @@ const InputNumberNullToString: React.FC<Props> = ({
         setIsTablet(isTabletDevice);
     }, []);
 
-    useEffect(() => {
+    /*  useEffect(() => {
         setInputText(!value ? 'z.A.' : value.toString());
-    }, [value]);
+    }, [value]); */
 
     const handleChange = (text: string) => {
         const formattedText = text.replace(/[^0-9.,]/g, '');
