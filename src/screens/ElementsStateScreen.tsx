@@ -204,7 +204,7 @@ const ElementsStateScreen: React.FC = () => {
         const isPageCompleted = await isAllCompleted();
 
         if (isPageCompleted) {
-            navigation.navigate('AllInspectionsScreen');
+            navigation.navigate('QuestionsScreen');
         } else {
             setErrorMessage('Niet alle elementen zijn voltooid. Vul alstublieft alle velden in.');
             setErrorModalVisible(true);
