@@ -1,7 +1,7 @@
 import React, { FC, useRef, useState, useEffect, useMemo, useCallback } from 'react';
 import { View, ScrollView, Dimensions, TouchableOpacity, Text } from 'react-native';
 import { useInspectionDeviceElementsStore } from '../../store/store';
-import { InspectionDeviceElement } from '../../../database/types';
+import { DeviceElementCompletionState, InspectionDeviceElement } from '../../../database/types';
 import InspectionDeviceElementImgMerged from './InspectionDeviceElementImgMerged';
 import styles from '../../assets/styles/imageStyles';
 import ErrorInformationModal from '../modals/ErrorInformationModal';
@@ -11,7 +11,7 @@ interface Props {
     selectedElementId: string;
     setSelectedElementId: React.Dispatch<React.SetStateAction<string>>;
     setSelectedDeviceElementId: React.Dispatch<React.SetStateAction<string>>;
-    elementCompleted: { [key: string]: boolean };
+    deviceElementCompleted: DeviceElementCompletionState[];
 }
 
 const windowWidth = Dimensions.get('window').width;
@@ -21,7 +21,7 @@ const InspectionDeviceElementsMerged: FC<Props> = ({
     selectedElementId,
     setSelectedElementId,
     setSelectedDeviceElementId,
-    elementCompleted = false,
+    deviceElementCompleted,
 }) => {
     const scrollViewRef = useRef<ScrollView>(null);
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -166,9 +166,7 @@ const InspectionDeviceElementsMerged: FC<Props> = ({
                                 isTablet={isTablet}
                                 currentIndex={currentIndex}
                                 index={filteredElements.indexOf(element)}
-                                elementCompleted={
-                                    typeof elementCompleted === 'boolean' ? {} : elementCompleted
-                                }
+                                deviceElementCompleted={deviceElementCompleted}
                             />
                         ))}
                     </ScrollView>

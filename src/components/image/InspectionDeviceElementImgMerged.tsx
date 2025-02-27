@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
-import { InspectionDeviceElement } from '../../../database/types';
+import { DeviceElementCompletionState, InspectionDeviceElement } from '../../../database/types';
 import { View, Image, TouchableOpacity, Dimensions, Text } from 'react-native';
 import { DeviceElementImage } from '../../resources/deviceElementImages';
 import CheckedIcon from '../icons/svg/Checked';
@@ -17,7 +17,7 @@ type Props = {
     isTablet?: boolean;
     index: number;
     currentIndex: number;
-    elementCompleted: { [key: string]: boolean };
+    deviceElementCompleted: DeviceElementCompletionState[];
 };
 
 const InspectionDeviceElementImgMerged: FC<Props> = ({
@@ -27,7 +27,7 @@ const InspectionDeviceElementImgMerged: FC<Props> = ({
     isTablet,
     index,
     currentIndex,
-    elementCompleted,
+    deviceElementCompleted,
 }) => {
     const [isCompleted, setIsCompleted] = useState(false);
 
@@ -39,32 +39,13 @@ const InspectionDeviceElementImgMerged: FC<Props> = ({
         onFocusChange(deviceElement.id.toString(), false, deviceElement.id);
     };
 
-    const checkCompletionStatus = (): boolean => {
-        if (!elementCompleted) {
-            return false;
-        }
-
-        // Proveri da li postoji direktan ključ za ovaj element
-        if (typeof elementCompleted === 'object' && elementCompleted[deviceElement.id]) {
-            return elementCompleted[deviceElement.id];
-        }
-
-        // Ako nije pronađeno direktno, pokušaj pronaći preko imena slike
-        const elementKey = deviceElement.imageFileName?.split('.')[0]?.toUpperCase().trim();
-        if (!elementKey) {
-            return false;
-        }
-
-        const relevantKeys = Object.keys(elementCompleted).filter((key) =>
-            key.includes(elementKey),
+    useEffect(() => {
+        const completionStatus = deviceElementCompleted.find(
+            (entry) => entry.inspectionDeviceElementId === deviceElement.id,
         );
 
-        return relevantKeys.length > 0 && relevantKeys.every((key) => elementCompleted[key]);
-    };
-
-    useEffect(() => {
-        setIsCompleted(checkCompletionStatus());
-    }, [deviceElement, elementCompleted]);
+        setIsCompleted(completionStatus ? completionStatus.isCompleted : false);
+    }, [deviceElement, deviceElementCompleted]);
 
     return (
         <TouchableOpacity
@@ -97,7 +78,6 @@ const InspectionDeviceElementImgMerged: FC<Props> = ({
                 text={deviceElement.imageFileName?.split('.')[0]?.toUpperCase()}
                 isTablet={isTablet}
             />
-            <Text style={{ color: 'white', fontSize: 12 }}>{`ID: ${deviceElement.id}`}</Text>
         </TouchableOpacity>
     );
 };

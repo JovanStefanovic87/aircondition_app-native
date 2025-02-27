@@ -370,7 +370,7 @@ const ElementsStateScreen: React.FC = () => {
                                 selectedElementId={selectedElementId}
                                 setSelectedElementId={setSelectedElementId}
                                 setSelectedDeviceElementId={setSelectedDeviceElementId}
-                                elementCompleted={elementCompleted}
+                                deviceElementCompleted={deviceElementCompleted}
                             />
                         </View>
                     </View>
