@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { customColors } from '../assets/styles/customStyles';
 import { useInspectionStore } from '../store/store';
 import { getInspectionQuestions } from '../../database/dataAccess/Query/sqlQueries';
+import { saveInspectionQuestion } from '../../database/dataAccess/Command/sqlCommands';
 import { TypedQuestionGroupForUI } from '../../database/types';
 
 const QuestionsScreen = () => {
@@ -10,15 +11,18 @@ const QuestionsScreen = () => {
     const [questionsData, setQuestionsData] = useState<TypedQuestionGroupForUI[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [responses, setResponses] = useState<
+        Record<number, { answer: string | null; comment: string }>
+    >({});
 
     useEffect(() => {
         const fetchQuestions = async () => {
             try {
                 const data = await getInspectionQuestions(inspectionId);
+                console.log('data', JSON.stringify(data));
                 setQuestionsData(data);
             } catch (err) {
-                setError('Error fetching questions');
-                console.error('Error fetching inspection questions:', err);
+                setError('Fehler beim Abrufen der Fragen');
             } finally {
                 setLoading(false);
             }
@@ -27,11 +31,86 @@ const QuestionsScreen = () => {
         fetchQuestions();
     }, [inspectionId]);
 
+    const handleResponse = (questionId: string, answer: string) => {
+        setResponses((prev) => {
+            const updatedResponses = {
+                ...prev,
+                [questionId]: {
+                    answer,
+                    comment: prev[questionId]?.comment || '',
+                },
+            };
+
+            saveInspectionQuestion({
+                id: questionId,
+                answer,
+                comment: updatedResponses[questionId].comment,
+            });
+
+            return updatedResponses;
+        });
+    };
+
+    const handleCommentChange = (questionId: string, comment: string) => {
+        setResponses((prev) => {
+            const updatedResponses = {
+                ...prev,
+                [questionId]: {
+                    answer: prev[questionId]?.answer ?? '',
+                    comment,
+                },
+            };
+
+            saveInspectionQuestion({
+                id: questionId,
+                answer: updatedResponses[questionId].answer,
+                comment,
+            });
+
+            return updatedResponses;
+        });
+    };
+
+    useEffect(() => {
+        const fetchQuestions = async () => {
+            try {
+                const data = await getInspectionQuestions(inspectionId);
+                console.log('data', JSON.stringify(data));
+                setQuestionsData(data);
+
+                // Inicijalizacija odgovora za svako pitanje
+                const initialResponses: Record<number, { answer: string | null; comment: string }> =
+                    {};
+                data.forEach((type) => {
+                    type.questionsByGroup.forEach((group) => {
+                        group.questions.forEach((q) => {
+                            initialResponses[q.inspectionQuestionId] = {
+                                answer: null,
+                                comment: '',
+                            };
+                        });
+                    });
+                });
+                setResponses(initialResponses);
+            } catch (err) {
+                setError('Fehler beim Abrufen der Fragen');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchQuestions();
+    }, [inspectionId]);
+
+    useEffect(() => {
+        console.log('Updated responses:', responses);
+    }, [responses]);
+
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Inspection Questions</Text>
+            <Text style={styles.title}>Inspektionsfragen</Text>
             {loading ? (
-                <Text>Loading...</Text>
+                <Text>Laden...</Text>
             ) : error ? (
                 <Text style={styles.error}>{error}</Text>
             ) : (
@@ -42,16 +121,98 @@ const QuestionsScreen = () => {
                             {type.questionsByGroup.map((group) => (
                                 <View key={group.groupId} style={styles.groupContainer}>
                                     <Text style={styles.groupTitle}>{group.name}</Text>
-                                    {group.questions.map((q) => (
-                                        <View
-                                            key={q.inspectionQuestionId}
-                                            style={styles.questionContainer}
-                                        >
-                                            <Text style={styles.questionText}>
-                                                {q.questionNumber}. {q.fullDescription}
-                                            </Text>
-                                        </View>
-                                    ))}
+                                    {group.questions.map((q) => {
+                                        const selectedAnswer =
+                                            responses[q.inspectionQuestionId]?.answer ?? null;
+
+                                        return (
+                                            <View
+                                                key={q.inspectionQuestionId}
+                                                style={styles.questionContainer}
+                                            >
+                                                <Text style={styles.questionText}>
+                                                    {q.questionNumber}. {q.fullDescription}
+                                                </Text>
+                                                <View style={styles.buttonContainer}>
+                                                    {[
+                                                        { label: 'Ja', color: '#4CAF50' }, // Zeleno
+                                                        { label: 'Nein', color: '#F44336' }, // Crveno
+                                                        {
+                                                            label: 'Nicht relevant',
+                                                            color: '#9E9E9E',
+                                                        }, // Sivo
+                                                    ].map(({ label, color }) => {
+                                                        const isSelected = selectedAnswer === label;
+
+                                                        return (
+                                                            <TouchableOpacity
+                                                                key={label}
+                                                                style={[
+                                                                    styles.answerButton,
+                                                                    {
+                                                                        backgroundColor:
+                                                                            responses[
+                                                                                q
+                                                                                    .inspectionQuestionId
+                                                                            ]?.answer === label
+                                                                                ? '#222'
+                                                                                : color,
+                                                                        borderWidth:
+                                                                            responses[
+                                                                                q
+                                                                                    .inspectionQuestionId
+                                                                            ]?.answer === label
+                                                                                ? 2
+                                                                                : 0,
+                                                                        borderColor:
+                                                                            responses[
+                                                                                q
+                                                                                    .inspectionQuestionId
+                                                                            ]?.answer === label
+                                                                                ? '#FFD700'
+                                                                                : 'transparent',
+                                                                    },
+                                                                ]}
+                                                                onPress={() =>
+                                                                    handleResponse(
+                                                                        q.inspectionQuestionId,
+                                                                        label,
+                                                                    )
+                                                                }
+                                                            >
+                                                                <Text
+                                                                    style={[
+                                                                        styles.buttonText,
+                                                                        responses[
+                                                                            q.inspectionQuestionId
+                                                                        ]?.answer === label &&
+                                                                            styles.selectedButtonText,
+                                                                    ]}
+                                                                >
+                                                                    {label}
+                                                                </Text>
+                                                            </TouchableOpacity>
+                                                        );
+                                                    })}
+                                                </View>
+
+                                                <TextInput
+                                                    style={styles.commentInput}
+                                                    placeholder="Kommentar eingeben..."
+                                                    value={
+                                                        responses[q.inspectionQuestionId]
+                                                            ?.comment || ''
+                                                    }
+                                                    onChangeText={(text) =>
+                                                        handleCommentChange(
+                                                            q.inspectionQuestionId,
+                                                            text,
+                                                        )
+                                                    }
+                                                />
+                                            </View>
+                                        );
+                                    })}
                                 </View>
                             ))}
                         </View>
@@ -69,7 +230,7 @@ const styles = StyleSheet.create({
         backgroundColor: customColors.blueLighter,
     },
     title: {
-        fontSize: 20,
+        fontSize: 22,
         fontWeight: 'bold',
         marginBottom: 10,
     },
@@ -82,7 +243,7 @@ const styles = StyleSheet.create({
     },
     typeContainer: {
         marginBottom: 20,
-        padding: 10,
+        padding: 12,
         backgroundColor: customColors.blueLight,
         borderRadius: 8,
     },
@@ -93,7 +254,7 @@ const styles = StyleSheet.create({
     },
     groupContainer: {
         marginLeft: 10,
-        padding: 8,
+        padding: 10,
         backgroundColor: customColors.blueDark,
         borderRadius: 6,
         marginBottom: 5,
@@ -105,14 +266,47 @@ const styles = StyleSheet.create({
     },
     questionContainer: {
         marginLeft: 10,
-        padding: 6,
+        padding: 8,
         backgroundColor: customColors.grayLight,
-        borderRadius: 4,
-        marginTop: 3,
+        borderRadius: 6,
+        marginTop: 5,
     },
     questionText: {
-        fontSize: 14,
+        fontSize: 16,
         color: 'black',
+        fontWeight: '500',
+    },
+    buttonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 10,
+        paddingHorizontal: 5,
+    },
+    answerButton: {
+        flex: 1,
+        alignItems: 'center',
+        paddingVertical: 12,
+        marginHorizontal: 5,
+        borderRadius: 8,
+    },
+    buttonText: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    selectedButtonText: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#FFD700', // Zlatna boja za izabrani odgovor
+    },
+    commentInput: {
+        marginTop: 10,
+        padding: 10,
+        borderRadius: 6,
+        backgroundColor: 'white',
+        borderWidth: 1,
+        borderColor: '#ccc',
+        fontSize: 14,
     },
 });
 
