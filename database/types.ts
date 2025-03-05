@@ -384,6 +384,6 @@ export interface TypedQuestionGroupForUI {
 
 export interface InspectionQuestionUpdate {
     id: string;
-    answer: string;
+    answerId: string;
     comment: string;
 }
