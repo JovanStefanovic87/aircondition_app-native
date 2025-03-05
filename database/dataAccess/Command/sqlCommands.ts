@@ -290,6 +290,7 @@ const fillDeviceStateByElementsToInspection = async (inspectionId: string): Prom
  * @param record - Question record
  */
 export const saveInspectionQuestion = async (record: InspectionQuestionUpdate): Promise<void> => {
+    console.log('record', record);
     await executeUpdate<InspectionQuestionUpdate>('Inspection_Question', record);
 };
 

@@ -47,19 +47,27 @@ const QuestionsScreen = () => {
         fetchQuestions();
     }, [inspectionId]);
 
+    const answerMapping: Record<string, number> = {
+        Ja: 1,
+        Nein: 2,
+        'Nicht relevant': 3,
+    };
+
     const handleResponse = (questionId: string, answer: string) => {
+        const answerId = answerMapping[answer] || null; // Konvertuje tekst u ID ili null ako ne postoji
+
         setResponses((prev) => {
             const updatedResponses = {
                 ...prev,
                 [questionId]: {
-                    answer,
+                    answer: answerId, // Sada koristimo ID umesto teksta
                     comment: prev[questionId]?.comment || '',
                 },
             };
 
             saveInspectionQuestion({
                 id: questionId,
-                answer,
+                answer: answerId?.toString() || '', // API sada prima broj (ID) kao string
                 comment: updatedResponses[questionId].comment,
             });
 
@@ -91,7 +99,6 @@ const QuestionsScreen = () => {
         const fetchQuestions = async () => {
             try {
                 const data = await getInspectionQuestions(inspectionId);
-                console.log('data', JSON.stringify(data));
                 setQuestionsData(data);
 
                 // Inicijalizacija odgovora za svako pitanje
@@ -102,7 +109,7 @@ const QuestionsScreen = () => {
                         group.questions.forEach((q) => {
                             initialResponses[q.inspectionQuestionId] = {
                                 answer: null,
-                                comment: '',
+                                comment: 'a',
                             };
                         });
                     });
@@ -118,9 +125,9 @@ const QuestionsScreen = () => {
         fetchQuestions();
     }, [inspectionId]);
 
-    useEffect(() => {
+    /* useEffect(() => {
         console.log('Updated responses:', responses);
-    }, [responses]);
+    }, [responses]); */
 
     const submit = async () => {
         if (isAllCompleted()) {

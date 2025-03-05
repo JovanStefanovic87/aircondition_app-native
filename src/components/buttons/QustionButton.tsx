@@ -9,8 +9,19 @@ type QuestionButtonProps = {
     handleResponse: (id: string, label: string) => void;
 };
 
+const answerMapping: Record<string, number> = {
+    Ja: 1,
+    Nein: 2,
+    'Nicht relevant': 3,
+};
+
+const reverseAnswerMapping: Record<number, string> = Object.fromEntries(
+    Object.entries(answerMapping).map(([key, value]) => [value, key]),
+);
+
 const QuestionButton = ({ label, responses, q, color, handleResponse }: QuestionButtonProps) => {
-    const isSelected = responses[q.inspectionQuestionId]?.answer === label;
+    const currentAnswerId = responses[q.inspectionQuestionId]?.answer;
+    const isSelected = reverseAnswerMapping[currentAnswerId || 0] === label;
 
     return (
         <TouchableOpacity
@@ -41,21 +52,21 @@ const styles = StyleSheet.create({
         borderRadius: 8,
     },
     buttonText: {
-        color: '#222222', // Poboljšava kontrast umesto crne
-        fontSize: 18, // Malo veći font za bolju čitljivost
-        fontWeight: '900', // Deblji tekst za bolju oštrinu
+        color: '#222222',
+        fontSize: 18,
+        fontWeight: '900',
         textTransform: 'uppercase',
         textAlign: 'center',
-        letterSpacing: 1.2, // Poboljšava razmak između slova
-        textShadowColor: 'rgba(0, 0, 0, 0.2)', // Blaga senka
+        letterSpacing: 1.2,
+        textShadowColor: 'rgba(0, 0, 0, 0.2)',
         textShadowOffset: { width: 1, height: 1 },
         textShadowRadius: 2,
     },
     selectedButtonText: {
-        fontSize: 20, // Selektovan tekst je još izraženiji
+        fontSize: 20,
         fontWeight: 'bold',
-        color: '#FFD700', // Zlatna boja za selektovani tekst
-        textShadowColor: 'rgba(0, 0, 0, 0.3)', // Jača senka na selektovanom tekstu
+        color: '#FFD700',
+        textShadowColor: 'rgba(0, 0, 0, 0.3)',
         textShadowOffset: { width: 2, height: 2 },
         textShadowRadius: 3,
     },
