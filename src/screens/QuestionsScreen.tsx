@@ -1,12 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import {
+    View,
+    Text,
+    ScrollView,
+    StyleSheet,
+    TextInput,
+    KeyboardAvoidingView,
+    Platform,
+} from 'react-native';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { customColors } from '../assets/styles/customStyles';
 import { useInspectionStore } from '../store/store';
 import { getInspectionQuestions } from '../../database/dataAccess/Query/sqlQueries';
 import { saveInspectionQuestion } from '../../database/dataAccess/Command/sqlCommands';
 import { TypedQuestionGroupForUI } from '../../database/types';
+import QuestionButton from '../components/buttons/QustionButton';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import PrimaryButton from '../components/buttons/PrimaryButton';
+
+type NewInspectionScreenNavigationProp = NavigationProp<Record<string, object>, string>;
 
 const QuestionsScreen = () => {
+    const navigation = useNavigation<NewInspectionScreenNavigationProp>();
     const inspectionId = useInspectionStore((state) => state.inspectionId);
     const [questionsData, setQuestionsData] = useState<TypedQuestionGroupForUI[]>([]);
     const [loading, setLoading] = useState(true);
@@ -14,6 +29,7 @@ const QuestionsScreen = () => {
     const [responses, setResponses] = useState<
         Record<number, { answer: string | null; comment: string }>
     >({});
+    const [allCompleted, setAllCompleted] = useState<boolean[]>([]);
 
     useEffect(() => {
         const fetchQuestions = async () => {
@@ -106,120 +122,102 @@ const QuestionsScreen = () => {
         console.log('Updated responses:', responses);
     }, [responses]);
 
+    const submit = async () => {
+        if (isAllCompleted()) {
+            navigation.navigate('AllInspectionsScreen');
+        } else {
+            console.log('error');
+        }
+    };
+
+    const isAllCompleted = () => {
+        const completionValues = Object.values(allCompleted);
+        return completionValues.length > 0 && completionValues.every((status) => status === true);
+    };
+
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Inspektionsfragen</Text>
-            {loading ? (
-                <Text>Laden...</Text>
-            ) : error ? (
-                <Text style={styles.error}>{error}</Text>
-            ) : (
-                <ScrollView style={styles.scrollView}>
-                    {questionsData.map((type) => (
-                        <View key={type.inspectionTypeId} style={styles.typeContainer}>
-                            <Text style={styles.typeTitle}>{type.inspectionTypeName}</Text>
-                            {type.questionsByGroup.map((group) => (
-                                <View key={group.groupId} style={styles.groupContainer}>
-                                    <Text style={styles.groupTitle}>{group.name}</Text>
-                                    {group.questions.map((q) => {
-                                        const selectedAnswer =
-                                            responses[q.inspectionQuestionId]?.answer ?? null;
+        <KeyboardAvoidingView
+            style={styles.container}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+            <GestureHandlerRootView style={styles.scrollContainer}>
+                {loading ? (
+                    <Text>Laden...</Text>
+                ) : error ? (
+                    <Text style={styles.error}>{error}</Text>
+                ) : (
+                    <ScrollView style={styles.scrollView}>
+                        {questionsData.map((type) => (
+                            <View key={type.inspectionTypeId} style={styles.typeContainer}>
+                                <Text style={styles.typeTitle}>{type.inspectionTypeName}</Text>
+                                {type.questionsByGroup.map((group) => (
+                                    <View key={group.groupId} style={styles.groupContainer}>
+                                        <Text style={styles.groupTitle}>{group.name}</Text>
+                                        {group.questions.map((q) => {
+                                            return (
+                                                <View
+                                                    key={q.inspectionQuestionId}
+                                                    style={styles.questionContainer}
+                                                >
+                                                    <Text style={styles.questionText}>
+                                                        {q.questionNumber}. {q.fullDescription}
+                                                    </Text>
+                                                    <View style={styles.buttonContainer}>
+                                                        {[
+                                                            {
+                                                                label: 'Ja',
+                                                                color: customColors.greenMid,
+                                                            }, // Zeleno
+                                                            {
+                                                                label: 'Nein',
+                                                                color: customColors.redLight,
+                                                            }, // Crveno
+                                                            {
+                                                                label: 'Nicht relevant',
+                                                                color: '#9E9E9E',
+                                                            }, // Sivo
+                                                        ].map(({ label, color }) => {
+                                                            return (
+                                                                <QuestionButton
+                                                                    key={label}
+                                                                    label={label}
+                                                                    responses={responses}
+                                                                    q={q}
+                                                                    color={color}
+                                                                    handleResponse={handleResponse}
+                                                                />
+                                                            );
+                                                        })}
+                                                    </View>
 
-                                        return (
-                                            <View
-                                                key={q.inspectionQuestionId}
-                                                style={styles.questionContainer}
-                                            >
-                                                <Text style={styles.questionText}>
-                                                    {q.questionNumber}. {q.fullDescription}
-                                                </Text>
-                                                <View style={styles.buttonContainer}>
-                                                    {[
-                                                        { label: 'Ja', color: '#4CAF50' }, // Zeleno
-                                                        { label: 'Nein', color: '#F44336' }, // Crveno
-                                                        {
-                                                            label: 'Nicht relevant',
-                                                            color: '#9E9E9E',
-                                                        }, // Sivo
-                                                    ].map(({ label, color }) => {
-                                                        const isSelected = selectedAnswer === label;
-
-                                                        return (
-                                                            <TouchableOpacity
-                                                                key={label}
-                                                                style={[
-                                                                    styles.answerButton,
-                                                                    {
-                                                                        backgroundColor:
-                                                                            responses[
-                                                                                q
-                                                                                    .inspectionQuestionId
-                                                                            ]?.answer === label
-                                                                                ? '#222'
-                                                                                : color,
-                                                                        borderWidth:
-                                                                            responses[
-                                                                                q
-                                                                                    .inspectionQuestionId
-                                                                            ]?.answer === label
-                                                                                ? 2
-                                                                                : 0,
-                                                                        borderColor:
-                                                                            responses[
-                                                                                q
-                                                                                    .inspectionQuestionId
-                                                                            ]?.answer === label
-                                                                                ? '#FFD700'
-                                                                                : 'transparent',
-                                                                    },
-                                                                ]}
-                                                                onPress={() =>
-                                                                    handleResponse(
-                                                                        q.inspectionQuestionId,
-                                                                        label,
-                                                                    )
-                                                                }
-                                                            >
-                                                                <Text
-                                                                    style={[
-                                                                        styles.buttonText,
-                                                                        responses[
-                                                                            q.inspectionQuestionId
-                                                                        ]?.answer === label &&
-                                                                            styles.selectedButtonText,
-                                                                    ]}
-                                                                >
-                                                                    {label}
-                                                                </Text>
-                                                            </TouchableOpacity>
-                                                        );
-                                                    })}
+                                                    <TextInput
+                                                        style={styles.commentInput}
+                                                        placeholder="Kommentar eingeben..."
+                                                        value={
+                                                            responses[q.inspectionQuestionId]
+                                                                ?.comment || ''
+                                                        }
+                                                        onChangeText={(text) =>
+                                                            handleCommentChange(
+                                                                q.inspectionQuestionId,
+                                                                text,
+                                                            )
+                                                        }
+                                                    />
                                                 </View>
-
-                                                <TextInput
-                                                    style={styles.commentInput}
-                                                    placeholder="Kommentar eingeben..."
-                                                    value={
-                                                        responses[q.inspectionQuestionId]
-                                                            ?.comment || ''
-                                                    }
-                                                    onChangeText={(text) =>
-                                                        handleCommentChange(
-                                                            q.inspectionQuestionId,
-                                                            text,
-                                                        )
-                                                    }
-                                                />
-                                            </View>
-                                        );
-                                    })}
-                                </View>
-                            ))}
-                        </View>
-                    ))}
-                </ScrollView>
-            )}
-        </View>
+                                            );
+                                        })}
+                                    </View>
+                                ))}
+                            </View>
+                        ))}
+                    </ScrollView>
+                )}
+            </GestureHandlerRootView>
+            <View style={styles.rightAlign}>
+                <PrimaryButton title="Nächster Schritt" onPress={submit} />
+            </View>
+        </KeyboardAvoidingView>
     );
 };
 
@@ -229,10 +227,10 @@ const styles = StyleSheet.create({
         padding: 16,
         backgroundColor: customColors.blueLighter,
     },
-    title: {
-        fontSize: 22,
-        fontWeight: 'bold',
-        marginBottom: 10,
+    scrollContainer: {
+        alignItems: 'center',
+        width: '100%',
+        maxHeight: '92%',
     },
     error: {
         color: 'red',
@@ -247,8 +245,16 @@ const styles = StyleSheet.create({
         backgroundColor: customColors.blueLight,
         borderRadius: 8,
     },
+    rightAlign: {
+        display: 'flex',
+        alignItems: 'flex-end',
+        position: 'absolute',
+        bottom: 20,
+        paddingHorizontal: 20,
+        width: '100%',
+    },
     typeTitle: {
-        fontSize: 18,
+        fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 5,
     },
@@ -260,7 +266,7 @@ const styles = StyleSheet.create({
         marginBottom: 5,
     },
     groupTitle: {
-        fontSize: 16,
+        fontSize: 22,
         fontWeight: 'bold',
         color: 'white',
     },
@@ -272,8 +278,8 @@ const styles = StyleSheet.create({
         marginTop: 5,
     },
     questionText: {
-        fontSize: 16,
-        color: 'black',
+        fontSize: 20,
+        color: customColors.blackText,
         fontWeight: '500',
     },
     buttonContainer: {
@@ -297,7 +303,7 @@ const styles = StyleSheet.create({
     selectedButtonText: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#FFD700', // Zlatna boja za izabrani odgovor
+        color: '#FFD700',
     },
     commentInput: {
         marginTop: 10,
@@ -306,7 +312,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         borderWidth: 1,
         borderColor: '#ccc',
-        fontSize: 14,
+        fontSize: 18,
     },
 });
 

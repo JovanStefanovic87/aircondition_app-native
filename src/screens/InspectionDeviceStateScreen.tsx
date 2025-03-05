@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useInspectionStore } from '../store/store';
-import { StyleSheet, View, ScrollView, KeyboardAvoidingView, Platform, Image } from 'react-native';
+import { StyleSheet, View, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { calculateMinColumnWidth } from '../helpers/universalFunctions';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';

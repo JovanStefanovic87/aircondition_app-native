@@ -63,7 +63,7 @@ const TabNavigator = () => {
             <Stack.Screen
                 name="QuestionsScreen"
                 component={QuestionsScreen}
-                options={tabNameOptions('FRAGEN')}
+                options={tabNameOptions('INSPEKTIONSFRAGEN')}
             />
             <Stack.Screen name="HomeScreen" component={HomeScreen} />
         </Stack.Navigator>
