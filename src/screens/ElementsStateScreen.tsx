@@ -17,6 +17,7 @@ import {
     getInspectionElementStateDetails,
     getDeviceStateImages,
     getDeviceElementCompletionState,
+    getInspectionType,
 } from '../../database/dataAccess/Query/sqlQueries';
 import {
     DeviceElementCompletionState,
@@ -52,6 +53,7 @@ const ElementsStateScreen: React.FC = () => {
     const setInspectionDeviceElements = useInspectionDeviceElementsStore(
         (state) => state.setInspectionDeviceElements,
     );
+    const [inspectionType, setInspectionType] = useState<number | null>(null);
     const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
     const [selectedDeviceElementId, setSelectedDeviceElementId] = useState<string | null>(null);
     const deviceElementSort = useDeviceElementSortStore((state) => state.deviceOrder);
@@ -75,7 +77,7 @@ const ElementsStateScreen: React.FC = () => {
     const [isGalleryVisible, setGalleryVisible] = useState(false);
     const [galeryTitle, setGalleryTitle] = useState<string | null>(null);
     const [photoPreview, setPhotoPreview] = useState<string | null>(null);
-
+    console.log('inspectionDeviceStateDetails', inspectionDeviceStateDetails);
     useEffect(() => {
         const fetchInitialData = async () => {
             try {
@@ -100,6 +102,19 @@ const ElementsStateScreen: React.FC = () => {
         const elementsCompleted = elementCheck.every((element) => element.isCompleted);
         setAllElementsCompleted(elementsCompleted);
     };
+
+    useEffect(() => {
+        const fetchInspectionType = async () => {
+            try {
+                const type = await getInspectionType(inspectionId);
+                setInspectionType(type);
+            } catch (error) {
+                console.error('Error fetching inspection type:', error);
+            }
+        };
+
+        fetchInspectionType();
+    }, [inspectionId]);
 
     useEffect(() => {
         isCompleteCheckPerElement();
@@ -204,7 +219,11 @@ const ElementsStateScreen: React.FC = () => {
         const isPageCompleted = await isAllCompleted();
 
         if (isPageCompleted) {
-            navigation.navigate('QuestionsScreen');
+            if ([1, 2, 6].includes(inspectionType)) {
+                navigation.navigate('QuestionsScreen');
+            } else {
+                navigation.navigate('AllInspectionsScreen');
+            }
         } else {
             setErrorMessage('Niet alle elementen zijn voltooid. Vul alstublieft alle velden in.');
             setErrorModalVisible(true);

@@ -29,7 +29,7 @@ const QuestionsScreen = () => {
     const [responses, setResponses] = useState<
         Record<number, { answerId: string | null; comment: string }>
     >({});
-    const [allCompleted, setAllCompleted] = useState<boolean[]>([]);
+    const [allCompleted, setAllCompleted] = useState<boolean>(false);
 
     useEffect(() => {
         const fetchQuestions = async () => {
@@ -120,9 +120,12 @@ const QuestionsScreen = () => {
         }
     };
 
+    useEffect(() => {
+        setAllCompleted(isAllCompleted());
+    }, [responses]);
+
     const isAllCompleted = () => {
-        const completionValues = Object.values(allCompleted);
-        return completionValues.length > 0 && completionValues.every((status) => status === true);
+        return Object.values(responses).every((response) => response.answerId !== null);
     };
 
     return (
@@ -205,7 +208,11 @@ const QuestionsScreen = () => {
                 )}
             </GestureHandlerRootView>
             <View style={styles.rightAlign}>
-                <PrimaryButton title="Nächster Schritt" onPress={submit} />
+                <PrimaryButton
+                    title="Nächster Schritt"
+                    onPress={submit}
+                    isDisabled={!allCompleted}
+                />
             </View>
         </KeyboardAvoidingView>
     );
@@ -214,8 +221,6 @@ const QuestionsScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 16,
-        backgroundColor: customColors.blueLighter,
     },
     scrollContainer: {
         alignItems: 'center',
@@ -227,7 +232,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     scrollView: {
-        marginTop: 10,
+        width: '100%',
     },
     typeContainer: {
         marginBottom: 20,

@@ -8,6 +8,7 @@ import { useInspectionStore } from '../store/store';
 import Dropdown from '../components/input/DropdownWithValidation';
 import TextMain from '../components/text/TextMain';
 import NoResultMessage from '../components/text/NoResultMessage';
+import PrimaryButton from '../components/buttons/PrimaryButton';
 
 type AllInspectionsScreenNavigationProp = NavigationProp<Record<string, object>, string>;
 
@@ -52,16 +53,22 @@ const AllInspectionsScreen = () => {
         <View style={styles.container}>
             <ScrollView>
                 <View style={styles.listContainer}>
-                    <Dropdown
-                        items={[
-                            { label: 'Gestartet inspektionen', value: 0 },
-                            { label: 'Vollendet inspektionen', value: 1 },
-                            { label: 'Finalized inspektionen', value: 2 },
-                            { label: 'Gesperrt inspektionen', value: 3 },
-                        ]}
-                        selectedValue={selectedStatus}
-                        setSelectedValue={(value) => setSelectedStatus(value)}
-                    />
+                    <View style={styles.headerOptions}>
+                        <Dropdown
+                            items={[
+                                { label: 'Gestartet inspektionen', value: 0 },
+                                { label: 'Vollendet inspektionen', value: 1 },
+                                { label: 'Finalized inspektionen', value: 2 },
+                                { label: 'Gesperrt inspektionen', value: 3 },
+                            ]}
+                            selectedValue={selectedStatus}
+                            setSelectedValue={(value) => setSelectedStatus(value)}
+                        />
+                        <PrimaryButton
+                            title="Neue Inspektion"
+                            onPress={() => navigation.navigate('InspectionBasicDetailsScreen')}
+                        />
+                    </View>
                     <View>
                         {filteredInspections.length === 0 ? (
                             <NoResultMessage text="Keine Inspektion" />
@@ -85,6 +92,11 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
+    },
+    headerOptions: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 20,
     },
     listContainer: {
         flex: 1,
