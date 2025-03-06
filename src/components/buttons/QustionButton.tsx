@@ -3,7 +3,7 @@ import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 
 type QuestionButtonProps = {
     label: string;
-    responses: { [key: string]: { answer: string } };
+    responses: { [key: string]: { answerId: string } };
     q: { inspectionQuestionId: string };
     color: string;
     handleResponse: (id: string, label: string) => void;
@@ -20,8 +20,8 @@ const reverseAnswerMapping: Record<number, string> = Object.fromEntries(
 );
 
 const QuestionButton = ({ label, responses, q, color, handleResponse }: QuestionButtonProps) => {
-    const currentAnswerId = responses[q.inspectionQuestionId]?.answer;
-    const isSelected = reverseAnswerMapping[currentAnswerId || 0] === label;
+    const currentAnswerId = responses[q.inspectionQuestionId]?.answerId ?? 0;
+    const isSelected = (reverseAnswerMapping[currentAnswerId] || '') === label;
 
     return (
         <TouchableOpacity

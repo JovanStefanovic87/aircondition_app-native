@@ -27,7 +27,7 @@ const QuestionsScreen = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [responses, setResponses] = useState<
-        Record<number, { answer: string | null; comment: string }>
+        Record<number, { answerId: string | null; comment: string }>
     >({});
     const [allCompleted, setAllCompleted] = useState<boolean[]>([]);
 
@@ -35,8 +35,25 @@ const QuestionsScreen = () => {
         const fetchQuestions = async () => {
             try {
                 const data = await getInspectionQuestions(inspectionId);
-                console.log('data', JSON.stringify(data));
                 setQuestionsData(data);
+
+                const initialResponses: Record<
+                    string,
+                    { answerId: string | null; comment: string }
+                > = {};
+
+                data.forEach((type) => {
+                    type.questionsByGroup.forEach((group) => {
+                        group.questions.forEach((q) => {
+                            initialResponses[q.inspectionQuestionId] = {
+                                answerId: q.answerId?.toString() ?? null,
+                                comment: q.comment ?? '',
+                            };
+                        });
+                    });
+                });
+
+                setResponses(initialResponses);
             } catch (err) {
                 setError('Fehler beim Abrufen der Fragen');
             } finally {
@@ -53,21 +70,21 @@ const QuestionsScreen = () => {
         'Nicht relevant': 3,
     };
 
-    const handleResponse = (questionId: string, answer: string) => {
-        const answerId = answerMapping[answer] || null; // Konvertuje tekst u ID ili null ako ne postoji
+    const handleResponse = (questionId: string, label: string) => {
+        const answerId = answerMapping[label] ?? null;
 
         setResponses((prev) => {
             const updatedResponses = {
                 ...prev,
                 [questionId]: {
-                    answer: answerId, // Sada koristimo ID umesto teksta
+                    answerId,
                     comment: prev[questionId]?.comment || '',
                 },
             };
 
             saveInspectionQuestion({
                 id: questionId,
-                answer: answerId?.toString() || '', // API sada prima broj (ID) kao string
+                answerId: answerId?.toString() || '',
                 comment: updatedResponses[questionId].comment,
             });
 
@@ -80,54 +97,20 @@ const QuestionsScreen = () => {
             const updatedResponses = {
                 ...prev,
                 [questionId]: {
-                    answer: prev[questionId]?.answer ?? '',
+                    answerId: prev[questionId]?.answer ?? '',
                     comment,
                 },
             };
 
             saveInspectionQuestion({
                 id: questionId,
-                answer: updatedResponses[questionId].answer,
+                answerId: updatedResponses[questionId].answer,
                 comment,
             });
 
             return updatedResponses;
         });
     };
-
-    useEffect(() => {
-        const fetchQuestions = async () => {
-            try {
-                const data = await getInspectionQuestions(inspectionId);
-                setQuestionsData(data);
-
-                // Inicijalizacija odgovora za svako pitanje
-                const initialResponses: Record<number, { answer: string | null; comment: string }> =
-                    {};
-                data.forEach((type) => {
-                    type.questionsByGroup.forEach((group) => {
-                        group.questions.forEach((q) => {
-                            initialResponses[q.inspectionQuestionId] = {
-                                answer: null,
-                                comment: 'a',
-                            };
-                        });
-                    });
-                });
-                setResponses(initialResponses);
-            } catch (err) {
-                setError('Fehler beim Abrufen der Fragen');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchQuestions();
-    }, [inspectionId]);
-
-    /* useEffect(() => {
-        console.log('Updated responses:', responses);
-    }, [responses]); */
 
     const submit = async () => {
         if (isAllCompleted()) {
