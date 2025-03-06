@@ -7,6 +7,7 @@ import {
     TextInput,
     KeyboardAvoidingView,
     Platform,
+    TouchableOpacity,
 } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { customColors } from '../assets/styles/customStyles';
@@ -30,6 +31,7 @@ const QuestionsScreen = () => {
         Record<number, { answerId: string | null; comment: string }>
     >({});
     const [allCompleted, setAllCompleted] = useState<boolean>(false);
+    const [selectedTab, setSelectedTab] = useState<number | null>(null);
 
     useEffect(() => {
         const fetchQuestions = async () => {
@@ -37,8 +39,12 @@ const QuestionsScreen = () => {
                 const data = await getInspectionQuestions(inspectionId);
                 setQuestionsData(data);
 
+                if (data.length > 0) {
+                    setSelectedTab(data[0].inspectionTypeId);
+                }
+
                 const initialResponses: Record<
-                    string,
+                    number,
                     { answerId: string | null; comment: string }
                 > = {};
 
@@ -93,23 +99,10 @@ const QuestionsScreen = () => {
     };
 
     const handleCommentChange = (questionId: string, comment: string) => {
-        setResponses((prev) => {
-            const updatedResponses = {
-                ...prev,
-                [questionId]: {
-                    answerId: prev[questionId]?.answer ?? '',
-                    comment,
-                },
-            };
-
-            saveInspectionQuestion({
-                id: questionId,
-                answerId: updatedResponses[questionId].answer,
-                comment,
-            });
-
-            return updatedResponses;
-        });
+        setResponses((prev) => ({
+            ...prev,
+            [questionId]: { answerId: prev[questionId]?.answerId ?? '', comment },
+        }));
     };
 
     const submit = async () => {
@@ -139,38 +132,66 @@ const QuestionsScreen = () => {
                 ) : error ? (
                     <Text style={styles.error}>{error}</Text>
                 ) : (
-                    <ScrollView style={styles.scrollView}>
-                        {questionsData.map((type) => (
-                            <View key={type.inspectionTypeId} style={styles.typeContainer}>
-                                <Text style={styles.typeTitle}>{type.inspectionTypeName}</Text>
-                                {type.questionsByGroup.map((group) => (
-                                    <View key={group.groupId} style={styles.groupContainer}>
-                                        <Text style={styles.groupTitle}>{group.name}</Text>
-                                        {group.questions.map((q) => {
-                                            return (
-                                                <View
-                                                    key={q.inspectionQuestionId}
-                                                    style={styles.questionContainer}
-                                                >
-                                                    <Text style={styles.questionText}>
-                                                        {q.questionNumber}. {q.fullDescription}
-                                                    </Text>
-                                                    <View style={styles.buttonContainer}>
-                                                        {[
-                                                            {
-                                                                label: 'Ja',
-                                                                color: customColors.greenMid,
-                                                            }, // Zeleno
-                                                            {
-                                                                label: 'Nein',
-                                                                color: customColors.redLight,
-                                                            }, // Crveno
-                                                            {
-                                                                label: 'Nicht relevant',
-                                                                color: '#9E9E9E',
-                                                            }, // Sivo
-                                                        ].map(({ label, color }) => {
-                                                            return (
+                    <>
+                        {/* Tabs za inspekcije */}
+                        <View style={styles.tabsContainer}>
+                            {questionsData.map((type) => (
+                                <TouchableOpacity
+                                    key={type.inspectionTypeId}
+                                    style={[
+                                        styles.tab,
+                                        selectedTab === type.inspectionTypeId && styles.activeTab,
+                                    ]}
+                                    onPress={() => setSelectedTab(type.inspectionTypeId)}
+                                >
+                                    <Text
+                                        style={[
+                                            styles.tabText,
+                                            selectedTab === type.inspectionTypeId &&
+                                                styles.activeTabText,
+                                        ]}
+                                    >
+                                        {type.inspectionTypeName}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+
+                        {/* Prikaz pitanja za izabranu inspekciju */}
+                        <ScrollView style={styles.scrollView}>
+                            {questionsData
+                                .filter((type) => type.inspectionTypeId === selectedTab)
+                                .map((type) => (
+                                    <View
+                                        key={type.inspectionTypeId}
+                                        style={styles.inspectionContainer}
+                                    >
+                                        {type.questionsByGroup.map((group) => (
+                                            <View key={group.groupId} style={styles.groupContainer}>
+                                                <Text style={styles.groupTitle}>{group.name}</Text>
+                                                {group.questions.map((q) => (
+                                                    <View
+                                                        key={q.inspectionQuestionId}
+                                                        style={styles.questionContainer}
+                                                    >
+                                                        <Text style={styles.questionText}>
+                                                            {q.questionNumber}. {q.fullDescription}
+                                                        </Text>
+                                                        <View style={styles.buttonContainer}>
+                                                            {[
+                                                                {
+                                                                    label: 'Ja',
+                                                                    color: customColors.greenMid,
+                                                                },
+                                                                {
+                                                                    label: 'Nein',
+                                                                    color: customColors.redLight,
+                                                                },
+                                                                {
+                                                                    label: 'Nicht relevant',
+                                                                    color: '#9E9E9E',
+                                                                },
+                                                            ].map(({ label, color }) => (
                                                                 <QuestionButton
                                                                     key={label}
                                                                     label={label}
@@ -179,32 +200,31 @@ const QuestionsScreen = () => {
                                                                     color={color}
                                                                     handleResponse={handleResponse}
                                                                 />
-                                                            );
-                                                        })}
-                                                    </View>
+                                                            ))}
+                                                        </View>
 
-                                                    <TextInput
-                                                        style={styles.commentInput}
-                                                        placeholder="Kommentar eingeben..."
-                                                        value={
-                                                            responses[q.inspectionQuestionId]
-                                                                ?.comment || ''
-                                                        }
-                                                        onChangeText={(text) =>
-                                                            handleCommentChange(
-                                                                q.inspectionQuestionId,
-                                                                text,
-                                                            )
-                                                        }
-                                                    />
-                                                </View>
-                                            );
-                                        })}
+                                                        <TextInput
+                                                            style={styles.commentInput}
+                                                            placeholder="Kommentar eingeben..."
+                                                            value={
+                                                                responses[q.inspectionQuestionId]
+                                                                    ?.comment || ''
+                                                            }
+                                                            onChangeText={(text) =>
+                                                                handleCommentChange(
+                                                                    q.inspectionQuestionId,
+                                                                    text,
+                                                                )
+                                                            }
+                                                        />
+                                                    </View>
+                                                ))}
+                                            </View>
+                                        ))}
                                     </View>
                                 ))}
-                            </View>
-                        ))}
-                    </ScrollView>
+                        </ScrollView>
+                    </>
                 )}
             </GestureHandlerRootView>
             <View style={styles.rightAlign}>
@@ -234,19 +254,23 @@ const styles = StyleSheet.create({
     scrollView: {
         width: '100%',
     },
-    typeContainer: {
-        marginBottom: 20,
-        padding: 12,
-        backgroundColor: customColors.blueLight,
-        borderRadius: 8,
+    inspectionContainer: {
+        marginBottom: 30, // Razmak između različitih inspekcija
+        padding: 15,
+        backgroundColor: customColors.blueLighter,
+        borderRadius: 10,
     },
-    rightAlign: {
-        display: 'flex',
-        alignItems: 'flex-end',
-        position: 'absolute',
-        bottom: 20,
-        paddingHorizontal: 20,
-        width: '100%',
+    tabsContainer: { flexDirection: 'row', justifyContent: 'center', marginVertical: 10 },
+    tab: { padding: 12, borderRadius: 8, backgroundColor: '#ccc', marginHorizontal: 5 },
+    activeTab: { backgroundColor: customColors.blueDark },
+    tabText: { fontSize: 18, fontWeight: 'bold', color: 'black' },
+    activeTabText: { color: 'white' },
+    inspectionTitle: {
+        fontSize: 26,
+        fontWeight: 'bold',
+        color: customColors.blackText,
+        marginBottom: 10,
+        textAlign: 'center',
     },
     typeTitle: {
         fontSize: 24,
@@ -283,23 +307,6 @@ const styles = StyleSheet.create({
         marginTop: 10,
         paddingHorizontal: 5,
     },
-    answerButton: {
-        flex: 1,
-        alignItems: 'center',
-        paddingVertical: 12,
-        marginHorizontal: 5,
-        borderRadius: 8,
-    },
-    buttonText: {
-        color: 'white',
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
-    selectedButtonText: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#FFD700',
-    },
     commentInput: {
         marginTop: 10,
         padding: 10,
@@ -308,6 +315,14 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#ccc',
         fontSize: 18,
+    },
+    rightAlign: {
+        display: 'flex',
+        alignItems: 'flex-end',
+        position: 'absolute',
+        bottom: 20,
+        paddingHorizontal: 20,
+        width: '100%',
     },
 });
 
