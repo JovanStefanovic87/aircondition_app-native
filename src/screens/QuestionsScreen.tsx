@@ -105,6 +105,15 @@ const QuestionsScreen = () => {
         }));
     };
 
+    const handleCommentBlur = (questionId: string) => {
+        const { answerId, comment } = responses[questionId] || {};
+        saveInspectionQuestion({
+            id: questionId,
+            answerId: answerId?.toString() || '',
+            comment,
+        });
+    };
+
     const submit = async () => {
         if (isAllCompleted()) {
             navigation.navigate('AllInspectionsScreen');
@@ -216,6 +225,11 @@ const QuestionsScreen = () => {
                                                                     text,
                                                                 )
                                                             }
+                                                            onBlur={() =>
+                                                                handleCommentBlur(
+                                                                    q.inspectionQuestionId,
+                                                                )
+                                                            }
                                                         />
                                                     </View>
                                                 ))}
@@ -315,6 +329,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#ccc',
         fontSize: 18,
+        color: customColors.blackText,
     },
     rightAlign: {
         display: 'flex',

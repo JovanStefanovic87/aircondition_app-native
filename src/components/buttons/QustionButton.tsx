@@ -47,6 +47,7 @@ const styles = StyleSheet.create({
     answerButton: {
         flex: 1,
         alignItems: 'center',
+        justifyContent: 'center',
         paddingVertical: 12,
         marginHorizontal: 5,
         borderRadius: 8,
