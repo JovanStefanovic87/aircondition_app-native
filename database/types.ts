@@ -17,12 +17,32 @@ export type DatabaseVersionType = {
     version: number;
 };
 
+export type Client = {
+    id: string;
+    name: string;
+    address: string;
+    city: string;
+    postalCode: string;
+    phone: string;
+    email: string;
+    contactPerson: string;
+    isDeleted: boolean;
+};
+
 /**
  * @param userId Format of param is UUID.
  * @param createdAt The creation date of the inspection in the format 'YYYY-MM-DDTHH:mm:ssZ'.
  */
+
 export type InspectionUpdate = {
     id?: string;
+    clientId: string;
+    clientName: string;
+    clientAddress: string;
+    clientCity: string;
+    endClientName: string;
+    endClientAddress: string;
+    endClientCity: string;
     barcode: string;
     deviceTypeId: number;
     inspectionTypeId: number;
@@ -31,6 +51,8 @@ export type InspectionUpdate = {
     contractNumber: string;
     createdAt: string;
     lastInspectionDate?: string;
+    nextInspectionDate?: string;
+    inspectionDate: string;
     airVolume?: number;
     constructionYear?: number;
     lastMaintenance?: string;
@@ -387,3 +409,15 @@ export interface InspectionQuestionUpdate {
     answerId: string;
     comment: string;
 }
+
+export type ClientUpdate = {
+    id?: string;
+    name: string;
+    address: string;
+    city: string;
+    postalCode: string;
+    phone: string;
+    email: string;
+    contactPerson: string;
+    isDeleted: boolean;
+};

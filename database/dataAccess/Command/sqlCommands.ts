@@ -1,6 +1,7 @@
 import { INSPECTION_TYPES } from '../../../src/helpers/constants';
 import { deleteFile } from '../../../src/helpers/universalFunctions';
 import {
+    ClientUpdate,
     DeviceElementImageInsert,
     DeviceElementSortUpdate,
     DeviceElementStateImageInsert,
@@ -26,6 +27,7 @@ import {
     executeUpdateOrInsertWithGuid,
 } from '../Command/baseCommand';
 import {
+    getClientById,
     getComponentElementTitleIds,
     getDeviceStateComponentsWholeDevice,
     getImageStorageById,
@@ -335,4 +337,24 @@ export const deleteDeviceStateImage = async (imageId: string): Promise<void> => 
  */
 export const deleteDeviceElementImage = async (imageId: string): Promise<void> => {
     await deleteImage(imageId, 'DeviceElement_Image');
+};
+
+/**
+ * saveClient - Function used in step 1 to save the client
+ * @param record - Insert client information into Client table
+ */
+export const saveClient = async (record: ClientUpdate): Promise<void> => {
+    await executeUpdateOrInsertWithGuid<ClientUpdate>('Client', record);
+};
+
+/**
+ * deleteClient - Function will not actualy delete client from db, instead this will just update isDeleted=true state
+ * @param clientId - Client table
+ */
+export const deleteClient = async (clientId: string): Promise<void> => {
+    const client = await getClientById(clientId);
+    if (client) {
+        client.isDeleted = true;
+        await executeUpdateOrInsertWithGuid<ClientUpdate>('Client', client);
+    }
 };
