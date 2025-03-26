@@ -2,6 +2,7 @@ import {
     getDeviceElementTypes,
     getInspectionDeviceElements,
 } from '../../database/dataAccess/Query/sqlQueries';
+import { InspectionDeviceElement } from '../../database/types';
 
 export const fetchDeviceElementTypes = async (setDeviceElementTypes) => {
     try {
@@ -11,8 +12,6 @@ export const fetchDeviceElementTypes = async (setDeviceElementTypes) => {
         console.error('Error fetching device element types:', error);
     }
 };
-
-import { InspectionDeviceElement } from '../../database/types';
 
 export const fetchInspectionDeviceElements = async (
     inspectionId: string,

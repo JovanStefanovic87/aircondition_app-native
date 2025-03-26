@@ -1,5 +1,6 @@
 import { STATE_TYPES } from '../../../src/helpers/constants';
 import {
+    Client,
     ComponentElementTitle,
     DatabaseVersionType,
     DeviceElement,
@@ -545,4 +546,15 @@ export const getAllQuestions = async (): Promise<QuestionComponent[]> => {
 export const getQuestionGroups = async (): Promise<QuestionGroup[]> => {
     const query = `SELECT * FROM QuestionGroup`;
     return executeQuery<QuestionGroup>({ query });
+};
+
+export const getAllClients = async (): Promise<Client[]> => {
+    const query = `SELECT * FROM Client where isDeleted = 0`;
+    return executeQuery<Client>({ query });
+};
+
+export const getClientById = async (clientId: string): Promise<Client> => {
+    const query = `
+        SELECT * FROM Client WHERE id = '${clientId}'`;
+    return executeQuerySingle<Client>({ query });
 };

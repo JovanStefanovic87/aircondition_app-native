@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS UserRole (
 CREATE TABLE IF NOT EXISTS User (
   id TEXT PRIMARY KEY,
   name VARCHAR(100),
-  userName VARCHAR(255),
+  email VARCHAR(100),
   password VARCHAR(255),
   roleId INTEGER,
   FOREIGN KEY (roleId) REFERENCES UserRole(id)
@@ -37,8 +37,27 @@ CREATE TABLE IF NOT EXISTS InspectionStatus (
   name VARCHAR(50)
 );
 
+CREATE TABLE IF NOT EXISTS Client (
+  id TEXT PRIMARY KEY,
+  name VARCHAR(100),
+  address VARCHAR(150),
+  city VARCHAR(100),
+  postalCode VARCHAR(20),
+  phone VARCHAR(20),
+  email VARCHAR(100),
+  contactPerson VARCHAR(100),
+  isDeleted BOOLEAN DEFAULT 0
+);
+
 CREATE TABLE IF NOT EXISTS Inspection (
   id TEXT PRIMARY KEY,
+  clientId TEXT NULL,
+  clientName VARCHAR(100),
+  clientAddress VARCHAR(150),
+  clientCity VARCHAR(100),
+  endClientName VARCHAR(100),
+  endClientAddress VARCHAR(150),
+  endClientCity VARCHAR(100),
   barcode VARCHAR(13),
   deviceTypeId INTEGER,
   inspectionTypeId INTEGER,
@@ -49,13 +68,16 @@ CREATE TABLE IF NOT EXISTS Inspection (
   airVolume NUMERIC,
   constructionYear INTEGER,
   lastMaintenance DATE,
+  nextMaintenance DATE,
+  inspectionDate DATE,
   userId TEXT,
   inspectionStatusId INTEGER,
   isDeleted BOOLEAN DEFAULT 0,
   note TEXT,
+  FOREIGN KEY (clientId) REFERENCES Client(id),
   FOREIGN KEY (deviceTypeId) REFERENCES DeviceType(id),
   FOREIGN KEY (inspectionTypeId) REFERENCES InspectionType(id),
-  FOREIGN KEY (userId) REFERENCES User(id)
+  FOREIGN KEY (userId) REFERENCES User(id),
   FOREIGN KEY (inspectionStatusId) REFERENCES InspectionStatus(id)
 );
 
@@ -84,4 +106,4 @@ INSERT INTO UserRole (name) VALUES ('admin');
 INSERT INTO UserRole (name) VALUES ('user');
 
 
-INSERT INTO User (id, name, userName, password, roleId) VALUES (<GUID>, 'Darko Sovilj', 'darko', 'hashed_password', 1);
+INSERT INTO User (id, name, email, password, roleId) VALUES (<GUID>, 'Darko Sovilj', 'darko@test.com', 'hashed_password', 1);

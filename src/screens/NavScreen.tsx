@@ -203,7 +203,8 @@ const NavScreen: React.FC = () => {
                         iconColor="red"
                         buttonText="Ausloggen"
                     />
-                    {/* <NavButton
+
+                    {/*  <NavButton
                         onPress={handleDeviceByGroupType}
                         iconName="microchip"
                         iconColor="red"
