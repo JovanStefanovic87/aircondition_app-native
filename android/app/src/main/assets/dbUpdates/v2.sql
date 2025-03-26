@@ -154,8 +154,8 @@ CREATE TABLE IF NOT EXISTS Device_StateValue (
 );
 
 CREATE TABLE IF NOT EXISTS InspectionQuestion_Image (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  inspectionQuestionId INTEGER NOT NULL,
+  id TEXT PRIMARY KEY,
+  inspectionQuestionId TEXT NOT NULL,
   imageId TEXT NOT NULL,
   FOREIGN KEY (inspectionQuestionId) REFERENCES Inspection_Question(id),
   FOREIGN KEY (imageId) REFERENCES ImageStorage(id)

@@ -6,6 +6,7 @@ import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { useInspectionStore } from '../store/store';
 import NavButton from '../components/buttons/NavButton';
 import {
+    getAllImageStorages,
     getAllInspectionQuestions,
     getAllQuestions,
     getDeviceElementPositions,
@@ -17,6 +18,7 @@ import {
     getInspectionQuestions,
     getInspections,
     getQuestionGroups,
+    getQuestionImages,
 } from '../../database/dataAccess/Query/sqlQueries';
 import { deleteAllTables } from '../../database/dataAccess/helpers';
 import {
@@ -29,8 +31,10 @@ import {
     deleteInspectionDeviceElement,
     saveDeviceElementsSortOrder,
     saveInspectionDeviceElement,
+    saveQuestionImage,
 } from '../../database/dataAccess/Command/sqlCommands';
 import ErrorInformationModal from '../components/modals/ErrorInformationModal';
+import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 type NavScreenNavigationProp = NavigationProp<any, any>;
 
@@ -175,6 +179,24 @@ const NavScreen: React.FC = () => {
         console.log('questionGroups: ', questionGroups);
     };
 
+    const handleSaveQuestionImage = async () => {
+        saveQuestionImage('32c3a2b3-e848-4246-ad83-d3bf7154b9fe', {
+            name: 'test',
+            storagePath:
+                'file:///data/user/0/com.inspectionapp/cache/ReactNative_cropped_image_1617902862374.jpg',
+        });
+    };
+
+    const handleGetAllQuestionImages = async () => {
+        const images = await getQuestionImages('32c3a2b3-e848-4246-ad83-d3bf7154b9fe');
+        console.log('images: ', images);
+    };
+
+    const handleAllImages = async () => {
+        const images = await getAllImageStorages();
+        console.log('images: ', images);
+    };
+
     return (
         <GestureHandlerRootView style={styles.scrollContainer}>
             <ScrollView style={styles.scrollView}>
@@ -203,20 +225,42 @@ const NavScreen: React.FC = () => {
                         iconColor="red"
                         buttonText="Ausloggen"
                     />
-
-                    {/*  <NavButton
-                        onPress={handleDeviceByGroupType}
-                        iconName="microchip"
-                        iconColor="red"
-                        buttonText="DeviceElements"
-                    />
+                    {/*
                     <NavButton
                         onPress={() => deleteAllTabless()}
                         iconName="database"
                         iconColor="red"
                         buttonText="Delete All Tables"
                     />
+
                     <NavButton
+                        onPress={handleSaveQuestionImage}
+                        iconName="microchip"
+                        iconColor="red"
+                        buttonText="Save Question Image"
+                    />
+                    <NavButton
+                        onPress={handleGetAllQuestionImages}
+                        iconName="microchip"
+                        iconColor="red"
+                        buttonText="Get Question Images"
+                    />
+
+                    <NavButton
+                        onPress={handleAllImages}
+                        iconName="microchip"
+                        iconColor="red"
+                        buttonText="Get All Images"
+                    />
+
+                    <NavButton
+                        onPress={handleDeviceByGroupType}
+                        iconName="microchip"
+                        iconColor="red"
+                        buttonText="DeviceElements"
+                    />
+                    
+                       <NavButton
                         onPress={handleDeviceByGroupType}
                         iconName="microchip"
                         iconColor="red"

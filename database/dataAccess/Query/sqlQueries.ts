@@ -404,6 +404,14 @@ export const getDeviceStateImages = async (
     return executeQuery<ImageStorage>({ query });
 };
 
+export const getQuestionImages = async (inspectionQuestionId: string): Promise<ImageStorage[]> => {
+    const query = `
+        SELECT s.* FROM InspectionQuestion_Image ii
+        LEFT JOIN ImageStorage s ON s.id = ii.imageId
+        WHERE ii.inspectionQuestionId = '${inspectionQuestionId}'`;
+    return executeQuery<ImageStorage>({ query });
+};
+
 /**
  * getDeviceElementStateImages - Function that retrieves images for general state of device elements
  * @param deviceElementId - DeviceElement table
@@ -477,7 +485,6 @@ export const getInspectionQuestions = async (
 ): Promise<TypedQuestionGroupForUI[]> => {
     const inspectionTypeId = await getInspectionType(inspectionId);
     const relatedInspectionTypeIds = inspectionTypeLookup[inspectionTypeId] || [inspectionTypeId];
-    console.log('relatedInspectionTypeIds', relatedInspectionTypeIds);
 
     const allQuestions: InspectionQuestionWithDetails[] = [];
 

@@ -13,6 +13,7 @@ import {
     InspectionDeviceStateUpdate,
     InspectionImageInsert,
     InspectionQuestion,
+    InspectionQuestionInsert,
     InspectionQuestionUpdate,
     InspectionUpdate,
     QuestionComponent,
@@ -187,6 +188,30 @@ export const saveDeviceElementImage = async (
     };
 
     await executeInsert<DeviceStateImageInsert>('DeviceElement_Image', imageRecord);
+};
+
+/**
+ * saveQuestionImage - Function that saves an images of question in step 5 and 6
+ * @param inspectionQuestionId - Id of record in Inspection_Question table
+ * @param record - Insert into ImageStorage table
+ */
+export const saveQuestionImage = async (
+    inspectionQuestionId: string,
+    record: ImageStorageInsert,
+): Promise<void> => {
+    const imageId = await executeInsertWithGuid<ImageStorage>('ImageStorage', record);
+
+    if (!imageId) throw new Error('Error inserting image');
+
+    const inspectionQuestionImageRecord: InspectionQuestionInsert = {
+        inspectionQuestionId: inspectionQuestionId,
+        imageId: imageId,
+    };
+
+    await executeInsertWithGuid<InspectionQuestionInsert>(
+        'InspectionQuestion_Image',
+        inspectionQuestionImageRecord,
+    );
 };
 
 /**

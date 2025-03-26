@@ -421,3 +421,8 @@ export type ClientUpdate = {
     contactPerson: string;
     isDeleted: boolean;
 };
+
+export type InspectionQuestionInsert = {
+    inspectionQuestionId: string;
+    imageId: string;
+};
