@@ -1,13 +1,52 @@
 import React, { useEffect } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import {
+    createNativeStackNavigator,
+    NativeStackNavigationProp,
+} from '@react-navigation/native-stack';
 import TabNavigator from './src/navigators/TabNavigator';
 import { runDBUpdates } from './database/dbUpdates/runUpdates';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { dbConnectionExist, initDatabase } from './database/dbConnection/initDatabase';
-import PictureScreen from './src/screens-test/CameraTestingScreen';
+import { checkSession } from './database/dataAccess/Helper/auth';
+import LoginScreen from './src/screens/LoginScreen';
 
 const Stack = createNativeStackNavigator();
+
+type RootStackParamList = {
+    Tab: undefined;
+    Auth: undefined;
+};
+
+const AppNavigator = () => {
+    const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
+    // useEffect(() => {
+    //     checkSession((user) => {
+    //         if (!user) {
+    //             navigation.reset({
+    //                 index: 0,
+    //                 routes: [{ name: 'Auth' }],
+    //             });
+    //         }
+    //     });
+    // }, []);
+
+    return (
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen
+                name="Tab"
+                component={TabNavigator}
+                options={{ animation: 'slide_from_bottom' }}
+            />
+            <Stack.Screen
+                name="Auth"
+                component={LoginScreen}
+                options={{ animation: 'slide_from_bottom' }}
+            />
+        </Stack.Navigator>
+    );
+};
 
 const App = () => {
     useEffect(() => {
@@ -28,19 +67,10 @@ const App = () => {
 
         if (!dbConnectionExist()) initializeApp();
     }, []);
+
     return (
         <NavigationContainer>
-            {/* Example */}
-            {/* <Stack.Navigator initialRouteName="Picture">
-                <Stack.Screen name="Picture" component={PictureScreen} />
-            </Stack.Navigator> */}
-            <Stack.Navigator screenOptions={{ headerShown: false }}>
-                <Stack.Screen
-                    name="Tab"
-                    component={TabNavigator}
-                    options={{ animation: 'slide_from_bottom' }}
-                ></Stack.Screen>
-            </Stack.Navigator>
+            <AppNavigator />
         </NavigationContainer>
     );
 };

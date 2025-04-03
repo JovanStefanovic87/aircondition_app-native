@@ -28,7 +28,8 @@ CREATE TABLE IF NOT EXISTS User (
   name VARCHAR(100),
   email VARCHAR(100),
   password VARCHAR(255),
-  roleId INTEGER,
+  roleId INTEGER DEFAULT 2,
+  keepMeLoggedIn BOOLEAN DEFAULT 0,
   FOREIGN KEY (roleId) REFERENCES UserRole(id)
 );
 
@@ -106,4 +107,3 @@ INSERT INTO UserRole (name) VALUES ('admin');
 INSERT INTO UserRole (name) VALUES ('user');
 
 
-INSERT INTO User (id, name, email, password, roleId) VALUES (<GUID>, 'Darko Sovilj', 'darko@test.com', 'hashed_password', 1);

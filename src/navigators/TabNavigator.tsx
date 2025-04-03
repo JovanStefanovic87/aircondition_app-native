@@ -8,6 +8,7 @@ import AllInspectionsScreen from '../screens/AllInspectionsScreen';
 import DeviceElementsScreen from '../screens/DeviceElementsScreen';
 import ElementsStateScreen from '../screens/ElementsStateScreen';
 import QuestionsScreen from '../screens/QuestionsScreen';
+import LoginScreen from '../screens/LoginScreen';
 
 const Stack = createStackNavigator();
 
@@ -34,6 +35,7 @@ const TabNavigator = () => {
 
     return (
         <Stack.Navigator>
+            <Stack.Screen name="Login" component={LoginScreen} options={navigationOptions} />
             <Stack.Screen name="NavScreen" component={NavScreen} options={navigationOptions} />
             <Stack.Screen
                 name="InspectionBasicDetailsScreen"

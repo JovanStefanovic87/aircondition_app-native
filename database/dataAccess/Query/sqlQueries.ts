@@ -37,10 +37,19 @@ export const getDBVersionTable = async (): Promise<DatabaseVersionType[]> => {
     return executeQuery<DatabaseVersionType>({ query });
 };
 
-export const getDeviceTypes = async (): Promise<DeviceType[]> => {
-    const query = `SELECT * FROM DeviceType`;
-    return executeQuery<DeviceType>({ query });
+//========================================================================================================================================
+
+export const getUserByEmail = async (email: string): Promise<User> => {
+    const query = `SELECT id, name, roleId, email, password FROM User WHERE email = '${email}'`;
+    return executeQuerySingle<User>({ query });
 };
+
+export const getUserById = async (id: string): Promise<User> => {
+    const query = `SELECT id, name, roleId, email, password FROM User WHERE id = '${id}'`;
+    return executeQuerySingle<User>({ query });
+};
+
+//========================================================================================================================================
 
 export const getInspectionTypes = async (): Promise<InspectionType[]> => {
     const query = `SELECT * FROM InspectionType order by sortOrder`;
@@ -57,11 +66,6 @@ export const getInspectionStatus = async (): Promise<InspectionStatus[]> => {
     return executeQuery<InspectionStatus>({ query });
 };
 
-export const getUser = async (): Promise<User[]> => {
-    const query = `SELECT id, name, roleId, userName FROM User WHERE userName = 'darko' AND password = 'hashed_password'`;
-    return executeQuery<User>({ query });
-};
-
 export const getInspections = async (): Promise<Inspection[]> => {
     const query = `SELECT * FROM Inspection`;
     return executeQuery<Inspection>({ query });
@@ -70,6 +74,13 @@ export const getInspections = async (): Promise<Inspection[]> => {
 export const getInspectionById = async (inspectionId: string): Promise<InspectionUpdate> => {
     const query = `SELECT * FROM Inspection where id = '${inspectionId}'`;
     return executeQuerySingle<InspectionUpdate>({ query });
+};
+
+//========================================================================================================================================
+
+export const getDeviceTypes = async (): Promise<DeviceType[]> => {
+    const query = `SELECT * FROM DeviceType`;
+    return executeQuery<DeviceType>({ query });
 };
 
 export const getInspectionDeviceStateForElements = async (
@@ -113,11 +124,6 @@ export const getComponentElementTitleIds = async (elementsList: number[]): Promi
     `;
     const result = await executeQuery<{ id: number }>({ query });
     return result.map((row) => row.id);
-};
-
-export const getElementStateComponents = async (): Promise<DeviceStateComponent[]> => {
-    const query = `SELECT * FROM DeviceStateComponent WHERE elementId IS NOT NULL`;
-    return executeQuery<DeviceStateComponent>({ query });
 };
 
 export const getInspectionDeviceState = async (): Promise<InspectionDeviceComponent[]> => {
@@ -214,29 +220,16 @@ export const getInspectionDeviceStateDetails = async (
     return finalResult;
 };
 
-export const getAllImageStorages = async (): Promise<ImageStorage[]> => {
-    const query = `SELECT * FROM ImageStorage`;
-    return executeQuery<ImageStorage>({ query });
-};
-
-export const getImageStorageByInspectionId = async (
-    inspectionId: string,
-): Promise<InspectionAndImageStorage[]> => {
-    const query = `
-        SELECT i.id, i.inspectionId, i.imageId, s.name, s.storagePath FROM Inspection_Image i
-        LEFT JOIN ImageStorage s on s.id = i.imageId WHERE i.inspectionId = '${inspectionId}'`;
-    return executeQuery<InspectionAndImageStorage>({ query });
-};
-
-export const getImageStorageById = async (imageId: string): Promise<ImageStorage> => {
-    const query = `
-        SELECT * FROM ImageStorage WHERE id = '${imageId}'`;
-    return executeQuerySingle<ImageStorage>({ query });
-};
+//========================================================================================================================================
 
 export const getDeviceElements = async (): Promise<DeviceElement[]> => {
     const query = `SELECT * FROM DeviceElement`;
     return executeQuery<DeviceElement>({ query });
+};
+
+export const getElementStateComponents = async (): Promise<DeviceStateComponent[]> => {
+    const query = `SELECT * FROM DeviceStateComponent WHERE elementId IS NOT NULL`;
+    return executeQuery<DeviceStateComponent>({ query });
 };
 
 export const getDeviceElementTypes = async (): Promise<DeviceElementType[]> => {
@@ -382,6 +375,28 @@ export const getDeviceElementCompletionState = async (
     return executeQuery<DeviceElementCompletionState>({ query });
 };
 
+//========================================================================================================================================
+
+export const getAllImageStorages = async (): Promise<ImageStorage[]> => {
+    const query = `SELECT * FROM ImageStorage`;
+    return executeQuery<ImageStorage>({ query });
+};
+
+export const getImageStorageByInspectionId = async (
+    inspectionId: string,
+): Promise<InspectionAndImageStorage[]> => {
+    const query = `
+        SELECT i.id, i.inspectionId, i.imageId, s.name, s.storagePath FROM Inspection_Image i
+        LEFT JOIN ImageStorage s on s.id = i.imageId WHERE i.inspectionId = '${inspectionId}'`;
+    return executeQuery<InspectionAndImageStorage>({ query });
+};
+
+export const getImageStorageById = async (imageId: string): Promise<ImageStorage> => {
+    const query = `
+        SELECT * FROM ImageStorage WHERE id = '${imageId}'`;
+    return executeQuerySingle<ImageStorage>({ query });
+};
+
 export const getInspectionImages = async (inspectionId: string): Promise<ImageStorage[]> => {
     const query = `
         SELECT s.* FROM Inspection_Image ii
@@ -427,6 +442,8 @@ export const getDeviceElementStateImages = async (
         WHERE d.deviceElementId = ${deviceElementId}`;
     return executeQuery<ImageStorage>({ query });
 };
+
+//========================================================================================================================================
 
 export const getQuestionComponents = async (
     inspectionType: number,
@@ -554,6 +571,8 @@ export const getQuestionGroups = async (): Promise<QuestionGroup[]> => {
     const query = `SELECT * FROM QuestionGroup`;
     return executeQuery<QuestionGroup>({ query });
 };
+
+//========================================================================================================================================
 
 export const getAllClients = async (): Promise<Client[]> => {
     const query = `SELECT * FROM Client where isDeleted = 0`;

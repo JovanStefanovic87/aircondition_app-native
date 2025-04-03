@@ -28,7 +28,7 @@ import {
     getInspectionTypes,
     getInspectionById,
 } from '../../database/dataAccess/Query/sqlQueries';
-import { deleteAllTables } from '../../database/dataAccess/helpers';
+import { deleteAllTables } from '../../database/dataAccess/Helper/helpers';
 import { saveInspection } from '../../database/dataAccess/Command/sqlCommands';
 import TextMain from '../components/text/TextMain';
 import ErrorBoundary from '../components/errors/ErrorBoundary';

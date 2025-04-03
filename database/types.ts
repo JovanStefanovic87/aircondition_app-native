@@ -68,8 +68,15 @@ export type InspectionUpdate = {
 export type User = {
     id: string;
     name: string;
-    userName: string;
+    email: string;
     password: string;
+    roleId: number;
+};
+
+export type AuthenticatedUser = {
+    id: string;
+    name: string;
+    email: string;
     roleId: number;
 };
 

@@ -1,5 +1,6 @@
 import { INSPECTION_TYPES } from '../../../src/helpers/constants';
 import { deleteFile } from '../../../src/helpers/universalFunctions';
+import bcrypt from 'react-native-bcrypt';
 import {
     ClientUpdate,
     DeviceElementImageInsert,
@@ -17,6 +18,7 @@ import {
     InspectionQuestionUpdate,
     InspectionUpdate,
     QuestionComponent,
+    User,
 } from '../../types';
 import {
     executeDeleteByConditions,

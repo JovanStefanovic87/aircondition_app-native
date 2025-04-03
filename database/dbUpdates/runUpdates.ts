@@ -3,6 +3,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import fs from 'react-native-fs';
 import { getDatabase } from '../dbConnection/initDatabase';
 import uuid from 'react-native-uuid';
+import { getUserByEmail } from '../dataAccess/Query/sqlQueries';
+import { registerUser } from '../dataAccess/Helper/auth';
 
 async function getCurrentDatabaseVersion() {
     const db = getDatabase();
@@ -139,6 +141,7 @@ export async function runDBUpdates() {
     // Start processing updates
     try {
         await processUpdate(currentVersion + 1);
+        await insertInitialUsers();
         console.log('All updates were successful.');
     } catch (error) {
         console.error('Error processing updates:', error);
@@ -147,4 +150,19 @@ export async function runDBUpdates() {
 
 export const clearDBInitialization = async () => {
     await AsyncStorage.removeItem('hasInitialized');
+};
+
+const insertInitialUsers = async () => {
+    const users = [
+        { name: 'Luka Poljaković', email: 'lulesine@gmail.com', password: 'Luka.Poljakov1c!' },
+        { name: 'App-Admin', email: 'soxdarko@gmail.com', password: 'Sokser.AC.8520' },
+        { name: 'App-Admin', email: 'zbnirs@gmail.com', password: 'Jove.AC.8520' },
+    ];
+
+    for (const user of users) {
+        const userExists = await getUserByEmail(user.email);
+        if (!userExists) {
+            await registerUser(user.name, user.email, user.password, 1);
+        }
+    }
 };

@@ -20,7 +20,7 @@ import {
     getQuestionGroups,
     getQuestionImages,
 } from '../../database/dataAccess/Query/sqlQueries';
-import { deleteAllTables } from '../../database/dataAccess/helpers';
+import { deleteAllTables } from '../../database/dataAccess/Helper/helpers';
 import {
     DeviceElement,
     DeviceElementSortUpdate,
@@ -35,6 +35,7 @@ import {
 } from '../../database/dataAccess/Command/sqlCommands';
 import ErrorInformationModal from '../components/modals/ErrorInformationModal';
 import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+import { getStoredUser } from '../../database/dataAccess/Helper/auth';
 
 type NavScreenNavigationProp = NavigationProp<any, any>;
 
@@ -197,6 +198,15 @@ const NavScreen: React.FC = () => {
         console.log('images: ', images);
     };
 
+    const handleCheckSession = async () => {
+        const user = await getStoredUser();
+        console.log('user: ', user);
+    };
+
+    const logoutUser = async () => {
+        await logoutUser();
+    };
+
     return (
         <GestureHandlerRootView style={styles.scrollContainer}>
             <ScrollView style={styles.scrollView}>
@@ -220,12 +230,12 @@ const NavScreen: React.FC = () => {
                         buttonText="Profil"
                     />
                     <NavButton
-                        onPress={() => console.log('sign-out')}
+                        onPress={logoutUser}
                         iconName="sign-out"
                         iconColor="red"
                         buttonText="Ausloggen"
                     />
-                    {/*
+
                     <NavButton
                         onPress={() => deleteAllTabless()}
                         iconName="database"
@@ -233,6 +243,13 @@ const NavScreen: React.FC = () => {
                         buttonText="Delete All Tables"
                     />
 
+                    <NavButton
+                        onPress={handleCheckSession}
+                        iconName="microchip"
+                        iconColor="red"
+                        buttonText="Get Session"
+                    />
+                    {/*
                     <NavButton
                         onPress={handleSaveQuestionImage}
                         iconName="microchip"
