@@ -385,3 +385,7 @@ export const deleteClient = async (clientId: string): Promise<void> => {
         await executeUpdateOrInsertWithGuid<ClientUpdate>('Client', client);
     }
 };
+
+export const deleteUser = async (userId: string): Promise<void> => {
+    await executeDeleteById('User', userId);
+};

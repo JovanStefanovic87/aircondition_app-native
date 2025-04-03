@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import {
     createNativeStackNavigator,
@@ -19,31 +19,33 @@ type RootStackParamList = {
 };
 
 const AppNavigator = () => {
-    const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+    const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
 
-    // useEffect(() => {
-    //     checkSession((user) => {
-    //         if (!user) {
-    //             navigation.reset({
-    //                 index: 0,
-    //                 routes: [{ name: 'Auth' }],
-    //             });
-    //         }
-    //     });
-    // }, []);
+    useEffect(() => {
+        checkSession((user) => {
+            setIsLoggedIn(!!user);
+        });
+    }, []);
+
+    if (isLoggedIn === null) {
+        return null;
+    }
 
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen
-                name="Tab"
-                component={TabNavigator}
-                options={{ animation: 'slide_from_bottom' }}
-            />
-            <Stack.Screen
-                name="Auth"
-                component={LoginScreen}
-                options={{ animation: 'slide_from_bottom' }}
-            />
+            {isLoggedIn ? (
+                <Stack.Screen
+                    name="Tab"
+                    component={TabNavigator}
+                    options={{ animation: 'slide_from_bottom' }}
+                />
+            ) : (
+                <Stack.Screen
+                    name="Auth"
+                    component={LoginScreen}
+                    options={{ animation: 'slide_from_bottom' }}
+                />
+            )}
         </Stack.Navigator>
     );
 };

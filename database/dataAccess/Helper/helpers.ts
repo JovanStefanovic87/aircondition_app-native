@@ -153,6 +153,7 @@ export const deleteAllTables = async (
         const db = await SQLite.openDatabase({ name: 'AC_inspector.db', location: 'default' });
         const tables = await getAllTables();
         for (const table of tables) {
+            console.log('Table: ', table);
             if (table === 'android_metadata' || table === 'sqlite_sequence') continue;
 
             await new Promise<void>((resolve, reject) => {

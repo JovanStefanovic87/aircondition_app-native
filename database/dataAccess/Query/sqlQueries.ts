@@ -49,6 +49,11 @@ export const getUserById = async (id: string): Promise<User> => {
     return executeQuerySingle<User>({ query });
 };
 
+export const getAllUsers = async (): Promise<User[]> => {
+    const query = `SELECT id, name, roleId, email FROM User`;
+    return executeQuery<User>({ query });
+};
+
 //========================================================================================================================================
 
 export const getInspectionTypes = async (): Promise<InspectionType[]> => {

@@ -9,6 +9,7 @@ import {
     getAllImageStorages,
     getAllInspectionQuestions,
     getAllQuestions,
+    getAllUsers,
     getDeviceElementPositions,
     getDeviceElementTypes,
     getDeviceElements,
@@ -29,13 +30,14 @@ import {
 } from '../../database/types';
 import {
     deleteInspectionDeviceElement,
+    deleteUser,
     saveDeviceElementsSortOrder,
     saveInspectionDeviceElement,
     saveQuestionImage,
 } from '../../database/dataAccess/Command/sqlCommands';
 import ErrorInformationModal from '../components/modals/ErrorInformationModal';
 import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
-import { getStoredUser } from '../../database/dataAccess/Helper/auth';
+import { getStoredUser, logoutUser } from '../../database/dataAccess/Helper/auth';
 
 type NavScreenNavigationProp = NavigationProp<any, any>;
 
@@ -55,6 +57,11 @@ const NavScreen: React.FC = () => {
 
     const handleAllInspectionsPress = () => {
         navigation.navigate('AllInspectionsScreen');
+    };
+
+    const handleLogoutUser = async () => {
+        await logoutUser();
+        navigation.navigate('LoginScreen');
     };
 
     /* const handleDevicElementsPress = () => {
@@ -203,8 +210,13 @@ const NavScreen: React.FC = () => {
         console.log('user: ', user);
     };
 
-    const logoutUser = async () => {
-        await logoutUser();
+    const handleGetAllUsers = async () => {
+        const users = await getAllUsers();
+        console.log('users: ', users);
+    };
+
+    const handleDeleteUser = async () => {
+        await deleteUser('fc57127b-b273-4323-b0e6-48f430f8137c');
     };
 
     return (
@@ -230,7 +242,7 @@ const NavScreen: React.FC = () => {
                         buttonText="Profil"
                     />
                     <NavButton
-                        onPress={logoutUser}
+                        onPress={handleLogoutUser}
                         iconName="sign-out"
                         iconColor="red"
                         buttonText="Ausloggen"
@@ -248,6 +260,20 @@ const NavScreen: React.FC = () => {
                         iconName="microchip"
                         iconColor="red"
                         buttonText="Get Session"
+                    />
+
+                    <NavButton
+                        onPress={handleGetAllUsers}
+                        iconName="microchip"
+                        iconColor="red"
+                        buttonText="Get All Users"
+                    />
+
+                    <NavButton
+                        onPress={handleDeleteUser}
+                        iconName="microchip"
+                        iconColor="red"
+                        buttonText="Delete Users"
                     />
                     {/*
                     <NavButton

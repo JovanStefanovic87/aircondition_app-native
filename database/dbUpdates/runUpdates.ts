@@ -141,6 +141,7 @@ export async function runDBUpdates() {
     // Start processing updates
     try {
         await processUpdate(currentVersion + 1);
+        await AsyncStorage.setItem('dbMigrationStatus', 'done');
         await insertInitialUsers();
         console.log('All updates were successful.');
     } catch (error) {

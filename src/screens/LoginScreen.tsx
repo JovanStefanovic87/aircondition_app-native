@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import { loginUser } from '../../database/dataAccess/Helper/auth';
 
 const LoginPage = ({ navigation }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [keepMeLoggedIn, setKeepMeLoggedIn] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const handleLogin = () => {
         if (!email || !password) {
@@ -13,7 +14,11 @@ const LoginPage = ({ navigation }) => {
             return;
         }
 
+        setLoading(true);
+
         loginUser(email, password, keepMeLoggedIn, (success, user) => {
+            setLoading(false);
+
             if (success && user) {
                 Alert.alert('Success', 'Login successful!', [
                     { text: 'OK', onPress: () => navigation.replace('NavScreen') },
@@ -43,12 +48,17 @@ const LoginPage = ({ navigation }) => {
             <TouchableOpacity onPress={() => setKeepMeLoggedIn(!keepMeLoggedIn)}>
                 <Text>{keepMeLoggedIn ? '☑ Keep me logged in' : '☐ Keep me logged in'}</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-                onPress={handleLogin}
-                style={{ marginTop: 20, padding: 10, backgroundColor: 'blue' }}
-            >
-                <Text style={{ color: 'white' }}>Login</Text>
-            </TouchableOpacity>
+
+            {loading ? (
+                <ActivityIndicator size="large" color="blue" style={{ marginTop: 20 }} />
+            ) : (
+                <TouchableOpacity
+                    onPress={handleLogin}
+                    style={{ marginTop: 20, padding: 10, backgroundColor: 'blue' }}
+                >
+                    <Text style={{ color: 'white' }}>Login</Text>
+                </TouchableOpacity>
+            )}
         </View>
     );
 };
