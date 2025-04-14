@@ -67,7 +67,7 @@ const TabNavigator = () => {
                 options={tabNameOptions('INSPEKTIONSFRAGEN')}
             />
             <Stack.Screen name="HomeScreen" component={HomeScreen} />
-            <Stack.Screen name="LoginScreen" component={LoginScreen} options={navigationOptions} />
+            {/* <Stack.Screen name="LoginScreen" component={LoginScreen} options={navigationOptions} /> */}
         </Stack.Navigator>
     );
 };

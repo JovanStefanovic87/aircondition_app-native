@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import { loginUser } from '../../database/dataAccess/Helper/auth';
+import NavButton from '../components/buttons/NavButton';
+import { deleteAllTables } from '../../database/dataAccess/Helper/helpers';
 
 const LoginPage = ({ navigation }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [keepMeLoggedIn, setKeepMeLoggedIn] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const handleLogin = () => {
         if (!email || !password) {
@@ -27,6 +31,10 @@ const LoginPage = ({ navigation }) => {
                 Alert.alert('Error', 'Invalid email or password.');
             }
         });
+    };
+
+    const deleteAllTabless = async () => {
+        await deleteAllTables(setErrorMessage, setErrorModalVisible);
     };
 
     return (
@@ -59,6 +67,12 @@ const LoginPage = ({ navigation }) => {
                     <Text style={{ color: 'white' }}>Login</Text>
                 </TouchableOpacity>
             )}
+            <NavButton
+                onPress={() => deleteAllTabless()}
+                iconName="database"
+                iconColor="red"
+                buttonText="Delete All Tables"
+            />
         </View>
     );
 };

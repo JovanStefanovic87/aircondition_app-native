@@ -177,7 +177,28 @@ const QuestionsScreen = () => {
                                     >
                                         {type.questionsByGroup.map((group) => (
                                             <View key={group.groupId} style={styles.groupContainer}>
-                                                <Text style={styles.groupTitle}>{group.name}</Text>
+                                                <View style={styles.groupHeader}>
+                                                    <Text style={styles.groupTitle}>
+                                                        {group.name}
+                                                    </Text>
+                                                    {group.questions.length > 0 && (
+                                                        <TouchableOpacity
+                                                            style={styles.allYesButton}
+                                                            onPress={() => {
+                                                                group.questions.forEach((q) => {
+                                                                    handleResponse(
+                                                                        q.inspectionQuestionId,
+                                                                        'Ja',
+                                                                    );
+                                                                });
+                                                            }}
+                                                        >
+                                                            <Text style={styles.allYesButtonText}>
+                                                                JA
+                                                            </Text>
+                                                        </TouchableOpacity>
+                                                    )}
+                                                </View>
                                                 {group.questions.map((q) => (
                                                     <View
                                                         key={q.inspectionQuestionId}
@@ -268,6 +289,12 @@ const styles = StyleSheet.create({
     scrollView: {
         width: '100%',
     },
+    groupHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 10,
+    },
     inspectionContainer: {
         marginBottom: 30, // Razmak između različitih inspekcija
         padding: 15,
@@ -338,6 +365,19 @@ const styles = StyleSheet.create({
         bottom: 20,
         paddingHorizontal: 20,
         width: '100%',
+    },
+    allYesButton: {
+        backgroundColor: customColors.greenMid,
+        paddingVertical: 10,
+        paddingHorizontal: 16,
+        borderRadius: 8,
+        width: '20%',
+    },
+    allYesButtonText: {
+        color: '#FFD700',
+        textAlign: 'center',
+        fontSize: 22,
+        fontWeight: 'bold',
     },
 });
 
