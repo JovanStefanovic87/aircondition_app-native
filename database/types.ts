@@ -180,7 +180,8 @@ export type ImageGallery = {
 export type ImageTypesByDbTable =
     | 'Inspection_Image'
     | 'DeviceElement_Image'
-    | 'DeviceState_Title_Group_Image';
+    | 'DeviceState_Title_Group_Image'
+    | 'Question_Image';
 
 export type DeviceStateByInspection = {
     id: number;

@@ -77,7 +77,7 @@ const ElementsStateScreen: React.FC = () => {
     const [isGalleryVisible, setGalleryVisible] = useState(false);
     const [galeryTitle, setGalleryTitle] = useState<string | null>(null);
     const [photoPreview, setPhotoPreview] = useState<string | null>(null);
-    console.log('inspectionDeviceStateDetails', inspectionDeviceStateDetails);
+
     useEffect(() => {
         const fetchInitialData = async () => {
             try {

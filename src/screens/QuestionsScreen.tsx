@@ -12,12 +12,29 @@ import {
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { customColors } from '../assets/styles/customStyles';
 import { useInspectionStore } from '../store/store';
-import { getInspectionQuestions } from '../../database/dataAccess/Query/sqlQueries';
-import { saveInspectionQuestion } from '../../database/dataAccess/Command/sqlCommands';
-import { TypedQuestionGroupForUI } from '../../database/types';
+import {
+    getDeviceStateImages,
+    getInspectionQuestions,
+    getQuestionImages,
+} from '../../database/dataAccess/Query/sqlQueries';
+import {
+    saveInspectionQuestion,
+    saveQuestionImage,
+} from '../../database/dataAccess/Command/sqlCommands';
+import IconButton from '../components/buttons/IconButton';
+import {
+    DeviceStateComponentsForInspection,
+    ImageGallery,
+    ImageTypesByDbTable,
+    TypedQuestionGroupForUI,
+} from '../../database/types';
 import QuestionButton from '../components/buttons/QustionButton';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import PrimaryButton from '../components/buttons/PrimaryButton';
+import GalleryModal from '../components/modals/GalleryModal';
+import TakePicture from '../components/camera/TakePicture';
+import ErrorInformationModal from '../components/modals/ErrorInformationModal';
+import { IMAGE_TYPES } from '../helpers/constants';
 
 type NewInspectionScreenNavigationProp = NavigationProp<Record<string, object>, string>;
 
@@ -30,8 +47,48 @@ const QuestionsScreen = () => {
     const [responses, setResponses] = useState<
         Record<number, { answerId: string | null; comment: string }>
     >({});
+    const [selectedDeviceElementId, setSelectedDeviceElementId] = useState<string | null>(null);
     const [allCompleted, setAllCompleted] = useState<boolean>(false);
     const [selectedTab, setSelectedTab] = useState<number | null>(null);
+    const [isCameraVisible, setCameraVisible] = useState(false);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
+    const [imageSaveParams, setImageSaveParams] = useState<ImageDeviceStateSave | null>(null);
+    const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
+    const [isGalleryVisible, setGalleryVisible] = useState(false);
+    const [galleryImages, setGalleryImages] = useState<ImageGallery[]>([]);
+    const [galeryTitle, setGalleryTitle] = useState<string | null>(null);
+    const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+    const [inspectionDeviceStateDetails, setInspectionDeviceStateDetails] = useState<
+        DeviceStateComponentsForInspection[]
+    >([]);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+    const onPressGallery = async (questionId: string) => {
+        try {
+            const images = await getQuestionImages(questionId);
+            setGalleryImages(
+                images.map((img) => ({
+                    imageId: img.id,
+                    imagePath: img.storagePath,
+                    imageType: IMAGE_TYPES.Question_Image as ImageTypesByDbTable,
+                })),
+            );
+            setGalleryTitle('Slike pitanja');
+            setGalleryVisible(true);
+        } catch (error) {
+            console.error('Failed to load question images:', error);
+            setErrorMessage('Greška pri učitavanju slika.');
+            setErrorModalVisible(true);
+        }
+    };
+
+    const handleCloseGallery = () => {
+        setGalleryVisible(false);
+    };
+
+    const handleCloseCamera = () => {
+        setCameraVisible(false);
+    };
 
     useEffect(() => {
         const fetchQuestions = async () => {
@@ -52,7 +109,10 @@ const QuestionsScreen = () => {
                     type.questionsByGroup.forEach((group) => {
                         group.questions.forEach((q) => {
                             initialResponses[q.inspectionQuestionId] = {
-                                answerId: q.answerId?.toString() ?? null,
+                                answerId:
+                                    q.answerId !== null && q.answerId !== undefined
+                                        ? Number(q.answerId)
+                                        : null,
                                 comment: q.comment ?? '',
                             };
                         });
@@ -130,11 +190,131 @@ const QuestionsScreen = () => {
         return Object.values(responses).every((response) => response.answerId !== null);
     };
 
+    interface ImageDeviceStateSave {
+        questionId: string;
+        groupId: number;
+    }
+
+    const toggleCameraDevice = (questionId: string, groupId: number) => {
+        if (!questionId || isNaN(groupId)) {
+            console.warn('Invalid IDs in toggleCameraDevice:', questionId, groupId);
+            return;
+        }
+
+        setCameraVisible(!isCameraVisible);
+        setImageSaveParams({ questionId, groupId });
+    };
+
+    const handleDeviceStateGalleryClick = async (titleId: number, groupTypeId: number) => {
+        if (!inspectionDeviceStateDetails) {
+            console.error('InspectionDeviceStateDetails is not loaded.');
+            return;
+        }
+
+        const group = inspectionDeviceStateDetails.find((group) =>
+            group.titleComponents.some((title) =>
+                title.deviceStateComponents.some(
+                    (deviceState) =>
+                        deviceState.titleComponentId === titleId &&
+                        deviceState.groupTypeId === groupTypeId,
+                ),
+            ),
+        );
+
+        if (!group) {
+            console.error(
+                `Group containing titleId: ${titleId} and groupTypeId: ${groupTypeId} not found`,
+            );
+            return;
+        }
+
+        const title = group.titleComponents.find((title) =>
+            title.deviceStateComponents.some(
+                (deviceState) =>
+                    deviceState.titleComponentId === titleId &&
+                    deviceState.groupTypeId === groupTypeId,
+            ),
+        );
+
+        if (!title) {
+            console.error(
+                `Title with titleId: ${titleId} and groupTypeId: ${groupTypeId} not found`,
+            );
+            return;
+        }
+
+        const galleryTitle = `${group.groupTypeName} - ${title.name}`;
+        setGalleryTitle(galleryTitle);
+
+        if (selectedElementId) {
+            const deviceImages = await getDeviceStateImages(
+                titleId,
+                groupTypeId,
+                parseInt(selectedElementId),
+            );
+            if (deviceImages && deviceImages.length > 0) {
+                setGalleryImages(
+                    deviceImages.map((image) => ({
+                        imageId: image.id,
+                        imagePath: image.storagePath,
+                        imageType: IMAGE_TYPES.DeviceState_Title_Group_Image as ImageTypesByDbTable,
+                    })),
+                );
+
+                setGalleryVisible(true);
+            } else {
+                console.log('No images found for this titleId and groupTypeId.');
+            }
+        }
+    };
+
+    const handleSaveDeviceElementImage = async (path: string, questionId: string) => {
+        try {
+            const record = {
+                storagePath: path,
+                name: 'Device Image',
+            };
+            await saveQuestionImage(questionId, record);
+            console.log('Image saved successfully');
+        } catch (error) {
+            console.error('Error saving device element image:', error);
+            setErrorMessage('Failed to save the image. Please try again.');
+            setErrorModalVisible(true);
+        }
+    };
+
     return (
         <KeyboardAvoidingView
             style={styles.container}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
+            <ErrorInformationModal
+                visible={errorModalVisible}
+                message={errorMessage}
+                onClose={() => setErrorModalVisible(false)}
+            />
+            <GalleryModal
+                visible={isGalleryVisible}
+                images={galleryImages}
+                title={galeryTitle || 'ANLAGE -- ANLAGE'}
+                onClose={handleCloseGallery}
+                setGalleryImages={setGalleryImages}
+            />
+            <TakePicture
+                visible={isCameraVisible}
+                onClose={handleCloseCamera}
+                saveImage={(path) => {
+                    const questionId = imageSaveParams?.questionId;
+
+                    if (questionId) {
+                        handleSaveDeviceElementImage(path, questionId);
+                    } else {
+                        console.error('imageSaveParams are missing or invalid!');
+                    }
+                }}
+                photoPreview={photoPreview}
+                setPhotoPreview={setPhotoPreview}
+            />
             <GestureHandlerRootView style={styles.scrollContainer}>
                 {loading ? (
                     <Text>Laden...</Text>
@@ -185,12 +365,28 @@ const QuestionsScreen = () => {
                                                         <TouchableOpacity
                                                             style={styles.allYesButton}
                                                             onPress={() => {
-                                                                group.questions.forEach((q) => {
-                                                                    handleResponse(
-                                                                        q.inspectionQuestionId,
-                                                                        'Ja',
+                                                                const hasNein =
+                                                                    group.questions.some(
+                                                                        (q) =>
+                                                                            responses[
+                                                                                q
+                                                                                    .inspectionQuestionId
+                                                                            ]?.answerId === 2,
                                                                     );
-                                                                });
+
+                                                                if (hasNein) {
+                                                                    setErrorMessage(
+                                                                        'Mindestens eine Frage wurde mit "Nein" beantwortet.',
+                                                                    );
+                                                                    setErrorModalVisible(true);
+                                                                } else {
+                                                                    group.questions.forEach((q) => {
+                                                                        handleResponse(
+                                                                            q.inspectionQuestionId,
+                                                                            'Ja',
+                                                                        );
+                                                                    });
+                                                                }
                                                             }}
                                                         >
                                                             <Text style={styles.allYesButtonText}>
@@ -232,26 +428,49 @@ const QuestionsScreen = () => {
                                                                 />
                                                             ))}
                                                         </View>
-
-                                                        <TextInput
-                                                            style={styles.commentInput}
-                                                            placeholder="Kommentar eingeben..."
-                                                            value={
-                                                                responses[q.inspectionQuestionId]
-                                                                    ?.comment || ''
-                                                            }
-                                                            onChangeText={(text) =>
-                                                                handleCommentChange(
-                                                                    q.inspectionQuestionId,
-                                                                    text,
-                                                                )
-                                                            }
-                                                            onBlur={() =>
-                                                                handleCommentBlur(
-                                                                    q.inspectionQuestionId,
-                                                                )
-                                                            }
-                                                        />
+                                                        <View style={styles.buttonContainer}>
+                                                            <TextInput
+                                                                style={styles.commentInput}
+                                                                placeholder="Kommentar eingeben..."
+                                                                value={
+                                                                    responses[
+                                                                        q.inspectionQuestionId
+                                                                    ]?.comment || ''
+                                                                }
+                                                                onChangeText={(text) =>
+                                                                    handleCommentChange(
+                                                                        q.inspectionQuestionId,
+                                                                        text,
+                                                                    )
+                                                                }
+                                                                onBlur={() =>
+                                                                    handleCommentBlur(
+                                                                        q.inspectionQuestionId,
+                                                                    )
+                                                                }
+                                                            />
+                                                            <View
+                                                                style={styles.cameraIconsContainer}
+                                                            >
+                                                                <IconButton
+                                                                    icon="camera"
+                                                                    onPress={() =>
+                                                                        toggleCameraDevice(
+                                                                            q.inspectionQuestionId,
+                                                                            Number(group.groupId),
+                                                                        )
+                                                                    }
+                                                                />
+                                                                <IconButton
+                                                                    icon="image"
+                                                                    onPress={() =>
+                                                                        onPressGallery(
+                                                                            q.inspectionQuestionId,
+                                                                        )
+                                                                    }
+                                                                />
+                                                            </View>
+                                                        </View>
                                                     </View>
                                                 ))}
                                             </View>
@@ -345,10 +564,12 @@ const styles = StyleSheet.create({
     buttonContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
+        alignItems: 'center',
         marginTop: 10,
         paddingHorizontal: 5,
     },
     commentInput: {
+        flex: 1,
         marginTop: 10,
         padding: 10,
         borderRadius: 6,
@@ -378,6 +599,13 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 22,
         fontWeight: 'bold',
+    },
+    cameraIconsContainer: {
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        gap: 10,
+        maxWidth: '40%',
+        paddingLeft: 10,
     },
 });
 
