@@ -10,6 +10,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { dbConnectionExist, initDatabase } from './database/dbConnection/initDatabase';
 import { checkSession } from './database/dataAccess/Helper/auth';
 import LoginScreen from './src/screens/LoginScreen';
+import { AuthProvider, useAuth } from './src/context/AuthContext';
 
 const Stack = createNativeStackNavigator();
 
@@ -19,7 +20,7 @@ type RootStackParamList = {
 };
 
 const AppNavigator = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
+    const { isLoggedIn, setIsLoggedIn } = useAuth();
 
     useEffect(() => {
         checkSession((user) => {
@@ -34,17 +35,9 @@ const AppNavigator = () => {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
             {isLoggedIn ? (
-                <Stack.Screen
-                    name="Tab"
-                    component={TabNavigator}
-                    options={{ animation: 'slide_from_bottom' }}
-                />
+                <Stack.Screen name="Tab" component={TabNavigator} />
             ) : (
-                <Stack.Screen
-                    name="Auth"
-                    component={LoginScreen}
-                    options={{ animation: 'slide_from_bottom' }}
-                />
+                <Stack.Screen name="Auth" component={LoginScreen} />
             )}
         </Stack.Navigator>
     );
@@ -71,9 +64,11 @@ const App = () => {
     }, []);
 
     return (
-        <NavigationContainer>
-            <AppNavigator />
-        </NavigationContainer>
+        <AuthProvider>
+            <NavigationContainer>
+                <AppNavigator />
+            </NavigationContainer>
+        </AuthProvider>
     );
 };
 

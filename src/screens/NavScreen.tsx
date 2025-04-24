@@ -38,6 +38,7 @@ import {
 import ErrorInformationModal from '../components/modals/ErrorInformationModal';
 import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 import { getStoredUser, logoutUser } from '../../database/dataAccess/Helper/auth';
+import { useAuth } from '../context/AuthContext';
 
 type NavScreenNavigationProp = NavigationProp<any, any>;
 
@@ -49,6 +50,7 @@ const NavScreen: React.FC = () => {
     const [deviceElementTypes, setDeviceElementTypes] = useState<DeviceElementType[]>([]);
     const [errorModalVisible, setErrorModalVisible] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const { setIsLoggedIn } = useAuth();
 
     const handleNewInspectionPress = () => {
         setInspectionId(null);
@@ -61,7 +63,7 @@ const NavScreen: React.FC = () => {
 
     const handleLogoutUser = async () => {
         await logoutUser();
-        navigation.navigate('LoginScreen');
+        setIsLoggedIn(false);
     };
 
     /* const handleDevicElementsPress = () => {

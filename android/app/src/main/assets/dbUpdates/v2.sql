@@ -178,10 +178,10 @@ INSERT INTO DeviceElementPosition (id, name) VALUES (3, 'AFTER');
 INSERT INTO StateType (id, name) VALUES (1, 'State of whole device');
 INSERT INTO StateType (id, name) VALUES (2, 'State of device element');
 
-INSERT INTO StateValue (name) VALUES ('GREEN');
-INSERT INTO StateValue (name) VALUES ('YELLOW');
-INSERT INTO StateValue (name) VALUES ('ORANGE');
-INSERT INTO StateValue (name) VALUES ('RED');
+INSERT INTO StateValue (id, name) VALUES (1, 'GREEN');
+INSERT INTO StateValue (id, name) VALUES (2, 'YELLOW');
+INSERT INTO StateValue (id, name) VALUES (3, 'ORANGE');
+INSERT INTO StateValue (id, name) VALUES (4, 'RED');
 
 INSERT INTO GroupType (name) VALUES ('PHYSIKALISCH');
 INSERT INTO GroupType (name) VALUES ('KONSTRUKTIV');

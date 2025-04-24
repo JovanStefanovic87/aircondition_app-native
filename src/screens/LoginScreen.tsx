@@ -1,16 +1,14 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import { loginUser } from '../../database/dataAccess/Helper/auth';
-import NavButton from '../components/buttons/NavButton';
-import { deleteAllTables } from '../../database/dataAccess/Helper/helpers';
+import { useAuth } from '../context/AuthContext';
 
 const LoginPage = ({ navigation }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [keepMeLoggedIn, setKeepMeLoggedIn] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [errorModalVisible, setErrorModalVisible] = useState(false);
-    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const { setIsLoggedIn } = useAuth();
 
     const handleLogin = () => {
         if (!email || !password) {
@@ -25,16 +23,12 @@ const LoginPage = ({ navigation }) => {
 
             if (success && user) {
                 Alert.alert('Success', 'Login successful!', [
-                    { text: 'OK', onPress: () => navigation.replace('NavScreen') },
+                    { text: 'OK', onPress: () => setIsLoggedIn(true) },
                 ]);
             } else {
                 Alert.alert('Error', 'Invalid email or password.');
             }
         });
-    };
-
-    const deleteAllTabless = async () => {
-        await deleteAllTables(setErrorMessage, setErrorModalVisible);
     };
 
     return (
@@ -67,12 +61,6 @@ const LoginPage = ({ navigation }) => {
                     <Text style={{ color: 'white' }}>Login</Text>
                 </TouchableOpacity>
             )}
-            <NavButton
-                onPress={() => deleteAllTabless()}
-                iconName="database"
-                iconColor="red"
-                buttonText="Delete All Tables"
-            />
         </View>
     );
 };
