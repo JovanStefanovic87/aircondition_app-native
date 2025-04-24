@@ -9,6 +9,7 @@ import DeviceElementsScreen from '../screens/DeviceElementsScreen';
 import ElementsStateScreen from '../screens/ElementsStateScreen';
 import QuestionsScreen from '../screens/QuestionsScreen';
 import LoginScreen from '../screens/LoginScreen';
+import DevToolsScreen from '../screens/DevToolsScreen';
 
 const Stack = createStackNavigator();
 
@@ -66,6 +67,7 @@ const TabNavigator = () => {
                 component={QuestionsScreen}
                 options={tabNameOptions('INSPEKTIONSFRAGEN')}
             />
+            {__DEV__ && <Stack.Screen name="DevToolsScreen" component={DevToolsScreen} />}
         </Stack.Navigator>
     );
 };
