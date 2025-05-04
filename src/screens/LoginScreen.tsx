@@ -12,7 +12,7 @@ const LoginPage = ({ navigation }) => {
 
     const handleLogin = () => {
         if (!email || !password) {
-            Alert.alert('Error', 'Please enter email and password.');
+            Alert.alert('Fehler', 'Bitte E-Mail und Passwort eingeben.');
             return;
         }
 
@@ -22,33 +22,31 @@ const LoginPage = ({ navigation }) => {
             setLoading(false);
 
             if (success && user) {
-                Alert.alert('Success', 'Login successful!', [
-                    { text: 'OK', onPress: () => setIsLoggedIn(true) },
-                ]);
+                setIsLoggedIn(true);
             } else {
-                Alert.alert('Error', 'Invalid email or password.');
+                Alert.alert('Fehler', 'Ungültige E-Mail oder ungültiges Passwort.');
             }
         });
     };
 
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
-            <Text style={{ fontSize: 24, marginBottom: 20 }}>Login</Text>
+            <Text style={{ fontSize: 24, marginBottom: 20 }}>Anmeldung</Text>
             <TextInput
-                placeholder="Email"
+                placeholder="E-Mail"
                 value={email}
                 onChangeText={setEmail}
                 style={{ width: '100%', padding: 10, borderWidth: 1, marginBottom: 10 }}
             />
             <TextInput
-                placeholder="Password"
+                placeholder="Passwort"
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
                 style={{ width: '100%', padding: 10, borderWidth: 1, marginBottom: 10 }}
             />
             <TouchableOpacity onPress={() => setKeepMeLoggedIn(!keepMeLoggedIn)}>
-                <Text>{keepMeLoggedIn ? '☑ Keep me logged in' : '☐ Keep me logged in'}</Text>
+                <Text>{keepMeLoggedIn ? '☑ Angemeldet bleiben' : '☐ Angemeldet bleiben'}</Text>
             </TouchableOpacity>
 
             {loading ? (
@@ -58,7 +56,7 @@ const LoginPage = ({ navigation }) => {
                     onPress={handleLogin}
                     style={{ marginTop: 20, padding: 10, backgroundColor: 'blue' }}
                 >
-                    <Text style={{ color: 'white' }}>Login</Text>
+                    <Text style={{ color: 'white' }}>Anmelden</Text>
                 </TouchableOpacity>
             )}
         </View>

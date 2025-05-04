@@ -1,9 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { NavigationContainer, useNavigation } from '@react-navigation/native';
-import {
-    createNativeStackNavigator,
-    NativeStackNavigationProp,
-} from '@react-navigation/native-stack';
+import React, { useEffect } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import TabNavigator from './src/navigators/TabNavigator';
 import { runDBUpdates } from './database/dbUpdates/runUpdates';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -13,11 +10,6 @@ import LoginScreen from './src/screens/LoginScreen';
 import { AuthProvider, useAuth } from './src/context/AuthContext';
 
 const Stack = createNativeStackNavigator();
-
-type RootStackParamList = {
-    Tab: undefined;
-    Auth: undefined;
-};
 
 const AppNavigator = () => {
     const { isLoggedIn, setIsLoggedIn } = useAuth();

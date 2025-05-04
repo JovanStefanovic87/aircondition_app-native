@@ -5,6 +5,7 @@ import { executeUpdateOrInsertWithGuid } from '../Command/baseCommand';
 import scrypt from 'scrypt-js';
 import 'fast-text-encoding';
 import { Buffer } from 'buffer';
+import { tableExists } from './helpers';
 
 if (typeof global.Buffer === 'undefined') {
     global.Buffer = Buffer;
@@ -116,6 +117,9 @@ export const getStoredUser = async (): Promise<AuthenticatedUser | null> => {
     try {
         const userId = await AsyncStorage.getItem('userId');
         if (!userId || !(await isSessionValid())) return null;
+
+        const tableExist = await tableExists('users');
+        if (!tableExist) return null;
 
         return (await getUserById(userId)) || null; // Fetch user from DB
     } catch (error) {

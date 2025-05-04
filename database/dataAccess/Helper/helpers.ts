@@ -205,3 +205,26 @@ export const getAllTables1 = () => {
         console.log('List of tables:', tables);
     });
 };
+
+export const tableExists = async (tableName: string): Promise<boolean> => {
+    const db = getDatabase();
+    return new Promise((resolve, reject) => {
+        db.transaction((tx) => {
+            tx.executeSql(
+                `SELECT name FROM sqlite_master WHERE type='table' AND name=?`,
+                [tableName],
+                (_, result) => {
+                    if (result.rows.length > 0) {
+                        resolve(true);
+                    } else {
+                        resolve(false);
+                    }
+                },
+                (_, error) => {
+                    reject(error);
+                    return false;
+                },
+            );
+        });
+    });
+};

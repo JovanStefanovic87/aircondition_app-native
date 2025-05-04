@@ -3,8 +3,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import fs from 'react-native-fs';
 import { getDatabase } from '../dbConnection/initDatabase';
 import uuid from 'react-native-uuid';
-import { getUserByEmail } from '../dataAccess/Query/sqlQueries';
+import { getAllUsers, getUserByEmail } from '../dataAccess/Query/sqlQueries';
 import { registerUser } from '../dataAccess/Helper/auth';
+import { tableExists } from '../dataAccess/Helper/helpers';
 
 async function getCurrentDatabaseVersion() {
     const db = getDatabase();
@@ -116,7 +117,7 @@ export async function runDBUpdates() {
         return scriptContent;
     };
 
-    async function processUpdate(version: number) {
+    async function runDbUpdate(version: number) {
         try {
             const scriptContent = await readSqlFile(version);
 
@@ -126,7 +127,7 @@ export async function runDBUpdates() {
             if (version > 1) await updateDatabaseVersion(version);
 
             // Process the next update
-            await processUpdate(version + 1);
+            await runDbUpdate(version + 1);
         } catch (error) {
             if (error?.code === 'ENOENT') {
                 // File not found, nothing to update
@@ -140,10 +141,11 @@ export async function runDBUpdates() {
 
     // Start processing updates
     try {
-        await processUpdate(currentVersion + 1);
+        await runDbUpdate(currentVersion + 1);
         await AsyncStorage.setItem('dbMigrationStatus', 'done');
-        await insertInitialUsers();
         console.log('All updates were successful.');
+
+        await seedInitialUsers();
     } catch (error) {
         console.error('Error processing updates:', error);
     }
@@ -153,7 +155,19 @@ export const clearDBInitialization = async () => {
     await AsyncStorage.removeItem('hasInitialized');
 };
 
-const insertInitialUsers = async () => {
+const seedInitialUsers = async () => {
+    const tableExist = await tableExists('User');
+
+    if (!tableExist) {
+        console.log('User table does not exist. Skipping user seeding.');
+        return;
+    }
+
+    const checkIfUserTableIsEmpty = await getAllUsers();
+    if (checkIfUserTableIsEmpty.length > 0) {
+        return;
+    }
+
     const users = [
         { name: 'Luka Poljaković', email: 'lulesine@gmail.com', password: 'Luka.Poljakov1c!' },
         { name: 'App-Admin', email: 'soxdarko@gmail.com', password: 'Sokser.AC.8520' },
