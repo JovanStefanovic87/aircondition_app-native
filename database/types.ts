@@ -36,7 +36,7 @@ export type Client = {
 
 export type InspectionUpdate = {
     id?: string;
-    clientId: string;
+    clientId?: string;
     clientName: string;
     clientAddress: string;
     clientCity: string;
