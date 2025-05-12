@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 import { useInspectionStore } from '../store/store';
 import moment from 'moment';
-import { InspectionUpdate, Inspection } from '../../database/types';
+import { InspectionUpdate } from '../../database/types';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import BarcodeScanner from '../components/camera/BarcodeScanner';
@@ -28,7 +28,7 @@ import {
     getInspectionTypes,
     getInspectionById,
 } from '../../database/dataAccess/Query/sqlQueries';
-import { deleteAllTables } from '../../database/dataAccess/Helper/helpers';
+import { getStoredUser } from '../../database/dataAccess/Helper/auth';
 import { saveInspection } from '../../database/dataAccess/Command/sqlCommands';
 import TextMain from '../components/text/TextMain';
 import ErrorBoundary from '../components/errors/ErrorBoundary';
@@ -53,6 +53,12 @@ const InspectionBasicDetailsScreen = () => {
     const [deviceTypes, setDeviceTypes] = useState<DeviceType[]>([]);
     const [inspectionTypes, setInspectionTypes] = useState<InspectionType[]>([]);
     const [form, setForm] = useState<InspectionUpdate>({
+        clientName: '',
+        clientAddress: '',
+        clientCity: '',
+        endClientName: '',
+        endClientAddress: '',
+        endClientCity: '',
         barcode: '',
         deviceTypeId: null,
         inspectionTypeId: null,
@@ -60,9 +66,11 @@ const InspectionBasicDetailsScreen = () => {
         location: '',
         contractNumber: '',
         createdAt: '',
-        userId: 'c1480367-7de5-4275-aa33-dde1db51c45e',
+        inspectionDate: '',
+        userId: '',
         inspectionStatusId: 0,
     });
+
     const [validation, setValidation] = useState<Record<string, boolean>>({
         barcode: true,
         deviceTypeId: true,
@@ -78,6 +86,17 @@ const InspectionBasicDetailsScreen = () => {
             const fetchedInspectionTypes = await getInspectionTypes();
             setDeviceTypes(fetchedDeviceTypes);
             setInspectionTypes(fetchedInspectionTypes);
+
+            if (!form.userId) {
+                const storedUser = await getStoredUser();
+                console.log('Ulogovani korisnik:', storedUser); //ovde dobijam null
+                const userId = storedUser?.id ?? '';
+                if (!userId) {
+                    console.log('Fehler: Kein Benutzer angemeldet');
+                    return;
+                }
+                setForm((prevForm) => ({ ...prevForm, userId }));
+            }
         };
 
         fetchData();
@@ -85,24 +104,31 @@ const InspectionBasicDetailsScreen = () => {
 
     useEffect(() => {
         const fetchInspectionData = async () => {
-            if (inspectionId) {
-                const inspectionData = await getInspectionById(inspectionId);
-                if (inspectionData) {
-                    setForm((prevForm) => ({
-                        ...prevForm,
-                        id: inspectionId ? inspectionId : null,
-                        barcode: inspectionData.barcode,
-                        deviceTypeId: inspectionData.deviceTypeId,
-                        inspectionTypeId: inspectionData.inspectionTypeId,
-                        facilityName: inspectionData.facilityName,
-                        location: inspectionData.location,
-                        contractNumber: inspectionData.contractNumber,
-                        createdAt: inspectionData.createdAt,
-                        inspectionStatusId: inspectionData.inspectionStatusId
-                            ? inspectionData.inspectionStatusId
-                            : 0,
-                    }));
-                }
+            if (!inspectionId) return;
+
+            const inspectionData = await getInspectionById(inspectionId);
+            const storedUser = await getStoredUser();
+            const fallbackUserId = storedUser?.id ?? '';
+
+            if (inspectionData) {
+                setForm({
+                    clientName: inspectionData.clientName ?? '',
+                    clientAddress: inspectionData.clientAddress ?? '',
+                    clientCity: inspectionData.clientCity ?? '',
+                    endClientName: inspectionData.endClientName ?? '',
+                    endClientAddress: inspectionData.endClientAddress ?? '',
+                    endClientCity: inspectionData.endClientCity ?? '',
+                    barcode: inspectionData.barcode ?? '',
+                    deviceTypeId: inspectionData.deviceTypeId ?? null,
+                    inspectionTypeId: inspectionData.inspectionTypeId ?? null,
+                    facilityName: inspectionData.facilityName ?? '',
+                    location: inspectionData.location ?? '',
+                    contractNumber: inspectionData.contractNumber ?? '',
+                    createdAt: inspectionData.createdAt ?? '',
+                    inspectionDate: inspectionData.inspectionDate ?? '',
+                    userId: inspectionData.userId ?? fallbackUserId,
+                    inspectionStatusId: inspectionData.inspectionStatusId ?? 0,
+                });
             }
         };
 
@@ -200,7 +226,7 @@ const InspectionBasicDetailsScreen = () => {
                     <GestureHandlerRootView style={styles.scrollContainer}>
                         <ScrollView style={styles.scrollView}>
                             <View style={styles.inputGroupContainer}>
-                                <TextMain text="ANLAGE-ID:" />
+                                <TextMain text="ANLAGE-ID:" isBold />
                                 <RowContainer>
                                     <InputText
                                         minWidth="78%"
@@ -217,7 +243,7 @@ const InspectionBasicDetailsScreen = () => {
                                 </RowContainer>
                             </View>
                             <View style={styles.inputGroupContainer}>
-                                <TextMain text="GERÄTEINFORMATION:" />
+                                <TextMain text="GERÄTEINFORMATION:" isBold />
                                 <TableContainer>
                                     <DropdownWithValidation
                                         selectedValue={form.deviceTypeId}
@@ -256,7 +282,7 @@ const InspectionBasicDetailsScreen = () => {
                                 </TableContainer>
                             </View>
                             <View style={styles.inputGroupContainer}>
-                                <TextMain text="NUMMER DER LEISTUNGSNACHWEIS:" />
+                                <TextMain text="NUMMER DER LEISTUNGSNACHWEIS:" isBold />
                                 <RowContainer>
                                     <InputText
                                         minWidth="78%"
@@ -273,6 +299,76 @@ const InspectionBasicDetailsScreen = () => {
                                     />
                                     <TextInput />
                                 </RowContainer>
+                            </View>
+
+                            <View style={styles.inputGroupContainer}>
+                                <TextMain text="ClIENT DATA:" isBold />
+                                <TableContainer>
+                                    <View style={styles.section}>
+                                        <TextMain text="Kunde" />
+                                        <InputText
+                                            placeholder="Kunde"
+                                            value={form.clientName}
+                                            setValue={(value) =>
+                                                setForm({ ...form, clientName: value })
+                                            }
+                                        />
+
+                                        <TextMain text="Adresse des Kunden" />
+                                        <InputText
+                                            placeholder="Adresse des Kunden"
+                                            value={form.clientAddress}
+                                            setValue={(value) =>
+                                                setForm({ ...form, clientAddress: value })
+                                            }
+                                        />
+
+                                        <TextMain text="Stadt des Kunden" />
+                                        <InputText
+                                            placeholder="Stadt des Kunden"
+                                            value={form.clientCity}
+                                            setValue={(value) =>
+                                                setForm({ ...form, clientCity: value })
+                                            }
+                                        />
+
+                                        <TextMain text="Endkunde" />
+                                        <InputText
+                                            placeholder="Endkunde"
+                                            value={form.endClientName}
+                                            setValue={(value) =>
+                                                setForm({ ...form, endClientName: value })
+                                            }
+                                        />
+
+                                        <TextMain text="Adresse des Endkunden" />
+                                        <InputText
+                                            placeholder="Adresse des Endkunden"
+                                            value={form.endClientAddress}
+                                            setValue={(value) =>
+                                                setForm({ ...form, endClientAddress: value })
+                                            }
+                                        />
+
+                                        <TextMain text="Stadt des Endkunden" />
+                                        <InputText
+                                            placeholder="Stadt des Endkunden"
+                                            value={form.endClientCity}
+                                            setValue={(value) =>
+                                                setForm({ ...form, endClientCity: value })
+                                            }
+                                        />
+
+                                        <TextMain text="Inspektionsdatum" />
+                                        <InputText
+                                            placeholder="Inspektionsdatum"
+                                            value={form.inspectionDate}
+                                            setValue={(value) =>
+                                                setForm({ ...form, inspectionDate: value })
+                                            }
+                                        />
+                                    </View>
+                                </TableContainer>
                             </View>
                         </ScrollView>
                     </GestureHandlerRootView>
@@ -338,6 +434,11 @@ const styles = StyleSheet.create({
         bottom: 20,
         paddingHorizontal: 20,
         width: '100%',
+    },
+    section: {
+        width: '100%',
+        gap: 8,
+        marginTop: 16,
     },
 });
 
