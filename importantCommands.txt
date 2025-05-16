@@ -1,2 +1,3 @@
 ./gradlew clean - For clean project before build
 ./gradlew assembleRelease - Create apk
+npx react-native start - start server

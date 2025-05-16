@@ -5,6 +5,8 @@ import DangerIcon from '../icons/svg/DangerIcon';
 import { customColors } from '../../assets/styles/customStyles';
 import { InspectionUpdate } from '../../../database/types';
 import TextMain from '../text/TextMain';
+import PdfButton from '../buttons/PdfButton';
+import DuplicateButton from '../buttons/DuplicateButton';
 
 interface Props {
     inspection: InspectionUpdate;
@@ -15,8 +17,16 @@ const InspectionItem: React.FC<Props> = ({ inspection, onPress }) => {
     return (
         <TouchableOpacity style={styles.inspectionItem} onPress={() => onPress(inspection.id)}>
             <View style={styles.container}>
-                <View style={styles.flexEnd}>
-                    {inspection.inspectionStatusId ? <CheckedIcon /> : <DangerIcon />}
+                <View style={styles.actionsContainer}>
+                    <View style={styles.actionRow}>
+                        <PdfButton onPress={() => console.log('Generate PDF for', inspection.id)} />
+                        <DuplicateButton
+                            onPress={() => console.log('Duplicate inspection', inspection.id)}
+                        />
+                    </View>
+                    <View style={styles.flexEnd}>
+                        {inspection.inspectionStatusId ? <CheckedIcon /> : <DangerIcon />}
+                    </View>
                 </View>
 
                 <View style={styles.flexContainer}>
@@ -75,6 +85,17 @@ const styles = StyleSheet.create({
     flexContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
+    },
+    actionRow: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        marginBottom: 10,
+    },
+    actionsContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 10,
     },
 });
 
