@@ -75,9 +75,11 @@ export type User = {
 
 export type AuthenticatedUser = {
     id: string;
-    name: string;
-    email: string;
-    roleId: number;
+    name?: string;
+    username: string;
+    email?: string;
+    roleId?: number;
+    token: string;
 };
 
 export type UserRole = {
