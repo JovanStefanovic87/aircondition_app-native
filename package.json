@@ -24,7 +24,6 @@
     "react": "^18.2.0",
     "react-native": "^0.73.2",
     "react-native-bcrypt": "^2.4.0",
-    "react-native-config": "^1.5.5",
     "react-native-css-vh-vw": "^1.0.5",
     "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "^2.14.1",

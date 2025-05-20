@@ -17,6 +17,11 @@ export const loginUser = async (
 
         const response = await authenticateUser(username, password);
 
+        if (!response) {
+            callback(false, undefined, 'Verbindung zum Server fehlgeschlagen.');
+            return;
+        }
+
         if (!response.ok) {
             callback(false, undefined, 'Benutzername oder Passwort ist falsch.');
             return;
