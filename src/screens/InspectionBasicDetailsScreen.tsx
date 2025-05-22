@@ -89,7 +89,7 @@ const InspectionBasicDetailsScreen = () => {
 
             if (!form.userId) {
                 const storedUser = await getStoredUser();
-                console.log('Ulogovani korisnik:', storedUser); //ovde dobijam null
+                //ovde dobijam null
                 const userId = storedUser?.id ?? '';
                 if (!userId) {
                     console.log('Fehler: Kein Benutzer angemeldet');
@@ -175,7 +175,7 @@ const InspectionBasicDetailsScreen = () => {
         }));
 
         const newId = await saveInspection(form);
-
+        console.log('Ulogovani korisnik:', newId);
         if (newId) {
             useInspectionStore.getState().setInspectionId(newId);
             navigation.navigate('InspectionDeviceStateScreen');

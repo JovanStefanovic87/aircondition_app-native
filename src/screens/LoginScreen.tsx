@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { loginUser } from '../../database/dataAccess/Helper/auth';
 import { useAuth } from '../context/AuthContext';
+import NavButton from '../components/buttons/NavButton';
 
 const { width } = Dimensions.get('window');
 const isSmallScreen = width < 360;
@@ -80,6 +81,14 @@ const LoginPage = ({ navigation }) => {
                         <TouchableOpacity onPress={handleLogin} style={styles.button}>
                             <Text style={styles.buttonText}>Anmelden</Text>
                         </TouchableOpacity>
+                    )}
+                    {__DEV__ && (
+                        <NavButton
+                            onPress={() => navigation.navigate('DevToolsScreen')}
+                            iconName="gear"
+                            iconColor="green"
+                            buttonText="Dev Tools"
+                        />
                     )}
                 </View>
             </ScrollView>

@@ -36,8 +36,13 @@ const QuestionButton = ({ label, responses, q, color, handleResponse }: Question
             ]}
             onPress={() => handleResponse(q.inspectionQuestionId, label)}
         >
-            <Text style={[styles.buttonText, isSelected && styles.selectedButtonText]}>
-                {label}
+            <Text
+                style={[styles.buttonText, isSelected && styles.selectedButtonText]}
+                numberOfLines={2}
+                adjustsFontSizeToFit
+                minimumFontScale={0.7}
+            >
+                {label.toUpperCase()}
             </Text>
         </TouchableOpacity>
     );
@@ -45,10 +50,11 @@ const QuestionButton = ({ label, responses, q, color, handleResponse }: Question
 
 const styles = StyleSheet.create({
     answerButton: {
-        flex: 1,
+        flexBasis: '30%',
+        flexGrow: 1,
+        height: 56,
         alignItems: 'center',
         justifyContent: 'center',
-        paddingVertical: 12,
         marginHorizontal: 5,
         borderRadius: 8,
     },
@@ -56,15 +62,16 @@ const styles = StyleSheet.create({
         color: '#222222',
         fontSize: 18,
         fontWeight: '900',
-        textTransform: 'uppercase',
         textAlign: 'center',
+        textAlignVertical: 'center',
         letterSpacing: 1.2,
         textShadowColor: 'rgba(0, 0, 0, 0.2)',
         textShadowOffset: { width: 1, height: 1 },
         textShadowRadius: 2,
     },
+
     selectedButtonText: {
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: 'bold',
         color: '#FFD700',
         textShadowColor: 'rgba(0, 0, 0, 0.3)',

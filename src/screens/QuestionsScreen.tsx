@@ -334,6 +334,10 @@ const QuestionsScreen = () => {
                                     onPress={() => setSelectedTab(type.inspectionTypeId)}
                                 >
                                     <Text
+                                        numberOfLines={1}
+                                        ellipsizeMode="tail"
+                                        adjustsFontSizeToFit
+                                        minimumFontScale={0.8}
                                         style={[
                                             styles.tabText,
                                             selectedTab === type.inspectionTypeId &&
@@ -358,9 +362,14 @@ const QuestionsScreen = () => {
                                         {type.questionsByGroup.map((group) => (
                                             <View key={group.groupId} style={styles.groupContainer}>
                                                 <View style={styles.groupHeader}>
-                                                    <Text style={styles.groupTitle}>
+                                                    <Text
+                                                        style={styles.groupTitle}
+                                                        numberOfLines={2}
+                                                        ellipsizeMode="middle"
+                                                    >
                                                         {group.name}
                                                     </Text>
+
                                                     {group.questions.length > 0 && (
                                                         <TouchableOpacity
                                                             style={styles.allYesButton}
@@ -512,7 +521,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 10,
+        gap: 10,
     },
     inspectionContainer: {
         marginBottom: 30, // Razmak između različitih inspekcija
@@ -520,10 +529,33 @@ const styles = StyleSheet.create({
         backgroundColor: customColors.blueLighter,
         borderRadius: 10,
     },
-    tabsContainer: { flexDirection: 'row', justifyContent: 'center', marginVertical: 10 },
-    tab: { padding: 12, borderRadius: 8, backgroundColor: '#ccc', marginHorizontal: 5 },
+    tabsContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+        rowGap: 10,
+        marginVertical: 10,
+    },
+    tab: {
+        width: '46%',
+        paddingVertical: 10,
+        paddingHorizontal: 12,
+        borderRadius: 8,
+        backgroundColor: '#ccc',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginHorizontal: '1%',
+    },
     activeTab: { backgroundColor: customColors.blueDark },
-    tabText: { fontSize: 18, fontWeight: 'bold', color: 'black' },
+    tabText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: 'black',
+        maxWidth: '100%',
+        overflow: 'hidden',
+        textAlign: 'center',
+    },
+
     activeTabText: { color: 'white' },
     inspectionTitle: {
         fontSize: 26,
@@ -548,6 +580,8 @@ const styles = StyleSheet.create({
         fontSize: 22,
         fontWeight: 'bold',
         color: 'white',
+        maxWidth: '70%',
+        flexShrink: 1,
     },
     questionContainer: {
         marginLeft: 10,
@@ -583,7 +617,7 @@ const styles = StyleSheet.create({
         display: 'flex',
         alignItems: 'flex-end',
         position: 'absolute',
-        bottom: 20,
+        bottom: 2,
         paddingHorizontal: 20,
         width: '100%',
     },

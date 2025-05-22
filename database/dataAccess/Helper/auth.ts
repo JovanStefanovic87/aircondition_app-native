@@ -118,10 +118,11 @@ export const getStoredUser = async (): Promise<AuthenticatedUser | null> => {
         const userId = await AsyncStorage.getItem('userId');
         if (!userId || !(await isSessionValid())) return null;
 
-        const tableExist = await tableExists('users');
+        const tableExist = await tableExists('User');
+
         if (!tableExist) return null;
 
-        return (await getUserById(userId)) || null; // Fetch user from DB
+        return (await getUserById(userId)) || null;
     } catch (error) {
         console.error('Error retrieving user:', error);
         return null;
