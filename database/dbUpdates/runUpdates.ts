@@ -3,9 +3,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import fs from 'react-native-fs';
 import { getDatabase } from '../dbConnection/initDatabase';
 import uuid from 'react-native-uuid';
-import { getAllUsers, getUserByEmail } from '../dataAccess/Query/sqlQueries';
-import { registerUser } from '../dataAccess/Helper/auth';
-import { tableExists } from '../dataAccess/Helper/helpers';
 
 async function getCurrentDatabaseVersion() {
     const db = getDatabase();
@@ -144,8 +141,6 @@ export async function runDBUpdates() {
         await runDbUpdate(currentVersion + 1);
         await AsyncStorage.setItem('dbMigrationStatus', 'done');
         console.log('All updates were successful.');
-
-        await seedInitialUsers();
     } catch (error) {
         console.error('Error processing updates:', error);
     }
@@ -153,31 +148,4 @@ export async function runDBUpdates() {
 
 export const clearDBInitialization = async () => {
     await AsyncStorage.removeItem('hasInitialized');
-};
-
-const seedInitialUsers = async () => {
-    const tableExist = await tableExists('User');
-
-    if (!tableExist) {
-        console.log('User table does not exist. Skipping user seeding.');
-        return;
-    }
-
-    const checkIfUserTableIsEmpty = await getAllUsers();
-    if (checkIfUserTableIsEmpty.length > 0) {
-        return;
-    }
-
-    const users = [
-        { name: 'Luka Poljaković', email: 'lulesine@gmail.com', password: 'Luka.Poljakov1c!' },
-        { name: 'App-Admin', email: 'soxdarko@gmail.com', password: 'Sokser.AC.8520' },
-        { name: 'App-Admin', email: 'zbnirs@gmail.com', password: 'Jove.AC.8520' },
-    ];
-
-    for (const user of users) {
-        const userExists = await getUserByEmail(user.email);
-        if (!userExists) {
-            await registerUser(user.name, user.email, user.password, 1);
-        }
-    }
 };

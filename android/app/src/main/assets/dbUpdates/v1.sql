@@ -18,21 +18,6 @@ CREATE TABLE IF NOT EXISTS InspectionType (
   sortOrder INTEGER
 );
 
-CREATE TABLE IF NOT EXISTS UserRole (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  name VARCHAR(50)
-);
-
-CREATE TABLE IF NOT EXISTS User (
-  id TEXT PRIMARY KEY,
-  name VARCHAR(100),
-  email VARCHAR(100),
-  password VARCHAR(255),
-  roleId INTEGER DEFAULT 2,
-  keepMeLoggedIn BOOLEAN DEFAULT 0,
-  FOREIGN KEY (roleId) REFERENCES UserRole(id)
-);
-
 CREATE TABLE IF NOT EXISTS InspectionStatus (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name VARCHAR(50)
@@ -52,6 +37,7 @@ CREATE TABLE IF NOT EXISTS Client (
 
 CREATE TABLE IF NOT EXISTS Inspection (
   id TEXT PRIMARY KEY,
+  userId TEXT,
   clientId TEXT NULL,
   clientName VARCHAR(100),
   clientAddress VARCHAR(150),
@@ -71,14 +57,12 @@ CREATE TABLE IF NOT EXISTS Inspection (
   lastMaintenance DATE,
   nextMaintenance DATE,
   inspectionDate DATE,
-  userId TEXT,
   inspectionStatusId INTEGER,
   isDeleted BOOLEAN DEFAULT 0,
   note TEXT,
   FOREIGN KEY (clientId) REFERENCES Client(id),
   FOREIGN KEY (deviceTypeId) REFERENCES DeviceType(id),
   FOREIGN KEY (inspectionTypeId) REFERENCES InspectionType(id),
-  FOREIGN KEY (userId) REFERENCES User(id),
   FOREIGN KEY (inspectionStatusId) REFERENCES InspectionStatus(id)
 );
 
@@ -103,7 +87,5 @@ INSERT INTO InspectionStatus (id, name) VALUES (2, 'Completed');
 INSERT INTO InspectionStatus (id, name) VALUES (3, 'Finalized');
 INSERT INTO InspectionStatus (id, name) VALUES (4, 'Locked');
 
-INSERT INTO UserRole (name) VALUES ('admin');
-INSERT INTO UserRole (name) VALUES ('user');
 
 

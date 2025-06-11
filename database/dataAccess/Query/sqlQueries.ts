@@ -15,6 +15,7 @@ import {
     ImageStorage,
     Inspection,
     InspectionAndImageStorage,
+    InspectionData,
     InspectionDeviceComponent,
     InspectionDeviceElement,
     InspectionQuestion,
@@ -79,6 +80,17 @@ export const getInspections = async (): Promise<Inspection[]> => {
 export const getInspectionById = async (inspectionId: string): Promise<InspectionUpdate> => {
     const query = `SELECT * FROM Inspection where id = '${inspectionId}'`;
     return executeQuerySingle<InspectionUpdate>({ query });
+};
+
+export const getInspectionByIdWithDetails = async (
+    inspectionId: string,
+): Promise<InspectionData> => {
+    const query = `SELECT i.*, it.name as inspectioTypeName, dt.name as deviceTypeName FROM Inspection i
+            LEFT JOIN InspectionType it ON i.inspectionTypeId = it.id
+            LEFT JOIN DeviceType dt ON i.deviceTypeId = dt.id
+        WHERE i.id = '${inspectionId}'`;
+
+    return executeQuerySingle<InspectionData>({ query });
 };
 
 //========================================================================================================================================
@@ -589,3 +601,5 @@ export const getClientById = async (clientId: string): Promise<Client> => {
         SELECT * FROM Client WHERE id = '${clientId}'`;
     return executeQuerySingle<Client>({ query });
 };
+
+//========================================================================================================================================

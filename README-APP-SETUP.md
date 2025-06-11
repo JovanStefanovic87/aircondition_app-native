@@ -70,9 +70,20 @@ You've successfully run and modified your React Native App. :partying_face:
 
 ### Now what?
 
+Delete all generated build files.
+
+```bash
+cd android
+./gradlew clean
+```
+
 If you need to export apk:
+
+```bash
 cd android
 ./gradlew assembleRelease
+```
+
 Apk is located at android/app/build/outputs/apk/release/app-release.apk
 
 -   If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).

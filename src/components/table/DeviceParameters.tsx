@@ -38,7 +38,7 @@ const DeviceParameters: React.FC<Props> = ({
         <View style={styles.container}>
             <RowContainerFlex>
                 <AutoFitTableContainer minColumnWidth={minColWidth}>
-                    <Text style={styles.title}>{'Buajahr'}</Text>
+                    <Text style={styles.title}>{'Baujahr'}</Text>
                     <InputNumberNullToString
                         value={constructionYear}
                         setValue={(value) =>
@@ -49,13 +49,21 @@ const DeviceParameters: React.FC<Props> = ({
                 </AutoFitTableContainer>
                 <AutoFitTableContainer minColumnWidth={minColWidth}>
                     <Text style={styles.title}>{'Letzte Wartung'}</Text>
-                    <InputNumberNullToString
+                    <InputText
                         value={lastMaintenance}
                         setValue={(value) =>
                             setInspection({ ...inspection, lastMaintenance: value.toString() })
                         }
                         onBlur={handleSaveInspection}
+                        placeholder="z.A."
                     />
+                    {/* <InputNumberNullToString
+                        value={lastMaintenance}
+                        setValue={(value) =>
+                            setInspection({ ...inspection, lastMaintenance: value.toString() })
+                        }
+                        onBlur={handleSaveInspection}
+                    /> */}
                 </AutoFitTableContainer>
                 <AutoFitTableContainer minColumnWidth={minColWidth}>
                     <Text style={styles.title}>{'Volumentstrom (m3/h)'}</Text>

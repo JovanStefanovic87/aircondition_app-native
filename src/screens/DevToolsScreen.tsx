@@ -27,10 +27,14 @@ import {
 } from '../../database/dataAccess/Command/sqlCommands';
 import ErrorInformationModal from '../components/modals/ErrorInformationModal';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+
+type NavScreenNavigationProp = NavigationProp<any, any>;
 
 const DevToolsScreen: React.FC = () => {
     const [errorModalVisible, setErrorModalVisible] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const navigation = useNavigation<NavScreenNavigationProp>();
 
     const handle = {
         deleteAllTables: async () => await deleteAllTables(setErrorMessage, setErrorModalVisible),
@@ -80,6 +84,12 @@ const DevToolsScreen: React.FC = () => {
                         iconName="database"
                         iconColor="red"
                         onPress={handle.deleteAllTables}
+                    />
+                    <NavButton
+                        buttonText="JS Report PDF Viewer"
+                        iconName="file-pdf-o"
+                        iconColor="blue"
+                        onPress={() => navigation.navigate('PdfViewerScreen')}
                     />
                     <NavButton
                         buttonText="Get Session"

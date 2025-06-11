@@ -34,7 +34,7 @@ export type Client = {
  * @param createdAt The creation date of the inspection in the format 'YYYY-MM-DDTHH:mm:ssZ'.
  */
 
-export type InspectionUpdate = {
+export interface InspectionUpdate {
     id?: string;
     clientId?: string;
     clientName: string;
@@ -60,7 +60,12 @@ export type InspectionUpdate = {
     inspectionStatusId: number;
     isDeleted?: boolean;
     note?: string;
-};
+}
+
+export interface InspectionData extends InspectionUpdate {
+    inspectionTypeName: string;
+    deviceTypeName: string;
+}
 
 /**
  * @param id format of param is UUID.
@@ -75,9 +80,11 @@ export type User = {
 
 export type AuthenticatedUser = {
     id: string;
-    name: string;
-    email: string;
-    roleId: number;
+    name?: string;
+    username: string;
+    email?: string;
+    roleId?: number;
+    token: string;
 };
 
 export type UserRole = {

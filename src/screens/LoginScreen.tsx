@@ -18,30 +18,27 @@ import NavButton from '../components/buttons/NavButton';
 
 const { width } = Dimensions.get('window');
 const isSmallScreen = width < 360;
-const scale = width / 375;
-const normalize = (size: number) => Math.round(scale * size);
 
 const LoginPage = ({ navigation }) => {
-    const [email, setEmail] = useState('');
+    const [userName, setUserName] = useState('');
     const [password, setPassword] = useState('');
-    const [keepMeLoggedIn, setKeepMeLoggedIn] = useState(false);
     const [loading, setLoading] = useState(false);
     const { setIsLoggedIn } = useAuth();
 
     const handleLogin = () => {
-        if (!email || !password) {
+        if (!userName || !password) {
             Alert.alert('Fehler', 'Bitte E-Mail und Passwort eingeben.');
             return;
         }
 
         setLoading(true);
 
-        loginUser(email, password, keepMeLoggedIn, (success, user) => {
+        loginUser(userName, password, (success, user, error) => {
             setLoading(false);
             if (success && user) {
                 setIsLoggedIn(true);
             } else {
-                Alert.alert('Fehler', 'Ungültige E-Mail oder ungültiges Passwort.');
+                Alert.alert('Fehler', error || 'Login fehlgeschlagen.');
             }
         });
     };
@@ -55,8 +52,8 @@ const LoginPage = ({ navigation }) => {
                 <View style={styles.inner}>
                     <TextInput
                         placeholder="E-Mail-Adresse"
-                        value={email}
-                        onChangeText={setEmail}
+                        value={userName}
+                        onChangeText={setUserName}
                         style={styles.input}
                         keyboardType="email-address"
                         autoCapitalize="none"
@@ -68,12 +65,6 @@ const LoginPage = ({ navigation }) => {
                         secureTextEntry
                         style={styles.input}
                     />
-
-                    <TouchableOpacity onPress={() => setKeepMeLoggedIn(!keepMeLoggedIn)}>
-                        <Text style={styles.keepLoggedInText}>
-                            {keepMeLoggedIn ? '☑ Angemeldet bleiben' : '☐ Angemeldet bleiben'}
-                        </Text>
-                    </TouchableOpacity>
 
                     {loading ? (
                         <ActivityIndicator size="large" color="#2563eb" style={styles.loader} />

@@ -1,96 +1,51 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AuthenticatedUser, User } from '../../types';
-import { getUserByEmail, getUserById } from '../Query/sqlQueries';
-import { executeUpdateOrInsertWithGuid } from '../Command/baseCommand';
-import scrypt from 'scrypt-js';
-import 'fast-text-encoding';
-import { Buffer } from 'buffer';
-import { tableExists } from './helpers';
-
-if (typeof global.Buffer === 'undefined') {
-    global.Buffer = Buffer;
-}
-
-const SALT = new TextEncoder().encode('your-fixed-salt'); // Store this securely!
-
-/***
- * 2^8 = 256 (very fast, insecure)
- * 2^10 = 1024 (reasonable but fast)
- * 2^12 = 4096 (good balance for many use cases)
- * 2^14 = 16384 (higher security, slower)
- */
-const hashPassword = async (password: string): Promise<string> => {
-    const passwordBuffer = new TextEncoder().encode(password);
-    const N = 2 ** 12, // CPU/memory cost parameter
-        r = 8,
-        p = 1,
-        dkLen = 64;
-
-    const derivedKey = await scrypt.scrypt(passwordBuffer, SALT, N, r, p, dkLen);
-    return Buffer.from(derivedKey).toString('hex');
-};
-
-export const registerUser = async (
-    name: string,
-    email: string,
-    password: string,
-    roleId?: number,
-) => {
-    try {
-        const hashedPassword = await hashPassword(password);
-
-        const user = {
-            name,
-            email,
-            password: hashedPassword,
-            roleId: roleId || 2,
-        };
-
-        executeUpdateOrInsertWithGuid<User>('User', user);
-    } catch (error) {
-        console.error('Error hashing password:', error);
-    }
-};
+import { AuthenticatedUser } from '../../types';
+import NetInfo from '@react-native-community/netinfo';
+import { authenticateUser } from '../../../src/api/login';
 
 export const loginUser = async (
-    email: string,
+    username: string,
     password: string,
-    keepMeLoggedIn: boolean,
-    callback: (success: boolean, user?: AuthenticatedUser) => void,
+    callback: (success: boolean, user?: AuthenticatedUser, error?: string) => void,
 ) => {
     try {
-        const user = await getUserByEmail(email);
-        if (!user) {
-            callback(false);
+        const netState = await NetInfo.fetch();
+        if (!netState.isConnected) {
+            callback(false, undefined, 'Keine Internetverbindung.');
             return;
         }
 
-        const hashedPassword = await hashPassword(password);
+        const response = await authenticateUser(username, password);
 
-        if (hashedPassword === user.password) {
-            if (keepMeLoggedIn) {
-                await AsyncStorage.setItem('userId', user.id);
-                await AsyncStorage.removeItem('sessionExpiry');
-            } else {
-                const expiryTime = Date.now() + 60 * 60 * 1000; // 1 hour in milliseconds
-                await AsyncStorage.setItem('userId', user.id);
-                await AsyncStorage.setItem('sessionExpiry', expiryTime.toString());
-            }
-
-            const sanitizedUser: AuthenticatedUser = {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                roleId: user.roleId,
-            };
-
-            callback(true, sanitizedUser);
-        } else {
-            callback(false);
+        if (!response) {
+            callback(false, undefined, 'Verbindung zum Server fehlgeschlagen.');
+            return;
         }
+
+        if (!response.ok) {
+            callback(false, undefined, 'Benutzername oder Passwort ist falsch.');
+            return;
+        }
+
+        const data = await response.json();
+
+        const user: AuthenticatedUser = {
+            id: data.user.id,
+            username: data.user.username,
+            token: data.token,
+        };
+
+        await AsyncStorage.setItem('userToken', user.token);
+        await AsyncStorage.setItem('userId', user.id);
+        await AsyncStorage.setItem('username', user.username);
+
+        const expiryTime = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+        await AsyncStorage.setItem('sessionExpiry', expiryTime.toString());
+
+        callback(true, user);
     } catch (error) {
-        console.error('Error in loginUser:', error);
-        callback(false);
+        console.error('Fehler beim Login:', error);
+        callback(false, undefined, 'Unbekannter Fehler.');
     }
 };
 
@@ -102,29 +57,39 @@ export const logoutUser = async () => {
 
 export const isSessionValid = async (): Promise<boolean> => {
     const sessionExpiry = await AsyncStorage.getItem('sessionExpiry');
-    if (sessionExpiry) {
-        const expiryTime = parseInt(sessionExpiry, 10);
-        if (Date.now() > expiryTime) {
-            await AsyncStorage.removeItem('userId');
-            await AsyncStorage.removeItem('sessionExpiry');
-            return false;
-        }
+    const userId = await AsyncStorage.getItem('userId');
+    const username = await AsyncStorage.getItem('username');
+    const token = await AsyncStorage.getItem('userToken');
+
+    if (!sessionExpiry || !userId || !username || !token) {
+        return false;
     }
+
+    const expiryTime = parseInt(sessionExpiry, 10);
+    if (Date.now() > expiryTime) {
+        await AsyncStorage.multiRemove(['userId', 'username', 'userToken', 'sessionExpiry']);
+        return false;
+    }
+
     return true;
 };
 
 export const getStoredUser = async (): Promise<AuthenticatedUser | null> => {
     try {
-        const userId = await AsyncStorage.getItem('userId');
-        if (!userId || !(await isSessionValid())) return null;
+        const isValid = await isSessionValid();
+        if (!isValid) return null;
 
-        const tableExist = await tableExists('User');
+        const id = await AsyncStorage.getItem('userId');
+        const username = await AsyncStorage.getItem('username');
+        const token = await AsyncStorage.getItem('userToken');
 
-        if (!tableExist) return null;
+        if (id && username && token) {
+            return { id, username, token };
+        }
 
-        return (await getUserById(userId)) || null;
+        return null;
     } catch (error) {
-        console.error('Error retrieving user:', error);
+        console.error('Error retrieving user from storage:', error);
         return null;
     }
 };
