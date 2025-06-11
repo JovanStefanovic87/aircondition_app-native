@@ -7,6 +7,9 @@ import { InspectionUpdate } from '../../../database/types';
 import TextMain from '../text/TextMain';
 import PdfButton from '../buttons/PdfButton';
 import DuplicateButton from '../buttons/DuplicateButton';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+
+type NavScreenNavigationProp = NavigationProp<any, any>;
 
 interface Props {
     inspection: InspectionUpdate;
@@ -14,12 +17,19 @@ interface Props {
 }
 
 const InspectionItem: React.FC<Props> = ({ inspection, onPress }) => {
+    const navigation = useNavigation<NavScreenNavigationProp>();
     return (
         <TouchableOpacity style={styles.inspectionItem} onPress={() => onPress(inspection.id)}>
             <View style={styles.container}>
                 <View style={styles.actionsContainer}>
                     <View style={styles.actionRow}>
-                        <PdfButton onPress={() => console.log('Generate PDF for', inspection.id)} />
+                        <PdfButton
+                            onPress={() =>
+                                navigation.navigate('PdfViewerScreen', {
+                                    inspectionId: inspection.id,
+                                })
+                            }
+                        />
                         <DuplicateButton
                             onPress={() => console.log('Duplicate inspection', inspection.id)}
                         />

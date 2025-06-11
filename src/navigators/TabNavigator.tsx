@@ -10,6 +10,7 @@ import ElementsStateScreen from '../screens/ElementsStateScreen';
 import QuestionsScreen from '../screens/QuestionsScreen';
 import LoginScreen from '../screens/LoginScreen';
 import DevToolsScreen from '../screens/DevToolsScreen';
+import PdfViewerScreen from '../screens/PdfViewerScreen';
 
 const Stack = createStackNavigator();
 
@@ -66,6 +67,11 @@ const TabNavigator = () => {
                 name="QuestionsScreen"
                 component={QuestionsScreen}
                 options={tabNameOptions('INSPEKTIONSFRAGEN')}
+            />
+            <Stack.Screen
+                name="PdfViewerScreen"
+                component={PdfViewerScreen}
+                options={{ title: 'PDF Viewer' }}
             />
             {__DEV__ && <Stack.Screen name="DevToolsScreen" component={DevToolsScreen} />}
         </Stack.Navigator>
