@@ -28,6 +28,7 @@ const AllInspectionsScreen = () => {
                     ...inspection,
                     inspectionStatusId: inspection.inspectionStatusId || 0,
                 }));
+
                 setInspections(inspections);
             } catch (error) {
                 setErrorMessage(error.message);

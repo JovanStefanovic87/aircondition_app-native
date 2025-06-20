@@ -89,7 +89,11 @@ const DevToolsScreen: React.FC = () => {
                         buttonText="JS Report PDF Viewer"
                         iconName="file-pdf-o"
                         iconColor="blue"
-                        onPress={() => navigation.navigate('PdfViewerScreen')}
+                        onPress={() =>
+                            navigation.navigate('PdfViewerScreen', {
+                                inspectionId: '',
+                            })
+                        }
                     />
                     <NavButton
                         buttonText="Get Session"

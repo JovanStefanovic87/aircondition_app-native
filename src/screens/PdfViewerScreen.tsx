@@ -16,6 +16,10 @@ const PdfViewerScreen = () => {
     useEffect(() => {
         const fetchInspection = async () => {
             const inspection = await getInspectionByIdWithDetails(inspectionId);
+            if (!inspection) {
+                setPdfReportData(REPORT_DATA);
+                return;
+            }
 
             const report: ReportData = {
                 ...REPORT_DATA,

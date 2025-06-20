@@ -10,6 +10,9 @@ export const REPORT_DATA = {
     client: {
         name: 'ERLANGER STADTWERKE AG',
         address: 'ÄUSSERE BRUCKER STRASSE 33, 91052 ERLANGEN',
+        endClient: 'ERLANGER STADTWERKE AG\nÄUSSERE BRUCKER STRASSE 33\n91052 ERLANGEN',
+        endClientSignature: 'Christophe Lucereau',
+        endClientAdress: 'ÄUSSERE BRUCKER STRASSE 33, 91052 ERLANGEN',
     },
     device: {
         location: 'Busbetriebshof',
@@ -24,8 +27,7 @@ export const REPORT_DATA = {
         type: 'HYGIENEINSPEKTION VDI 6022',
         date: '01.12.2020',
         next: '01.12.2023',
-        end_client: 'ERLANGER STADTWERKE AG\nÄUSSERE BRUCKER STRASSE 33\n91052 ERLANGEN',
-        end_client_signature: 'Christophe Lucereau',
+
         images: [
             {
                 imagePath:
