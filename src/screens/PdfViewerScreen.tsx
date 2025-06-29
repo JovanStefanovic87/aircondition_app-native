@@ -21,6 +21,8 @@ const PdfViewerScreen = () => {
                 return;
             }
 
+            //const elements = await getReportDataElements(inspectionId);
+
             const report: ReportData = {
                 ...REPORT_DATA,
                 company: {

@@ -18,6 +18,7 @@ import {
     InspectionData,
     InspectionDeviceComponent,
     InspectionDeviceElement,
+    InspectionElement,
     InspectionQuestion,
     InspectionQuestionWithDetails,
     InspectionStatus,
@@ -262,6 +263,13 @@ export const getInspectionDeviceElements = async (
         LEFT JOIN DeviceElement de ON de.id = ide.deviceElementId
         WHERE ide.inspectionId = '${inspectionId}'`;
     return executeQuery<InspectionDeviceElement>({ query });
+};
+
+export const getInspectionDeviceElementsBase = async (
+    inspectionId: string,
+): Promise<InspectionElement[]> => {
+    const query = `SELECT * FROM Inspection_DeviceElement WHERE inspectionId = '${inspectionId}'`;
+    return executeQuery<InspectionElement>({ query });
 };
 
 export const getDeviceElementPositions = async (): Promise<DeviceElementPosition[]> => {

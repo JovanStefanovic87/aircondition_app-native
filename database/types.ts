@@ -167,6 +167,14 @@ export type InspectionDeviceElement = {
     elementPositionId: number;
 };
 
+export type InspectionElement = {
+    id: string;
+    inspectionId: string;
+    deviceElementId: number;
+    deviceOrder: number;
+    elementPositionId: number;
+};
+
 export type InspectionDeviceStateUpdate = {
     id: string;
     value?: number | null;

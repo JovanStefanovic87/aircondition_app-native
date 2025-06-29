@@ -1,11 +1,10 @@
 import { INSPECTION_TYPES } from '../../../src/helpers/constants';
 import { deleteFile } from '../../../src/helpers/universalFunctions';
-import bcrypt from 'react-native-bcrypt';
+
 import {
     ClientUpdate,
     DeviceElementImageInsert,
     DeviceElementSortUpdate,
-    DeviceElementStateImageInsert,
     DeviceStateImageInsert,
     ImageStorage,
     ImageStorageInsert,
@@ -18,7 +17,6 @@ import {
     InspectionQuestionUpdate,
     InspectionUpdate,
     QuestionComponent,
-    User,
 } from '../../types';
 import {
     executeDeleteByConditions,
@@ -34,11 +32,10 @@ import {
     getComponentElementTitleIds,
     getDeviceStateComponentsWholeDevice,
     getImageStorageById,
-    getImageStorageByInspectionId,
+    getInspectionById,
     getInspectionDeviceElements,
+    getInspectionDeviceElementsBase,
     getInspectionDeviceStateByDeviceElements,
-    getInspectionDeviceStateForElements,
-    getInspectionImages,
     getQuestionComponents,
 } from '../Query/sqlQueries';
 
@@ -388,4 +385,28 @@ export const deleteClient = async (clientId: string): Promise<void> => {
 
 export const deleteUser = async (userId: string): Promise<void> => {
     await executeDeleteById('User', userId);
+};
+
+export const copyInspection = async (inspectionId: string): Promise<string | void> => {
+    const inspectionToCopy = await getInspectionById(inspectionId);
+    const inspectionElementsToCopy = await getInspectionDeviceElementsBase(inspectionId);
+    if (!inspectionToCopy) return;
+
+    // copy inspection data
+    inspectionToCopy.facilityName = `Copy of ${inspectionToCopy.facilityName}`;
+    const { id: _, ...newInspection } = inspectionToCopy;
+    const newInspectionId = await saveInspection(newInspection);
+
+    if (!newInspectionId) return;
+
+    // copy inspection elements
+    for (const element of inspectionElementsToCopy) {
+        const { id: _, inspectionId: __, ...rest } = element;
+        await saveInspectionDeviceElement({
+            ...rest,
+            inspectionId: newInspectionId,
+        });
+    }
+
+    return newInspectionId;
 };

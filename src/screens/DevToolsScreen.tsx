@@ -15,10 +15,12 @@ import {
     getAllUsers,
     getInspectionDeviceElements,
     getInspections,
+    getInspectionElementStateDetails,
 } from '../../database/dataAccess/Query/sqlQueries';
 import { deleteAllTables } from '../../database/dataAccess/Helper/helpers';
 import { getStoredUser } from '../../database/dataAccess/Helper/auth';
 import {
+    copyInspection,
     deleteInspectionDeviceElement,
     deleteUser,
     saveDeviceElementsSortOrder,
@@ -36,11 +38,11 @@ const DevToolsScreen: React.FC = () => {
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const navigation = useNavigation<NavScreenNavigationProp>();
 
+    const inspectionId = 'd9fda8ba-d15c-45fe-9857-590ae208943c';
+
     const handle = {
         deleteAllTables: async () => await deleteAllTables(setErrorMessage, setErrorModalVisible),
         getSession: async () => console.log(await getStoredUser()),
-        getAllUsers: async () => console.log(await getAllUsers()),
-        deleteUser: async () => await deleteUser('fc57127b-b273-4323-b0e6-48f430f8137c'),
         saveQuestionImage: async () =>
             await saveQuestionImage('id', {
                 name: 'test',
@@ -51,12 +53,12 @@ const DevToolsScreen: React.FC = () => {
         deviceByGroupType: async () => console.log(await getInspectionDeviceStateByGroupType('')),
         getAllInspections: async () => console.log(await getInspections()),
         getInspectionElements: async () =>
-            console.log(await getInspectionDeviceElements('a844e533-042e-4a9f-b6b2-a6aee757e2a5')),
+            console.log(await getInspectionDeviceElements(inspectionId)),
         deleteInspectionElements: async () =>
             await deleteInspectionDeviceElement('da3ae5e2-e8f8-42e6-87d2-2ae8d834b3f6'),
         saveInspectionElements: async () =>
             await saveInspectionDeviceElement({
-                inspectionId: 'a844e533-042e-4a9f-b6b2-a6aee757e2a5',
+                inspectionId: inspectionId,
                 deviceElementId: 3,
                 deviceOrder: 2,
                 elementPositionId: 2,
@@ -73,6 +75,16 @@ const DevToolsScreen: React.FC = () => {
         getAllInspectionQuestions: async () => console.log(await getAllInspectionQuestions()),
         getAllQuestions: async () => console.log(await getAllQuestions()),
         getQuestionGroups: async () => console.log(await getQuestionGroups()),
+        getInspectionElementStateDetails: async () =>
+            console.log(await getInspectionElementStateDetails(inspectionId, '')),
+        copyInspection: async () => {
+            const newInspectionId = await copyInspection(inspectionId);
+            if (newInspectionId) {
+                console.log(`New inspection copied with ID: ${newInspectionId}`);
+            } else {
+                console.log('Failed to copy inspection');
+            }
+        },
     };
 
     return (
@@ -100,18 +112,6 @@ const DevToolsScreen: React.FC = () => {
                         iconName="database"
                         iconColor="red"
                         onPress={handle.getSession}
-                    />
-                    <NavButton
-                        buttonText="Get All Users"
-                        iconName="database"
-                        iconColor="red"
-                        onPress={handle.getAllUsers}
-                    />
-                    <NavButton
-                        buttonText="Delete Users"
-                        iconName="database"
-                        iconColor="red"
-                        onPress={handle.deleteUser}
                     />
                     <NavButton
                         buttonText="Save Question Image"
@@ -143,6 +143,13 @@ const DevToolsScreen: React.FC = () => {
                         iconColor="red"
                         onPress={handle.getAllInspections}
                     />
+                    <NavButton
+                        buttonText="Copy Inspection"
+                        iconName="copy"
+                        iconColor="blue"
+                        onPress={handle.copyInspection}
+                    />
+
                     <NavButton
                         buttonText="Get Inspection Elements"
                         iconName="database"
@@ -202,6 +209,12 @@ const DevToolsScreen: React.FC = () => {
                         iconName="database"
                         iconColor="red"
                         onPress={handle.getQuestionGroups}
+                    />
+                    <NavButton
+                        buttonText="Get Element State Details - Step 4"
+                        iconName="sign-in"
+                        iconColor="green"
+                        onPress={handle.getInspectionElementStateDetails}
                     />
                 </ScrollView>
 
