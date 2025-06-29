@@ -51,11 +51,10 @@ const LoginPage = ({ navigation }) => {
             <ScrollView contentContainerStyle={styles.container}>
                 <View style={styles.inner}>
                     <TextInput
-                        placeholder="E-Mail-Adresse"
+                        placeholder="Gebruikersnaam"
                         value={userName}
                         onChangeText={setUserName}
                         style={styles.input}
-                        keyboardType="email-address"
                         autoCapitalize="none"
                     />
                     <TextInput
