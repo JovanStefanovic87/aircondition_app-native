@@ -17,6 +17,7 @@ interface Props {
     saveInspection: (inspectionUpdate: Inspection) => void;
     onPressCamera: () => void;
     onPressGallery: () => void;
+    onPressUpload: () => void;
 }
 
 const DeviceParameters: React.FC<Props> = ({
@@ -25,6 +26,7 @@ const DeviceParameters: React.FC<Props> = ({
     setInspection,
     onPressCamera,
     onPressGallery,
+    onPressUpload,
 }) => {
     const { constructionYear, lastMaintenance, airVolume, note } = inspection;
 
@@ -77,6 +79,7 @@ const DeviceParameters: React.FC<Props> = ({
             <View style={styles.cameraIconsContainer}>
                 <IconButton icon="camera" onPress={onPressCamera} />
                 <IconButton icon="image" onPress={onPressGallery} />
+                <IconButton icon="upload" onPress={onPressUpload} />
                 <InputText
                     value={note}
                     setValue={(value) => setInspection({ ...inspection, note: value })}

@@ -41,6 +41,7 @@ import RowContainerFlex from '../components/containers/RowContainerFlex';
 import AutoFitTableContainer from '../components/containers/AutoFitTableContainer';
 import DeviceStateColumnContainer from '../components/containers/DeviceStateTableContainer';
 import InspectionTitle from '../components/text/DeviceStateTitle';
+import { launchImageLibrary } from 'react-native-image-picker';
 import { calculateMinColumnWidth } from '../helpers/universalFunctions';
 import DeviceStateMerged from '../components/table/DeviceStateMerged';
 import GalleryModal from '../components/modals/GalleryModal';
@@ -142,6 +143,27 @@ const ElementsStateScreen: React.FC = () => {
         );
         setInspectionDeviceStateDetails(updatedInspection);
         checkAndUpdateCompletionStatus(updatedInspection);
+    };
+
+    const handleUploadFromDevice = async (titleId: number, groupTypeId: number) => {
+        try {
+            const result = await launchImageLibrary({ mediaType: 'photo' });
+
+            if (result.assets && result.assets.length > 0) {
+                const imagePath = result.assets[0].uri;
+
+                await handleSaveDeviceElementImage(
+                    imagePath,
+                    titleId,
+                    groupTypeId,
+                    selectedDeviceElementId ? parseInt(selectedDeviceElementId) : undefined,
+                );
+            }
+        } catch (error) {
+            console.error('Error uploading image:', error);
+            setErrorMessage('Fehler beim Hochladen des Bildes.');
+            setErrorModalVisible(true);
+        }
     };
 
     const handleDeviceStateGalleryClick = async (titleId: number, groupTypeId: number) => {
@@ -427,6 +449,14 @@ const ElementsStateScreen: React.FC = () => {
                                                     }
                                                     onPressGallery={() =>
                                                         handleDeviceStateGalleryClick(
+                                                            title.deviceStateComponents[0]
+                                                                ?.titleComponentId,
+                                                            title.deviceStateComponents[0]
+                                                                ?.groupTypeId,
+                                                        )
+                                                    }
+                                                    onPressUpload={() =>
+                                                        handleUploadFromDevice(
                                                             title.deviceStateComponents[0]
                                                                 ?.titleComponentId,
                                                             title.deviceStateComponents[0]

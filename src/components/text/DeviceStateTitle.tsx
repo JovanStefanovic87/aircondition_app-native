@@ -3,13 +3,26 @@ import { StyleSheet, Text, View } from 'react-native';
 import IconButton from '../buttons/IconButton';
 import { customColors } from '../../assets/styles/customStyles';
 
-const DeviceStateTitle = ({ title, onPressCamera, onPressGallery }) => {
+interface Props {
+    title: string;
+    onPressCamera: () => void;
+    onPressGallery: () => void;
+    onPressUpload: () => void;
+}
+
+const DeviceStateTitle: React.FC<Props> = ({
+    title,
+    onPressCamera,
+    onPressGallery,
+    onPressUpload,
+}) => {
     return (
         <View style={styles.iconsContainer}>
             <View style={styles.titleContainer}>
                 <Text style={styles.elementName}>{title}</Text>
                 <View style={styles.cameraIconsContainer}>
                     <IconButton icon="camera" onPress={onPressCamera} />
+                    <IconButton icon="upload" onPress={onPressUpload} />
                     <IconButton icon="image" onPress={onPressGallery} />
                 </View>
             </View>
@@ -27,25 +40,23 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap',
     },
     titleContainer: {
-        flex: 1,
         flexDirection: 'row',
-        justifyContent: 'space-between',
         alignItems: 'center',
+        justifyContent: 'space-between',
         backgroundColor: 'lightblue',
         padding: 10,
     },
     elementName: {
         flex: 1,
-        minWidth: '60%',
-        fontSize: 20,
-        textAlign: 'left',
+        fontSize: 18,
         fontWeight: 'bold',
         color: customColors.black,
+        marginRight: 10,
     },
     cameraIconsContainer: {
         flexDirection: 'row',
-        justifyContent: 'flex-start',
+        alignItems: 'center',
         gap: 10,
-        maxWidth: '40%',
+        flexShrink: 0,
     },
 });

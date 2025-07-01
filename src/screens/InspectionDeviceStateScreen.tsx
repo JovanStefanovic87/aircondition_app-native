@@ -23,7 +23,7 @@ import {
     saveInspectionImage,
 } from '../../database/dataAccess/Command/sqlCommands';
 import { saveInspection } from '../../database/dataAccess/Command/sqlCommands';
-import { MediaType, CameraOptions } from 'react-native-image-picker';
+import { MediaType, CameraOptions, launchImageLibrary } from 'react-native-image-picker';
 import TakePicture from '../components/camera/TakePicture';
 import InspectionTitle from '../components/text/DeviceStateTitle';
 import PrimaryButton from '../components/buttons/PrimaryButton';
@@ -121,6 +121,18 @@ const InspectionDeviceStateScreen = () => {
 
             setGalleryImages(images);
             setGalleryVisible(true);
+        }
+    };
+
+    const handleUploadFromDevice = async () => {
+        const result = await launchImageLibrary({ mediaType: 'photo' });
+        if (result.assets && result.assets.length > 0) {
+            const imagePath = result.assets[0].uri;
+            if (isInspectionImage) {
+                handleSaveInspectionImage(imagePath);
+            } else {
+                handleSaveDeviceStateImage(imagePath);
+            }
         }
     };
 
@@ -260,6 +272,10 @@ const InspectionDeviceStateScreen = () => {
                                     saveInspection={saveInspection}
                                     onPressCamera={toggleCameraInspection}
                                     onPressGallery={handleGalleryClick}
+                                    onPressUpload={() => {
+                                        setIsInspectionImage(true);
+                                        handleUploadFromDevice();
+                                    }}
                                 />
                             </DeviceParamsTableContainer>
                         )}
@@ -300,7 +316,22 @@ const InspectionDeviceStateScreen = () => {
                                                                     .groupTypeId,
                                                             )
                                                         }
+                                                        onPressUpload={() => {
+                                                            const titleId =
+                                                                title.deviceStateComponents[0]
+                                                                    .titleComponentId;
+                                                            const groupTypeId =
+                                                                title.deviceStateComponents[0]
+                                                                    .groupTypeId;
+                                                            setIsInspectionImage(false);
+                                                            setImageSaveParams({
+                                                                titleId,
+                                                                groupTypeId,
+                                                            });
+                                                            handleUploadFromDevice();
+                                                        }}
                                                     />
+
                                                     <View style={styles.iconsGroupContainer}>
                                                         {title.deviceStateComponents.map(
                                                             (deviceState: DeviceStateComponent) => (
