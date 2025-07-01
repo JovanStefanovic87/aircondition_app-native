@@ -8,6 +8,7 @@ import TextMain from '../text/TextMain';
 import PdfButton from '../buttons/PdfButton';
 import DuplicateButton from '../buttons/DuplicateButton';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { copyInspection } from '../../../database/dataAccess/Command/sqlCommands';
 
 type NavScreenNavigationProp = NavigationProp<any, any>;
 
@@ -31,7 +32,21 @@ const InspectionItem: React.FC<Props> = ({ inspection, onPress }) => {
                             }
                         />
                         <DuplicateButton
-                            onPress={() => console.log('Duplicate inspection', inspection.id)}
+                            onPress={async () => {
+                                try {
+                                    const newInspectionId = await copyInspection(inspection.id);
+                                    if (newInspectionId) {
+                                        console.log('New inspection copied:', newInspectionId);
+                                        navigation.navigate('InspectionBasicDetailsScreen', {
+                                            inspectionId: newInspectionId,
+                                        });
+                                    } else {
+                                        console.error('Failed to copy inspection');
+                                    }
+                                } catch (error) {
+                                    console.error('Error duplicating inspection:', error);
+                                }
+                            }}
                         />
                     </View>
                     <View style={styles.flexEnd}>
