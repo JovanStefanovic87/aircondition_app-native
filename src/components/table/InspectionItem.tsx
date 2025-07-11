@@ -9,6 +9,7 @@ import PdfButton from '../buttons/PdfButton';
 import DuplicateButton from '../buttons/DuplicateButton';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { copyInspection } from '../../../database/dataAccess/Command/sqlCommands';
+import { useInspectionStore } from '../../store/store';
 
 type NavScreenNavigationProp = NavigationProp<any, any>;
 
@@ -19,6 +20,7 @@ interface Props {
 
 const InspectionItem: React.FC<Props> = ({ inspection, onPress }) => {
     const navigation = useNavigation<NavScreenNavigationProp>();
+
     return (
         <TouchableOpacity style={styles.inspectionItem} onPress={() => onPress(inspection.id)}>
             <View style={styles.container}>
@@ -37,6 +39,10 @@ const InspectionItem: React.FC<Props> = ({ inspection, onPress }) => {
                                     const newInspectionId = await copyInspection(inspection.id);
                                     if (newInspectionId) {
                                         console.log('New inspection copied:', newInspectionId);
+                                        // OBAVEZNO: Sačuvaj novi ID u Zustand store-u!
+                                        useInspectionStore
+                                            .getState()
+                                            .setInspectionId(newInspectionId);
                                         navigation.navigate('InspectionBasicDetailsScreen', {
                                             inspectionId: newInspectionId,
                                         });
