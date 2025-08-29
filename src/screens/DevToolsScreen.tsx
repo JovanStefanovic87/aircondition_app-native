@@ -38,7 +38,7 @@ const DevToolsScreen: React.FC = () => {
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const navigation = useNavigation<NavScreenNavigationProp>();
 
-    const inspectionId = 'd9fda8ba-d15c-45fe-9857-590ae208943c';
+    const inspectionId = '9760731c-db10-455f-a5b6-fa4cfbe70773';
 
     const handle = {
         deleteAllTables: async () => await deleteAllTables(setErrorMessage, setErrorModalVisible),

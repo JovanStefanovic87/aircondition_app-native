@@ -101,7 +101,7 @@ export const REPORT_DATA = {
             imageTitle: 'Abluftanglage',
             elementValues: {
                 p: 1,
-                'k:': 2,
+                k: 2,
                 m: 1,
                 l: 4,
             },
@@ -113,7 +113,7 @@ export const REPORT_DATA = {
             imageTitle: 'Abluftgitterdig',
             elementValues: {
                 p: 1,
-                'k:': 2,
+                k: 2,
                 m: 1,
                 l: 4,
             },
@@ -125,7 +125,7 @@ export const REPORT_DATA = {
             imageTitle: 'Abluftkanal',
             elementValues: {
                 p: 1,
-                'k:': 2,
+                k: 2,
                 m: 1,
                 l: 4,
             },
@@ -137,7 +137,7 @@ export const REPORT_DATA = {
             imageTitle: 'Abluftkanaldig',
             elementValues: {
                 p: 1,
-                'k:': 2,
+                k: 2,
                 m: 1,
                 l: 4,
             },
@@ -149,7 +149,7 @@ export const REPORT_DATA = {
             imageTitle: 'Abstellplatz',
             elementValues: {
                 p: 1,
-                'k:': 2,
+                k: 2,
                 m: 1,
                 l: 4,
             },
@@ -161,7 +161,7 @@ export const REPORT_DATA = {
             imageTitle: 'Außenluftansaugung',
             elementValues: {
                 p: 1,
-                'k:': 2,
+                k: 2,
                 m: 1,
                 l: 4,
             },
@@ -173,7 +173,7 @@ export const REPORT_DATA = {
             imageTitle: 'Außenluftkanal',
             elementValues: {
                 p: 1,
-                'k:': 2,
+                k: 2,
                 m: 1,
                 l: 4,
             },
@@ -185,7 +185,7 @@ export const REPORT_DATA = {
             imageTitle: 'Abluftanglage',
             elementValues: {
                 p: 1,
-                'k:': 2,
+                k: 2,
                 m: 1,
                 l: 4,
             },
@@ -197,7 +197,7 @@ export const REPORT_DATA = {
             imageTitle: 'Abluftgitterdig',
             elementValues: {
                 p: 1,
-                'k:': 2,
+                k: 2,
                 m: 1,
                 l: 4,
             },
@@ -209,7 +209,7 @@ export const REPORT_DATA = {
             imageTitle: 'Abluftkanal',
             elementValues: {
                 p: 1,
-                'k:': 2,
+                k: 2,
                 m: 1,
                 l: 4,
             },
@@ -221,7 +221,7 @@ export const REPORT_DATA = {
             imageTitle: 'Abluftkanaldig',
             elementValues: {
                 p: 1,
-                'k:': 2,
+                k: 2,
                 m: 1,
                 l: 4,
             },
@@ -233,7 +233,7 @@ export const REPORT_DATA = {
             imageTitle: 'Abstellplatz',
             elementValues: {
                 p: 1,
-                'k:': 2,
+                k: 2,
                 m: 1,
                 l: 4,
             },
@@ -245,7 +245,7 @@ export const REPORT_DATA = {
             imageTitle: 'Außenluftansaugung',
             elementValues: {
                 p: 1,
-                'k:': 2,
+                k: 2,
                 m: 1,
                 l: 4,
             },
@@ -257,7 +257,7 @@ export const REPORT_DATA = {
             imageTitle: 'Außenluftkanal',
             elementValues: {
                 p: 1,
-                'k:': 2,
+                k: 2,
                 m: 1,
                 l: 4,
             },

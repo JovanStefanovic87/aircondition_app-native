@@ -393,7 +393,7 @@ export const copyInspection = async (inspectionId: string): Promise<string | voi
     if (!inspectionToCopy) return;
 
     // copy inspection data
-    inspectionToCopy.facilityName = `Copy of ${inspectionToCopy.facilityName}`;
+    inspectionToCopy.facilityName = `Kopie von ${inspectionToCopy.facilityName}`;
     const { id: _, ...newInspection } = inspectionToCopy;
     const newInspectionId = await saveInspection(newInspection);
 

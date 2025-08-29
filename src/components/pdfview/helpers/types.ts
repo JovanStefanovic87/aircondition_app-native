@@ -75,7 +75,7 @@ type ReportElement = {
     imageTitle: string;
     elementValues: {
         p: number;
-        'k:': number;
+        k: number;
         m: number;
         l: number;
     };

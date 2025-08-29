@@ -12,12 +12,14 @@ import {
     DeviceStateComponentsForInspection,
     DeviceStateValueDetails,
     DeviceType,
+    ElementsWithStateSumForReport,
     ImageStorage,
     Inspection,
     InspectionAndImageStorage,
     InspectionData,
     InspectionDeviceComponent,
     InspectionDeviceElement,
+    InspectionDeviceStatesForReport,
     InspectionElement,
     InspectionQuestion,
     InspectionQuestionWithDetails,
@@ -105,12 +107,39 @@ export const getInspectionDeviceStateForElements = async (
     inspectionId: string,
 ): Promise<InspectionDeviceComponent[]> => {
     const query = `
-        SELECT ids.* FROM Component_Element_Title cet
+        SELECT ids.*,dsc.groupTypeId FROM Component_Element_Title cet
         LEFT JOIN DeviceStateComponent dsc ON dsc.id = cet.deviceStateComponentId
         LEFT JOIN Inspection_DeviceState ids ON ids.componentElementTitleId = cet.id
         WHERE dsc.stateTypeId=${STATE_TYPES.DEVICE_ELEMENT} AND ids.inspectionId = '${inspectionId}'`;
 
     return executeQuery<InspectionDeviceComponent>({ query });
+};
+
+export const getInspectionDeviceStateForReport = async (
+    inspectionId: string,
+): Promise<InspectionDeviceStatesForReport[]> => {
+    const query = `
+        SELECT ids.*, dsc.groupTypeId FROM Component_Element_Title cet
+        LEFT JOIN DeviceStateComponent dsc ON dsc.id = cet.deviceStateComponentId
+        LEFT JOIN Inspection_DeviceState ids ON ids.componentElementTitleId = cet.id
+        WHERE dsc.stateTypeId=${STATE_TYPES.DEVICE_ELEMENT} AND ids.inspectionId = '${inspectionId}'`;
+
+    return executeQuery<InspectionDeviceStatesForReport>({ query });
+};
+
+export const getInspectionElementsForReport = async (
+    inspectionId: string,
+): Promise<ElementsWithStateSumForReport[]> => {
+    const query = `
+        SELECT 
+            ide.id as imageId, de.name as imageTitle, s.storagePathS3 as imageDataUri 
+        FROM Inspection_DeviceElement ide
+            LEFT JOIN DeviceElement de ON de.id = ide.deviceElementId
+            LEFT JOIN DeviceElement_Image dei ON dei.deviceElementId = de.id
+            LEFT JOIN ImageStorage s ON s.id = dei.imageId           
+        WHERE ide.inspectionId = '${inspectionId}'`;
+
+    return executeQuery<ElementsWithStateSumForReport>({ query });
 };
 
 export const getAllInspectionDeviceStates = async (): Promise<InspectionDeviceComponent[]> => {
@@ -259,7 +288,7 @@ export const getInspectionDeviceElements = async (
     inspectionId: string,
 ): Promise<InspectionDeviceElement[]> => {
     const query = `
-        SELECT ide.*, de.imageFileName, de.imagePath, de.deviceElementTypeId FROM Inspection_DeviceElement ide
+        SELECT ide.*, de.imageFileName, de.deviceElementTypeId FROM Inspection_DeviceElement ide
         LEFT JOIN DeviceElement de ON de.id = ide.deviceElementId
         WHERE ide.inspectionId = '${inspectionId}'`;
     return executeQuery<InspectionDeviceElement>({ query });

@@ -70,6 +70,8 @@ You've successfully run and modified your React Native App. :partying_face:
 
 ### Now what?
 
+Commands can be executed from android directory
+
 Delete all generated build files.
 
 ```bash

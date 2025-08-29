@@ -163,7 +163,6 @@ export type InspectionDeviceElement = {
     deviceElementId: number;
     deviceOrder: number;
     imageFileName: string;
-    imagePath: string;
     elementPositionId: number;
 };
 
@@ -448,4 +447,22 @@ export type ClientUpdate = {
 export type InspectionQuestionInsert = {
     inspectionQuestionId: string;
     imageId: string;
+};
+
+export type ElementsWithStateSumForReport = {
+    imageId: string;
+    imageTitle: string;
+    elementValues: Record<string, number>;
+    imageDataUri: string;
+};
+
+export type InspectionDeviceStatesForReport = {
+    id?: string;
+    inspectionId: string;
+    componentElementTitleId: number;
+    inspectionDeviceElementId: string;
+    value?: number;
+    note?: string;
+    isMeasurementPossible?: boolean;
+    groupTypeId: number;
 };

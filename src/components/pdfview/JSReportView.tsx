@@ -13,8 +13,6 @@ const JsreportPdfViewer = ({ inspectionData }: JsreportPdfViewerProps) => {
     const [pdfPath, setPdfPath] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
 
-    console.log('JsreportPdfViewer inspectionData:', inspectionData);
-
     useEffect(() => {
         const fetchAndSavePdf = async () => {
             try {

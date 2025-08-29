@@ -3,7 +3,11 @@ import { SafeAreaView, StyleSheet } from 'react-native';
 import JsreportPdfViewer from '../components/pdfview/JSReportView';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { ReportData } from '../components/pdfview/helpers/types';
-import { getInspectionByIdWithDetails } from '../../database/dataAccess/Query/sqlQueries';
+import {
+    getInspectionByIdWithDetails,
+    getInspectionDeviceStateForReport,
+    getInspectionElementsForReport,
+} from '../../database/dataAccess/Query/sqlQueries';
 import { REPORT_DATA } from '../components/pdfview/ReportData';
 
 type PdfViewerScreenRouteProp = RouteProp<any, 'PdfViewerScreen'>;
@@ -21,7 +25,13 @@ const PdfViewerScreen = () => {
                 return;
             }
 
-            //const elements = await getReportDataElements(inspectionId);
+            const elements = await getInspectionElementsForReport(inspectionId);
+
+            console.log('ELEMENTS', elements);
+
+            const statesPerElement = await getInspectionDeviceStateForReport(inspectionId);
+
+            console.log('STATES PER ELEMENT', statesPerElement);
 
             const report: ReportData = {
                 ...REPORT_DATA,
@@ -67,6 +77,12 @@ const PdfViewerScreen = () => {
                         },
                     ],
                 },
+                // elements: inspection.elements.map((element) => ({
+                //     imageId: element.id,
+                //     imageTitle: element.name,
+                //     elementValues: element.imagePath,
+                //     imageDataUri: element.state,
+                // })),
             };
 
             setPdfReportData(report);
