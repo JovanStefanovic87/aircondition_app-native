@@ -6,6 +6,7 @@ import { customColors } from '../../assets/styles/customStyles';
 import { InspectionUpdate } from '../../../database/types';
 import TextMain from '../text/TextMain';
 import PdfButton from '../buttons/PdfButton';
+import EditButton from '../buttons/EditButton';
 import DuplicateButton from '../buttons/DuplicateButton';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { copyInspection } from '../../../database/dataAccess/Command/sqlCommands';
@@ -22,44 +23,49 @@ const InspectionItem: React.FC<Props> = ({ inspection, onPress }) => {
     const navigation = useNavigation<NavScreenNavigationProp>();
 
     return (
-        <TouchableOpacity style={styles.inspectionItem} onPress={() => onPress(inspection.id)}>
-            <View style={styles.container}>
-                <View style={styles.actionsContainer}>
-                    <View style={styles.actionRow}>
-                        <PdfButton
-                            onPress={() =>
-                                navigation.navigate('PdfViewerScreen', {
-                                    inspectionId: inspection.id,
-                                })
-                            }
-                        />
-                        <DuplicateButton
-                            onPress={async () => {
-                                try {
-                                    const newInspectionId = await copyInspection(inspection.id);
-                                    if (newInspectionId) {
-                                        console.log('New inspection copied:', newInspectionId);
-                                        // OBAVEZNO: Sačuvaj novi ID u Zustand store-u!
-                                        useInspectionStore
-                                            .getState()
-                                            .setInspectionId(newInspectionId);
-                                        navigation.navigate('InspectionBasicDetailsScreen', {
-                                            inspectionId: newInspectionId,
-                                        });
-                                    } else {
-                                        console.error('Failed to copy inspection');
-                                    }
-                                } catch (error) {
-                                    console.error('Error duplicating inspection:', error);
-                                }
-                            }}
-                        />
-                    </View>
-                    <View style={styles.flexEnd}>
-                        {inspection.inspectionStatusId ? <CheckedIcon /> : <DangerIcon />}
-                    </View>
-                </View>
+        <View style={styles.inspectionItem}>
+            {/* Dugmići imaju svoje akcije */}
+            <View style={styles.actionsContainer}>
+                <View style={styles.actionRow}>
+                    <PdfButton
+                        onPress={(e) => {
+                            e.stopPropagation();
+                            navigation.navigate('PdfViewerScreen', {
+                                inspectionId: inspection.id,
+                            });
+                        }}
+                    />
 
+                    <DuplicateButton
+                        onPress={async (e) => {
+                            e.stopPropagation();
+                            try {
+                                const newInspectionId = await copyInspection(inspection.id);
+                                if (newInspectionId) {
+                                    useInspectionStore.getState().setInspectionId(newInspectionId);
+                                    navigation.navigate('InspectionBasicDetailsScreen', {
+                                        inspectionId: newInspectionId,
+                                    });
+                                }
+                            } catch (error) {
+                                console.error('Error duplicating inspection:', error);
+                            }
+                        }}
+                    />
+                    <EditButton
+                        onPress={() => {
+                            useInspectionStore.getState().setInspectionId(inspection.id);
+                            navigation.navigate('InspectionBasicDetailsScreen');
+                        }}
+                    />
+                </View>
+                <View style={styles.flexEnd}>
+                    {inspection.inspectionStatusId ? <CheckedIcon /> : <DangerIcon />}
+                </View>
+            </View>
+
+            {/* Klik na ostatak vodi u edit */}
+            <TouchableOpacity style={styles.infoContainer}>
                 <View style={styles.flexContainer}>
                     <TextMain text="Name der Anlage: " isBold={true} />
                     <TextMain text={inspection.facilityName} />
@@ -76,8 +82,8 @@ const InspectionItem: React.FC<Props> = ({ inspection, onPress }) => {
                     <TextMain text="Nummer der Leistungsnachweis : " isBold={true} />
                     <TextMain text={inspection.contractNumber} />
                 </View>
-            </View>
-        </TouchableOpacity>
+            </TouchableOpacity>
+        </View>
     );
 };
 
@@ -127,6 +133,10 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: 10,
+    },
+    infoContainer: {
+        paddingVertical: 10,
+        gap: 6,
     },
 });
 

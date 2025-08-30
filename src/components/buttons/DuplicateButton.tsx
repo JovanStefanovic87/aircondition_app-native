@@ -1,9 +1,9 @@
 import React from 'react';
-import { TouchableOpacity, StyleSheet } from 'react-native';
+import { TouchableOpacity, StyleSheet, GestureResponderEvent } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 interface Props {
-    onPress: () => void;
+    onPress: (event: GestureResponderEvent) => void;
 }
 
 const DuplicateButton: React.FC<Props> = ({ onPress }) => (
