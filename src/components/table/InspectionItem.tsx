@@ -11,6 +11,7 @@ import DuplicateButton from '../buttons/DuplicateButton';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { copyInspection } from '../../../database/dataAccess/Command/sqlCommands';
 import { useInspectionStore } from '../../store/store';
+import DeleteButton from '../buttons/DeleteButton';
 
 type NavScreenNavigationProp = NavigationProp<any, any>;
 
@@ -55,7 +56,16 @@ const InspectionItem: React.FC<Props> = ({ inspection, onPress }) => {
                     <EditButton
                         onPress={() => {
                             useInspectionStore.getState().setInspectionId(inspection.id);
-                            navigation.navigate('InspectionBasicDetailsScreen');
+                            navigation.navigate('InspectionBasicDetailsScreen', {
+                                inspectionId: inspection.id,
+                            });
+                        }}
+                    />
+                    <DeleteButton
+                        onPress={() => {
+                            // ❌ SQL delete need to be implemented
+                            console.log(`Delete inspection with id: ${inspection.id}`);
+                            // await deleteInspection(inspection.id);
                         }}
                     />
                 </View>

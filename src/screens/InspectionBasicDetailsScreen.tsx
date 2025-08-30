@@ -167,20 +167,24 @@ const InspectionBasicDetailsScreen = () => {
             return;
         }
 
-        // Proceed with submission if all validations pass
-        const formattedCreatedAt = moment().format('YYYY-MM-DDTHH:mm:ss[Z]');
-        setForm((prevForm) => ({
-            ...prevForm,
-            createdAt: formattedCreatedAt,
-        }));
+        if (inspectionId) {
+            // ✅ UPDATE postojeće inspekcije
+            await saveInspection({ ...form, id: inspectionId });
+            console.log('Izmena inspekcije:', inspectionId);
 
-        const newId = await saveInspection(form);
-        console.log('Ulogovani korisnik:', newId);
-        if (newId) {
-            useInspectionStore.getState().setInspectionId(newId);
-            navigation.navigate('InspectionDeviceStateScreen');
+            useInspectionStore.getState().setInspectionId(inspectionId);
+            (navigation as any).replace('InspectionDeviceStateScreen', { inspectionId });
+        } else {
+            // ✅ NOVO kreiranje inspekcije
+            const formattedCreatedAt = moment().format('YYYY-MM-DDTHH:mm:ss[Z]');
+            const newId = await saveInspection({ ...form, createdAt: formattedCreatedAt });
+            console.log('Nova inspekcija:', newId);
+
+            if (newId) {
+                useInspectionStore.getState().setInspectionId(newId);
+                (navigation as any).replace('InspectionDeviceStateScreen', { inspectionId: newId });
+            }
         }
-        navigation.navigate('InspectionDeviceStateScreen');
     };
 
     const openScanner = (scanType: string) => {
