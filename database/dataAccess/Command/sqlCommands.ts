@@ -60,6 +60,18 @@ export const saveInspection = async (
     return newInspectionId;
 };
 
+/**
+ * deleteInspection - Function will not actualy delete inspection from db, instead this will just update isDeleted=true state
+ * @param inspectionId - Inspection table
+ */
+export const deleteInspection = async (inspectionId: string): Promise<void> => {
+    const inspection = await getInspectionById(inspectionId);
+    if (inspection) {
+        inspection.isDeleted = true;
+        await executeUpdateOrInsertWithGuid<InspectionUpdate>('Inspection', inspection);
+    }
+};
+
 const fillDeviceStateToInspection = async (inspectonId: string): Promise<void> => {
     const deviceStateComponents = await getDeviceStateComponentsWholeDevice();
 

@@ -76,7 +76,7 @@ export const getInspectionStatus = async (): Promise<InspectionStatus[]> => {
 };
 
 export const getInspections = async (): Promise<Inspection[]> => {
-    const query = `SELECT * FROM Inspection`;
+    const query = `SELECT * FROM Inspection where isDeleted = false`;
     return executeQuery<Inspection>({ query });
 };
 

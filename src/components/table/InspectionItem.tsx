@@ -9,7 +9,7 @@ import PdfButton from '../buttons/PdfButton';
 import EditButton from '../buttons/EditButton';
 import DuplicateButton from '../buttons/DuplicateButton';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { copyInspection } from '../../../database/dataAccess/Command/sqlCommands';
+import { copyInspection, deleteInspection } from '../../../database/dataAccess/Command/sqlCommands';
 import { useInspectionStore } from '../../store/store';
 import DeleteButton from '../buttons/DeleteButton';
 
@@ -63,9 +63,7 @@ const InspectionItem: React.FC<Props> = ({ inspection, onPress }) => {
                     />
                     <DeleteButton
                         onPress={() => {
-                            // ❌ SQL delete need to be implemented
-                            console.log(`Delete inspection with id: ${inspection.id}`);
-                            // await deleteInspection(inspection.id);
+                            deleteInspection(inspection.id);
                         }}
                     />
                 </View>
