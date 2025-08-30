@@ -11,6 +11,8 @@ import {
     ScrollView,
     KeyboardAvoidingView,
     Platform,
+    TouchableWithoutFeedback,
+    Keyboard,
 } from 'react-native';
 import { loginUser } from '../../database/dataAccess/Helper/auth';
 import { useAuth } from '../context/AuthContext';
@@ -48,40 +50,53 @@ const LoginPage = ({ navigation }) => {
             style={{ flex: 1 }}
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
-            <ScrollView contentContainerStyle={styles.container}>
-                <View style={styles.inner}>
-                    <TextInput
-                        placeholder="Gebruikersnaam"
-                        value={userName}
-                        onChangeText={setUserName}
-                        style={styles.input}
-                        autoCapitalize="none"
-                    />
-                    <TextInput
-                        placeholder="Passwort"
-                        value={password}
-                        onChangeText={setPassword}
-                        secureTextEntry
-                        style={styles.input}
-                    />
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+                <View style={{ flex: 1 }}>
+                    <ScrollView
+                        contentContainerStyle={styles.container}
+                        keyboardShouldPersistTaps="handled"
+                    >
+                        <View style={styles.inner}>
+                            <TextInput
+                                placeholder="Gebruikersnaam"
+                                value={userName}
+                                onChangeText={setUserName}
+                                style={styles.input}
+                                autoCapitalize="none"
+                            />
+                            <TextInput
+                                placeholder="Passwort"
+                                value={password}
+                                onChangeText={setPassword}
+                                secureTextEntry
+                                style={styles.input}
+                                blurOnSubmit={true}
+                                onSubmitEditing={handleLogin}
+                            />
 
-                    {loading ? (
-                        <ActivityIndicator size="large" color="#2563eb" style={styles.loader} />
-                    ) : (
-                        <TouchableOpacity onPress={handleLogin} style={styles.button}>
-                            <Text style={styles.buttonText}>Anmelden</Text>
-                        </TouchableOpacity>
-                    )}
-                    {__DEV__ && (
-                        <NavButton
-                            onPress={() => navigation.navigate('DevToolsScreen')}
-                            iconName="gear"
-                            iconColor="green"
-                            buttonText="Dev Tools"
-                        />
-                    )}
+                            {loading ? (
+                                <ActivityIndicator
+                                    size="large"
+                                    color="#2563eb"
+                                    style={styles.loader}
+                                />
+                            ) : (
+                                <TouchableOpacity onPress={handleLogin} style={styles.button}>
+                                    <Text style={styles.buttonText}>Anmelden</Text>
+                                </TouchableOpacity>
+                            )}
+                            {__DEV__ && (
+                                <NavButton
+                                    onPress={() => navigation.navigate('DevToolsScreen')}
+                                    iconName="gear"
+                                    iconColor="green"
+                                    buttonText="Dev Tools"
+                                />
+                            )}
+                        </View>
+                    </ScrollView>
                 </View>
-            </ScrollView>
+            </TouchableWithoutFeedback>
         </KeyboardAvoidingView>
     );
 };
