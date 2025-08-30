@@ -9,6 +9,7 @@ import {
     getInspectionElementsForReport,
 } from '../../database/dataAccess/Query/sqlQueries';
 import { REPORT_DATA } from '../components/pdfview/ReportData';
+import { InspectionElementsForReport, InspectionDeviceStatesForReport } from '../../database/types';
 
 type PdfViewerScreenRouteProp = RouteProp<any, 'PdfViewerScreen'>;
 
@@ -27,11 +28,60 @@ const PdfViewerScreen = () => {
 
             const elements = await getInspectionElementsForReport(inspectionId);
 
-            console.log('ELEMENTS', elements);
+            // console.log('ELEMENTS', elements);
 
             const statesPerElement = await getInspectionDeviceStateForReport(inspectionId);
 
-            console.log('STATES PER ELEMENT', statesPerElement);
+            // console.log('STATES PER ELEMENT', statesPerElement);
+
+            type Result = {
+                imageId: string;
+                imageTitle: string;
+                imageDataUri: string;
+                elementPositionId: number;
+                elementValues: {
+                    p: number | null;
+                    k: number | null;
+                    m: number | null;
+                    l: number | null;
+                };
+            };
+
+            const mergeElementsAndStates = (
+                elements: InspectionElementsForReport[],
+                states: InspectionDeviceStatesForReport[],
+            ): Result[] => {
+                return elements.map((el) => {
+                    const relatedStates = states.filter(
+                        (s) => s.inspectionDeviceElementId === el.imageId,
+                    );
+
+                    const maxByGroup = (groupTypeId: number) => {
+                        const values = relatedStates
+                            .filter((s) => s.groupTypeId === groupTypeId)
+                            .map((s) => s.value)
+                            .filter((v): v is number => v !== null);
+                        return values.length ? Math.max(...values) : null;
+                    };
+
+                    return {
+                        imageId: el.imageId,
+                        imageTitle: el.imageTitle,
+                        imageDataUri: el.imageDataUri,
+                        elementPositionId: el.elementPositionId,
+                        elementValues: {
+                            p: maxByGroup(1),
+                            k: maxByGroup(2),
+                            m: maxByGroup(3),
+                            l: maxByGroup(4),
+                        },
+                    };
+                });
+            };
+
+            const elementsWithState = mergeElementsAndStates(elements, statesPerElement);
+
+            console.log('MERGED', elementsWithState);
 
             const report: ReportData = {
                 ...REPORT_DATA,
@@ -77,6 +127,7 @@ const PdfViewerScreen = () => {
                         },
                     ],
                 },
+                elements: elementsWithState,
                 // elements: inspection.elements.map((element) => ({
                 //     imageId: element.id,
                 //     imageTitle: element.name,

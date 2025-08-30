@@ -12,7 +12,7 @@ import {
     DeviceStateComponentsForInspection,
     DeviceStateValueDetails,
     DeviceType,
-    ElementsWithStateSumForReport,
+    InspectionElementsForReport,
     ImageStorage,
     Inspection,
     InspectionAndImageStorage,
@@ -129,17 +129,17 @@ export const getInspectionDeviceStateForReport = async (
 
 export const getInspectionElementsForReport = async (
     inspectionId: string,
-): Promise<ElementsWithStateSumForReport[]> => {
+): Promise<InspectionElementsForReport[]> => {
     const query = `
         SELECT 
-            ide.id as imageId, de.name as imageTitle, s.storagePathS3 as imageDataUri 
+            ide.id as imageId, de.name as imageTitle, s.storagePathS3 as imageDataUri, ide.elementPositionId
         FROM Inspection_DeviceElement ide
             LEFT JOIN DeviceElement de ON de.id = ide.deviceElementId
             LEFT JOIN DeviceElement_Image dei ON dei.deviceElementId = de.id
-            LEFT JOIN ImageStorage s ON s.id = dei.imageId           
+            RIGHT JOIN ImageStorage s ON s.id = dei.imageId
         WHERE ide.inspectionId = '${inspectionId}'`;
 
-    return executeQuery<ElementsWithStateSumForReport>({ query });
+    return executeQuery<InspectionElementsForReport>({ query });
 };
 
 export const getAllInspectionDeviceStates = async (): Promise<InspectionDeviceComponent[]> => {

@@ -449,11 +449,12 @@ export type InspectionQuestionInsert = {
     imageId: string;
 };
 
-export type ElementsWithStateSumForReport = {
+export type InspectionElementsForReport = {
     imageId: string;
     imageTitle: string;
     elementValues: Record<string, number>;
     imageDataUri: string;
+    elementPositionId: number;
 };
 
 export type InspectionDeviceStatesForReport = {
