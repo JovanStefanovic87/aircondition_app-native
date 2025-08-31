@@ -1,3 +1,4 @@
+//src\components\modals\ErrorInformationModal.tsx
 import React from 'react';
 import { Modal, Pressable, View, Text, StyleSheet, Dimensions } from 'react-native';
 import WarningButton from '../buttons/WarningButton';

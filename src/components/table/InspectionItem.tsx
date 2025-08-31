@@ -9,7 +9,7 @@ import PdfButton from '../buttons/PdfButton';
 import EditButton from '../buttons/EditButton';
 import DuplicateButton from '../buttons/DuplicateButton';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { copyInspection, deleteInspection } from '../../../database/dataAccess/Command/sqlCommands';
+import { copyInspection } from '../../../database/dataAccess/Command/sqlCommands';
 import { useInspectionStore } from '../../store/store';
 import DeleteButton from '../buttons/DeleteButton';
 
@@ -18,14 +18,14 @@ type NavScreenNavigationProp = NavigationProp<any, any>;
 interface Props {
     inspection: InspectionUpdate;
     onPress?: (id: string) => void;
+    onDelete?: () => void;
 }
 
-const InspectionItem: React.FC<Props> = ({ inspection, onPress }) => {
+const InspectionItem: React.FC<Props> = ({ inspection, onPress, onDelete }) => {
     const navigation = useNavigation<NavScreenNavigationProp>();
 
     return (
         <View style={styles.inspectionItem}>
-            {/* Dugmići imaju svoje akcije */}
             <View style={styles.actionsContainer}>
                 <View style={styles.actionRow}>
                     <PdfButton
@@ -53,6 +53,7 @@ const InspectionItem: React.FC<Props> = ({ inspection, onPress }) => {
                             }
                         }}
                     />
+
                     <EditButton
                         onPress={() => {
                             useInspectionStore.getState().setInspectionId(inspection.id);
@@ -61,9 +62,10 @@ const InspectionItem: React.FC<Props> = ({ inspection, onPress }) => {
                             });
                         }}
                     />
+
                     <DeleteButton
                         onPress={() => {
-                            deleteInspection(inspection.id);
+                            if (onDelete) onDelete();
                         }}
                     />
                 </View>
@@ -72,14 +74,13 @@ const InspectionItem: React.FC<Props> = ({ inspection, onPress }) => {
                 </View>
             </View>
 
-            {/* Klik na ostatak vodi u edit */}
             <TouchableOpacity style={styles.infoContainer}>
                 <View style={styles.flexContainer}>
                     <TextMain text="Name der Anlage: " isBold={true} />
                     <TextMain text={inspection.facilityName} />
                 </View>
                 <View style={styles.flexContainer}>
-                    <TextMain text="Ausftellungsort: " isBold={true} />
+                    <TextMain text="Ausstellungsort: " isBold={true} />
                     <TextMain text={inspection.location} />
                 </View>
                 <View style={styles.flexContainer}>
@@ -87,7 +88,7 @@ const InspectionItem: React.FC<Props> = ({ inspection, onPress }) => {
                     <TextMain text={inspection.barcode} />
                 </View>
                 <View style={styles.flexContainer}>
-                    <TextMain text="Nummer der Leistungsnachweis : " isBold={true} />
+                    <TextMain text="Nummer der Leistungsnachweis: " isBold={true} />
                     <TextMain text={inspection.contractNumber} />
                 </View>
             </TouchableOpacity>
@@ -111,21 +112,6 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         elevation: 2,
         backgroundColor: customColors.blueLighter,
-    },
-    itemHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 5,
-    },
-    itemTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#000',
-    },
-    itemSubTitle: {
-        fontSize: 16,
-        color: customColors.text,
     },
     flexContainer: {
         flexDirection: 'row',
