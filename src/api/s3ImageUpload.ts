@@ -1,49 +1,55 @@
-import RNFS from 'react-native-fs';
+export const uploadImagesToS3 = async (
+    apiBaseUrl: string,
+    imageUris: string[],
+    inspectionId: string,
+    imageIds: string[],
+) => {
+    try {
+        if (imageUris.length !== imageIds.length) {
+            throw new Error('Number of imageUris must match number of imageIds');
+        }
 
-type ImageRecord = {
-    id: string; // Will be used as the file name
-    path: string; // Full file path from SQLite
+        const formData = new FormData();
+
+        // inspectionId is the same for all files
+        formData.append('inspectionId', inspectionId);
+
+        // Append each file + its imageId
+        imageUris.forEach((imageUri, index) => {
+            const imageId = imageIds[index];
+            const fileName = imageUri.split('/').pop();
+            const fileExtension = fileName?.split('.').pop() || 'jpg';
+
+            const imageFile = {
+                uri: imageUri,
+                name: `${imageId}.${fileExtension}`,
+                type: `image/${fileExtension}`,
+            };
+
+            // Append file
+            formData.append('file', imageFile as any);
+
+            // Append matching imageId
+            formData.append('imageId', imageId);
+        });
+
+        const apiUrl = `${apiBaseUrl}/api/s3/images`;
+
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            body: formData,
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Upload failed with status ${response.status}: ${errorText}`);
+        }
+
+        const result = await response.json();
+        console.log('Upload successful:', result);
+        return result;
+    } catch (error) {
+        console.error('Error during image upload:', error);
+        throw error;
+    }
 };
-
-export async function uploadImagesFromSQLite(records: ImageRecord[]) {
-    const formData = new FormData();
-
-    for (const record of records) {
-        const fileStat = await RNFS.stat(record.path);
-        const fileName = `${record.id}.${getFileExtension(record.path)}`;
-
-        formData.append('file', {
-            uri: 'file://' + fileStat.path,
-            name: fileName,
-            type: getMimeType(fileName),
-        } as any);
-    }
-
-    const response = await fetch('https://your-domain.com/api/upload', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'multipart/form-data',
-        },
-        body: formData,
-    });
-
-    const data = await response.json();
-    console.log(data);
-}
-
-function getFileExtension(path: string): string {
-    return path.split('.').pop() || 'jpg';
-}
-
-function getMimeType(fileName: string): string {
-    const ext = fileName.split('.').pop()?.toLowerCase();
-    switch (ext) {
-        case 'jpg':
-        case 'jpeg':
-            return 'image/jpeg';
-        case 'png':
-            return 'image/png';
-        default:
-            return 'application/octet-stream';
-    }
-}

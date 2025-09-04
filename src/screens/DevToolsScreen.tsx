@@ -30,6 +30,7 @@ import {
 import ErrorInformationModal from '../components/modals/ErrorInformationModal';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { uploadImagesToS3 } from '../api/s3ImageUpload';
 
 type NavScreenNavigationProp = NavigationProp<any, any>;
 
@@ -50,6 +51,18 @@ const DevToolsScreen: React.FC = () => {
             }),
         getQuestionImages: async () => console.log(await getQuestionImages('id')),
         getAllImages: async () => console.log(await getAllImageStorages()),
+        saveImagesToS3: async () => {
+            const images = await getAllImageStorages();
+            //get last two images for testing
+            const imagesToUpload = images.slice(-2);
+            console.log('Uploading images to S3:', imagesToUpload);
+            await uploadImagesToS3(
+                'http://192.168.1.3:3000',
+                imagesToUpload.map((img) => img.storagePath),
+                inspectionId,
+                imagesToUpload.map((img) => img.id),
+            );
+        },
         deviceByGroupType: async () => console.log(await getInspectionDeviceStateByGroupType('')),
         getAllInspections: async () => console.log(await getInspections()),
         getInspectionElements: async () =>
@@ -130,6 +143,12 @@ const DevToolsScreen: React.FC = () => {
                         iconName="database"
                         iconColor="red"
                         onPress={handle.getAllImages}
+                    />
+                    <NavButton
+                        buttonText="Save Images to S3"
+                        iconName="database"
+                        iconColor="red"
+                        onPress={handle.saveImagesToS3}
                     />
                     <NavButton
                         buttonText="Device Elements by Group Type"
