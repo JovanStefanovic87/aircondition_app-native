@@ -1,7 +1,7 @@
 import React from 'react';
 import { customColors } from '../../assets/styles/customStyles';
 import { TouchableOpacity, ViewStyle, StyleProp } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/FontAwesome5';
 
 interface Props {
     isVisible?: boolean;
@@ -31,7 +31,7 @@ const YellowSmiley: React.FC<Props> = ({ isVisible = false, isActive = true, onC
 
     return (
         <TouchableOpacity style={containerStyles} onPress={handlePress}>
-            <Icon name="smile-o" size={50} color={isActive ? 'white' : '#d0d0d0'} />
+            <Icon name="grin-beam" size={50} color={isActive ? 'white' : '#d0d0d0'} />
         </TouchableOpacity>
     );
 };
