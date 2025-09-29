@@ -194,27 +194,28 @@ export type ImageGallery = {
 export type ImageTypesByDbTable =
     | 'Inspection_Image'
     | 'DeviceElement_Image'
-    | 'DeviceState_Title_Group_Image'
+    | 'Inspection_Element_Title_Group_Image'
     | 'Question_Image';
 
 export type DeviceStateByInspection = {
-    id: number;
-    inspectionId: string;
-    deviceStateId: number;
-    inspectionDeviceStateId: string;
-    value: number | null;
-    note: string | null;
-    name: string;
-    groupTypeId: number;
-    titleComponentId: number;
-    elementId: number | null;
-    isUsingNote: boolean;
-    isUsingMeasurementCheckbox: boolean;
-    displayOrder: number;
-    groupTypeName: string;
-    titleComponentName: string;
-    componentElementTitleId: number;
-    placeholder: string;
+    id: number; // DeviceStateComponent
+    inspectionId: string; // DeviceStateComponent
+    deviceStateComponentId: number; // Component_Element_Title
+    inspectionDeviceStateId: string; // Inspection_DeviceState (id)
+    deviceElementId: number; // Component_Element_Title
+    inspectionDeviceElementId: string; // Inspection_DeviceState
+    value: number | null; // Inspection_DeviceState
+    note: string | null; // Inspection_DeviceState
+    name: string; // Inspection_DeviceState
+    groupTypeId: number; // DeviceStateComponent
+    titleComponentId: number; // Component_Element_Title
+    isUsingNote: boolean; // Component_Element_Title
+    isUsingMeasurementCheckbox: boolean; // Component_Element_Title
+    displayOrder: number; // Component_Element_Title
+    groupTypeName: string; // GroupType (name)
+    titleComponentName: string; // TitleComponent (name)
+    componentElementTitleId: number; // Component_Element_Title (id)
+    placeholder: string; // DeviceStateComponent
 };
 
 export type ElementStateByInspection = {
@@ -248,6 +249,12 @@ export type DeviceStateComponentsForInspection = {
     titleComponents: TitleComponent[];
 };
 
+export type DeviceStateElementForInspection = {
+    groupTypeName: string;
+    inspectionDeviceElementId: string;
+    titleComponents: TitleComponent[];
+};
+
 export type TitleComponent = {
     name: string;
     deviceStateComponents: DeviceStateComponent[];
@@ -264,10 +271,22 @@ export type DeviceElementImageInsert = {
 };
 
 export type DeviceStateImageInsert = {
+    inspectionDeviceElementId: string;
     titleComponentId: number;
     groupTypeId: number;
     imageId: string;
-    deviceElementId?: number | null;
+};
+
+export type InspectionTitleGroupImageInsert = {
+    inspectionId: string;
+    titleComponentId: number;
+    groupTypeId: number;
+    imageId: string;
+};
+
+export type InspectionDeviceElementImageInsert = {
+    inspectionDeviceElementId: string;
+    imageId: string;
 };
 
 export type DeviceElementStateImageInsert = {

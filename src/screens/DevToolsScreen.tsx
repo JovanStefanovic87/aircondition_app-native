@@ -11,7 +11,7 @@ import {
     getAllInspectionQuestions,
     getAllQuestions,
     getQuestionGroups,
-    getQuestionImages,
+    getInspectionQuestionImages,
     getAllUsers,
     getInspectionDeviceElements,
     getInspections,
@@ -49,7 +49,7 @@ const DevToolsScreen: React.FC = () => {
                 name: 'test',
                 storagePath: 'file://example.jpg',
             }),
-        getQuestionImages: async () => console.log(await getQuestionImages('id')),
+        getQuestionImages: async () => console.log(await getInspectionQuestionImages('id')),
         getAllImages: async () => console.log(await getAllImageStorages()),
         saveImagesToS3: async () => {
             const images = await getAllImageStorages();
@@ -57,7 +57,6 @@ const DevToolsScreen: React.FC = () => {
             const imagesToUpload = images.slice(-2);
             console.log('Uploading images to S3:', imagesToUpload);
             await uploadImagesToS3(
-                'http://192.168.1.3:3000',
                 imagesToUpload.map((img) => img.storagePath),
                 inspectionId,
                 imagesToUpload.map((img) => img.id),

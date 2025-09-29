@@ -3,18 +3,19 @@ import { deleteFile } from '../../../src/helpers/universalFunctions';
 
 import {
     ClientUpdate,
-    DeviceElementImageInsert,
     DeviceElementSortUpdate,
     DeviceStateImageInsert,
     ImageStorage,
     ImageStorageInsert,
     InspectionDeviceComponent,
+    InspectionDeviceElementImageInsert,
     InspectionDeviceElementUpdate,
     InspectionDeviceStateUpdate,
     InspectionImageInsert,
     InspectionQuestion,
     InspectionQuestionInsert,
     InspectionQuestionUpdate,
+    InspectionTitleGroupImageInsert,
     InspectionUpdate,
     QuestionComponent,
 } from '../../types';
@@ -36,7 +37,9 @@ import {
     getInspectionDeviceElements,
     getInspectionDeviceElementsBase,
     getInspectionDeviceStateByDeviceElements,
+    getInspectionImages,
     getQuestionComponents,
+    getInspectionQuestionImages,
 } from '../Query/sqlQueries';
 
 /**
@@ -154,30 +157,84 @@ export const saveInspectionImage = async (
 };
 
 /**
- * saveDeviceStateImage - Function that saves an images of device state in steps 2 and 4
+ * saveInspectionElementTitleGroupImage - Function that saves an images of element title group in STEP 4
  * @param titleId - TitleComponent table
  * @param groupTypeId - Physical, Constructive, Microbiological, Air germ measurement
  * @param record - Insert into ImageStorage table
  * @param deviceElementId - DeviceElement table
  */
-export const saveDeviceStateImage = async (
+export const saveInspectionElementTitleGroupImage = async (
+    inspectionDeviceElementId: string,
     titleId: number,
     groupTypeId: number,
     record: ImageStorageInsert,
-    deviceElementId?: number,
 ): Promise<void> => {
     const imageId = await executeInsertWithGuid<ImageStorage>('ImageStorage', record);
 
     if (!imageId) throw new Error('Error inserting image');
 
     const imageRecord: DeviceStateImageInsert = {
+        inspectionDeviceElementId: inspectionDeviceElementId,
         titleComponentId: titleId,
         groupTypeId: groupTypeId,
-        deviceElementId: deviceElementId || null,
         imageId: imageId,
     };
 
-    await executeInsert<DeviceStateImageInsert>('DeviceState_Title_Group_Image', imageRecord);
+    await executeInsert<DeviceStateImageInsert>(
+        'Inspection_Element_Title_Group_Image',
+        imageRecord,
+    );
+};
+
+/**
+ * saveDeviceStateImage - Function that saves an images of device state in STEP 2
+ * @param inspectionId - Id of inspection
+ * @param titleId - TitleComponent table
+ * @param groupTypeId - Physical, Constructive, Microbiological, Air germ measurement
+ * @param record - Insert into ImageStorage table
+ */
+export const saveInspectionTitleGroupImage = async (
+    inspectionId: string,
+    titleId: number,
+    groupTypeId: number,
+    record: ImageStorageInsert,
+): Promise<void> => {
+    const imageId = await executeInsertWithGuid<ImageStorage>('ImageStorage', record);
+
+    if (!imageId) throw new Error('Error inserting image');
+
+    const imageRecord: InspectionTitleGroupImageInsert = {
+        inspectionId: inspectionId,
+        titleComponentId: titleId,
+        groupTypeId: groupTypeId,
+        imageId: imageId,
+    };
+
+    await executeInsert<InspectionTitleGroupImageInsert>(
+        'Inspection_Title_Group_Image',
+        imageRecord,
+    );
+};
+
+/**
+ * saveDeviceElementImage - Function that saves an images elements that are displayed in Step 3 - NOTE: UI feature not implemented yet
+ * @param deviceElementId - DeviceElement table
+ * @param record - Insert into ImageStorage table
+ */
+export const saveDeviceElementImage = async (
+    inspectionDeviceElementId: string,
+    record: ImageStorageInsert,
+): Promise<void> => {
+    const imageId = await executeInsertWithGuid<ImageStorage>('ImageStorage', record);
+
+    if (!imageId) throw new Error('Error inserting image');
+
+    const imageRecord: InspectionDeviceElementImageInsert = {
+        inspectionDeviceElementId: inspectionDeviceElementId,
+        imageId: imageId,
+    };
+
+    await executeInsert<InspectionDeviceElementImageInsert>('DeviceElement_Image', imageRecord);
 };
 
 /**
@@ -185,20 +242,23 @@ export const saveDeviceStateImage = async (
  * @param deviceElementId - DeviceElement table
  * @param record - Insert into ImageStorage table
  */
-export const saveDeviceElementImage = async (
-    deviceElementId: number,
+export const saveInspectionDeviceElementImage = async (
+    inspectionDeviceElementId: string,
     record: ImageStorageInsert,
 ): Promise<void> => {
     const imageId = await executeInsertWithGuid<ImageStorage>('ImageStorage', record);
 
     if (!imageId) throw new Error('Error inserting image');
 
-    const imageRecord: DeviceElementImageInsert = {
-        deviceElementId: deviceElementId,
+    const imageRecord: InspectionDeviceElementImageInsert = {
+        inspectionDeviceElementId: inspectionDeviceElementId,
         imageId: imageId,
     };
 
-    await executeInsert<DeviceStateImageInsert>('DeviceElement_Image', imageRecord);
+    await executeInsert<InspectionDeviceElementImageInsert>(
+        'Inspection_Element_Image',
+        imageRecord,
+    );
 };
 
 /**
@@ -364,7 +424,7 @@ export const deleteInspectionImage = async (imageId: string): Promise<void> => {
  * @param imageId - ImageStorage table
  */
 export const deleteDeviceStateImage = async (imageId: string): Promise<void> => {
-    await deleteImage(imageId, 'DeviceState_Title_Group_Image');
+    await deleteImage(imageId, 'Inspection_Element_Title_Group_Image');
 };
 
 /**
@@ -373,6 +433,30 @@ export const deleteDeviceStateImage = async (imageId: string): Promise<void> => 
  */
 export const deleteDeviceElementImage = async (imageId: string): Promise<void> => {
     await deleteImage(imageId, 'DeviceElement_Image');
+};
+
+/**
+ * uploadImagesToS3 - Function that uploads images to S3 and returns the response from the server
+ * @param imageUris - Array of image URIs to be uploaded
+ * @param inspectionId - The ID of the inspection
+ * @param imageIds - Array of image IDs corresponding to the image URIs
+ * @returns The response from the server after uploading the images
+ */
+export const uploadAllInspectionImagesToS3 = async (inspectionId: string): Promise<any> => {
+    try {
+        const allImageIds: string[] = [];
+        const inspectionImages = await getInspectionImages(inspectionId);
+        inspectionImages.forEach((img) => {
+            allImageIds.push(img.id);
+        });
+        const inspectionQuestionImages = await getInspectionQuestionImages(inspectionId);
+        inspectionQuestionImages.forEach((img) => {
+            allImageIds.push(img.id);
+        });
+    } catch (error) {
+        console.error('Error during image upload:', error);
+        throw error;
+    }
 };
 
 /**

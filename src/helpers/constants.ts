@@ -24,6 +24,6 @@ export const INSPECTION_TYPES = {
 export const IMAGE_TYPES: Record<ImageTypesByDbTable, string> = {
     Inspection_Image: 'Inspection_Image',
     DeviceElement_Image: 'DeviceElement_Image',
-    DeviceState_Title_Group_Image: 'DeviceState_Title_Group_Image',
+    Inspection_Element_Title_Group_Image: 'Inspection_Element_Title_Group_Image',
     Question_Image: 'Question_Image',
 };

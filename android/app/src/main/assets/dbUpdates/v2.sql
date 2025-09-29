@@ -33,18 +33,6 @@ CREATE TABLE IF NOT EXISTS TitleComponent (
   isUsingImage BOOL DEFAULT false
 );
 
-CREATE TABLE IF NOT EXISTS DeviceState_Title_Group_Image (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  groupTypeId INTEGER NOT NULL,
-  deviceElementId INTEGER,
-  titleComponentId INTEGER NOT NULL,
-  imageId TEXT NOT NULL,
-  FOREIGN KEY (groupTypeId) REFERENCES GroupType(id),
-  FOREIGN KEY (deviceElementId) REFERENCES DeviceElement(id),
-  FOREIGN KEY (titleComponentId) REFERENCES TitleComponent(id),
-  FOREIGN KEY (imageId) REFERENCES ImageStorage(id)
-);
-
 
 CREATE TABLE IF NOT EXISTS GroupType (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -166,6 +154,40 @@ CREATE TABLE IF NOT EXISTS DeviceElement_Image (
   deviceElementId INTEGER NOT NULL,
   imageId TEXT NOT NULL,
   FOREIGN KEY (deviceElementId) REFERENCES DeviceElement(id),
+  FOREIGN KEY (imageId) REFERENCES ImageStorage(id)
+);
+
+
+-- Description: Images under title(ex."ANLAGE") and group(ex."PHYSIKALISCH") per inspection and device element -- Step 4
+CREATE TABLE IF NOT EXISTS Inspection_Element_Title_Group_Image (
+  id TEXT PRIMARY KEY,
+  inspectionDeviceElementId TEXT NOT NULL,
+  titleComponentId INTEGER NOT NULL,
+  groupTypeId INTEGER NOT NULL,
+  imageId TEXT NOT NULL,
+  FOREIGN KEY (inspectionDeviceElementId) REFERENCES Inspection_DeviceElement(id),
+  FOREIGN KEY (titleComponentId) REFERENCES TitleComponent(id),
+  FOREIGN KEY (groupTypeId) REFERENCES GroupType(id)
+);
+
+-- Description: Images under title(ex."ANLAGE") and group(ex."PHYSIKALISCH") per inspection -- Step 2
+CREATE TABLE IF NOT EXISTS Inspection_Title_Group_Image (
+  id TEXT PRIMARY KEY,
+  inspectionId TEXT NOT NULL,
+  titleComponentId INTEGER NOT NULL,
+  groupTypeId INTEGER NOT NULL,
+  imageId TEXT NOT NULL,
+  FOREIGN KEY (inspectionId) REFERENCES Inspection(id),
+  FOREIGN KEY (titleComponentId) REFERENCES TitleComponent(id),
+  FOREIGN KEY (groupTypeId) REFERENCES GroupType(id)
+);
+
+
+CREATE TABLE IF NOT EXISTS Inspection_Element_Image (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  inspectionDeviceElementId TEXT NOT NULL,
+  imageId TEXT NOT NULL,
+  FOREIGN KEY (inspectionDeviceElementId) REFERENCES Inspection_DeviceElement(id),
   FOREIGN KEY (imageId) REFERENCES ImageStorage(id)
 );
 
