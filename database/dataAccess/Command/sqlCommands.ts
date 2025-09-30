@@ -1,3 +1,4 @@
+import { uploadImagesToS3 } from '../../../src/api/s3ImageUpload';
 import { INSPECTION_TYPES } from '../../../src/helpers/constants';
 import { deleteFile } from '../../../src/helpers/universalFunctions';
 
@@ -18,6 +19,7 @@ import {
     InspectionTitleGroupImageInsert,
     InspectionUpdate,
     QuestionComponent,
+    UploadResponse,
 } from '../../types';
 import {
     executeDeleteByConditions,
@@ -40,6 +42,7 @@ import {
     getInspectionImages,
     getQuestionComponents,
     getInspectionQuestionImages,
+    getAllInspectionImages,
 } from '../Query/sqlQueries';
 
 /**
@@ -283,6 +286,49 @@ export const saveQuestionImage = async (
         'InspectionQuestion_Image',
         inspectionQuestionImageRecord,
     );
+};
+
+/**
+ * syncInspectionImagesToS3 - Function that syncs inspection images to S3 through AC Inspector Admin API
+ * @param inspectionId - The ID of the inspection
+ */
+export const syncInspectionImagesToS3 = async (inspectionId: string) => {
+    try {
+        const images = await getAllInspectionImages(inspectionId);
+
+        if (!images || images.length === 0) {
+            console.log(`No images found for inspectionId ${inspectionId}`);
+            return;
+        }
+
+        const imageUris = images.map((img) => img.storagePath);
+        const imageIds = images.map((img) => img.id);
+
+        const result = await uploadImagesToS3(imageUris, inspectionId, imageIds);
+
+        await updateImageStorageWithS3(result);
+
+        console.log('All images uploaded successfully:', result);
+    } catch (error) {
+        console.error('Error syncing images to S3:', error);
+        throw error;
+    }
+};
+
+export const updateImageStorageWithS3 = async (responses: UploadResponse[]): Promise<void> => {
+    const records = responses
+        .filter((r) => r.success)
+        .map((r) => {
+            const imageId = r.fileName.replace(/\.[^/.]+$/, '');
+            return {
+                id: imageId,
+                storagePathS3: r.s3Key,
+            };
+        });
+
+    if (records.length > 0) {
+        await executeUpdateArray('ImageStorage', records);
+    }
 };
 
 /**

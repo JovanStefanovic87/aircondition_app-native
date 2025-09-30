@@ -27,6 +27,7 @@ import {
     saveDeviceElementsSortOrder,
     saveInspectionDeviceElement,
     saveQuestionImage,
+    syncInspectionImagesToS3,
 } from '../../database/dataAccess/Command/sqlCommands';
 import ErrorInformationModal from '../components/modals/ErrorInformationModal';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -54,15 +55,8 @@ const DevToolsScreen: React.FC = () => {
         getAllImages: async () => console.log(await getAllImageStorages()),
         getAllInspectionImages: async () => console.log(await getAllInspectionImages(inspectionId)),
         saveImagesToS3: async () => {
-            const images = await getAllImageStorages();
-            //get last two images for testing
-            const imagesToUpload = images.slice(-2);
-            console.log('Uploading images to S3:', imagesToUpload);
-            await uploadImagesToS3(
-                imagesToUpload.map((img) => img.storagePath),
-                inspectionId,
-                imagesToUpload.map((img) => img.id),
-            );
+            const images = await syncInspectionImagesToS3(inspectionId);
+            console.log('Images uploaded to S3:', images);
         },
         deviceByGroupType: async () => console.log(await getInspectionDeviceStateByGroupType('')),
         getAllInspections: async () => console.log(await getInspections()),

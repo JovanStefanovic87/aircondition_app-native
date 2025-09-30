@@ -315,6 +315,12 @@ export type InspectionAndImageStorage = {
     storagePath: string;
 };
 
+export type UploadResponse = {
+    fileName: string;
+    s3Key: string;
+    success: boolean;
+};
+
 export type DeviceElement = {
     id: number;
     name: string;
