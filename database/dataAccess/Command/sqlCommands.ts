@@ -239,7 +239,7 @@ export const saveDeviceElementImage = async (
 
 /**
  * saveDeviceElementImage - Function that saves an images of general state for device element in step 4
- * @param deviceElementId - DeviceElement table
+ * @param InspectionDeviceElementId - Inspection_DeviceElement table
  * @param record - Insert into ImageStorage table
  */
 export const saveInspectionDeviceElementImage = async (
