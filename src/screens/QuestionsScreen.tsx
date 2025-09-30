@@ -268,7 +268,7 @@ const QuestionsScreen = () => {
         try {
             const record = {
                 storagePath: path,
-                name: 'Device Image',
+                name: 'InspectionQuestion_Image',
             };
             await saveQuestionImage(questionId, record);
             console.log('Image saved successfully');

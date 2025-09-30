@@ -519,6 +519,50 @@ export const getInspectionQuestionImages = async (
     return executeQuery<ImageStorage>({ query });
 };
 
+export const getAllInspectionImages = async (inspectionId: string): Promise<ImageStorage[]> => {
+    const query = `
+    SELECT DISTINCT i.*
+    FROM ImageStorage i
+    
+    -- Direct inspection images
+    LEFT JOIN Inspection_Image ii
+      ON ii.imageId = i.id AND ii.inspectionId = '${inspectionId}'
+    
+    -- Title/group images per inspection
+    LEFT JOIN Inspection_Title_Group_Image itgi
+      ON itgi.imageId = i.id AND itgi.inspectionId = '${inspectionId}'
+    
+    -- Element images through inspectionDeviceElement
+    LEFT JOIN Inspection_Element_Image iei
+      ON iei.imageId = i.id
+    LEFT JOIN Inspection_DeviceElement ide
+      ON ide.id = iei.inspectionDeviceElementId
+      AND ide.inspectionId = '${inspectionId}'
+    
+    -- Title/group images per element
+    LEFT JOIN Inspection_Element_Title_Group_Image ietgi
+      ON ietgi.imageId = i.id
+    LEFT JOIN Inspection_DeviceElement ide2
+      ON ide2.id = ietgi.inspectionDeviceElementId
+      AND ide2.inspectionId = '${inspectionId}'
+    
+    -- Question images
+    LEFT JOIN InspectionQuestion_Image iqi
+      ON iqi.imageId = i.id
+    LEFT JOIN Inspection_Question iq
+      ON iq.id = iqi.inspectionQuestionId
+      AND iq.inspectionId = '${inspectionId}'
+    
+    WHERE ii.inspectionId IS NOT NULL
+       OR itgi.inspectionId IS NOT NULL
+       OR ide.inspectionId IS NOT NULL
+       OR ide2.inspectionId IS NOT NULL
+       OR iq.inspectionId IS NOT NULL
+  `;
+
+    return executeQuery<ImageStorage>({ query });
+};
+
 /**
  * getDeviceElementStateImages - Function that retrieves images for general state of device elements
  * @param deviceElementId - DeviceElement table

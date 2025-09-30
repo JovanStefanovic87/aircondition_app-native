@@ -32,9 +32,7 @@ import {
 } from '../../database/types';
 import InspectionDeviceElementsMerged from '../components/image/InspectionDeviceElementsMerged';
 import {
-    saveDeviceElementImage,
     saveInspectionElementTitleGroupImage,
-    saveInspectionDeviceElementImage,
     saveInspectionDeviceState,
 } from '../../database/dataAccess/Command/sqlCommands';
 import { customColors } from '../assets/styles/customStyles';
@@ -374,7 +372,7 @@ const ElementsStateScreen: React.FC = () => {
         try {
             const record = {
                 storagePath: path,
-                name: 'Device Image',
+                name: 'Inspection_Element_Title_Group_Image',
             };
 
             // Save the image record with the updated API

@@ -16,6 +16,7 @@ import {
     getInspectionDeviceElements,
     getInspections,
     getInspectionElementStateDetails,
+    getAllInspectionImages,
 } from '../../database/dataAccess/Query/sqlQueries';
 import { deleteAllTables } from '../../database/dataAccess/Helper/helpers';
 import { getStoredUser } from '../../database/dataAccess/Helper/auth';
@@ -39,7 +40,7 @@ const DevToolsScreen: React.FC = () => {
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const navigation = useNavigation<NavScreenNavigationProp>();
 
-    const inspectionId = '24650ea7-2720-4ed3-b399-267d92b2f074';
+    const inspectionId = '97cb9d34-c148-4a33-ac22-f66e9ed7b9e2';
 
     const handle = {
         deleteAllTables: async () => await deleteAllTables(setErrorMessage, setErrorModalVisible),
@@ -51,6 +52,7 @@ const DevToolsScreen: React.FC = () => {
             }),
         getQuestionImages: async () => console.log(await getInspectionQuestionImages('id')),
         getAllImages: async () => console.log(await getAllImageStorages()),
+        getAllInspectionImages: async () => console.log(await getAllInspectionImages(inspectionId)),
         saveImagesToS3: async () => {
             const images = await getAllImageStorages();
             //get last two images for testing
@@ -142,6 +144,12 @@ const DevToolsScreen: React.FC = () => {
                         iconName="database"
                         iconColor="red"
                         onPress={handle.getAllImages}
+                    />
+                    <NavButton
+                        buttonText="Get All Inspection Images"
+                        iconName="database"
+                        iconColor="red"
+                        onPress={handle.getAllInspectionImages}
                     />
                     <NavButton
                         buttonText="Save Images to S3"

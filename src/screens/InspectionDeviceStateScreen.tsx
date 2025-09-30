@@ -18,7 +18,6 @@ import {
     getInspectionTitleGroupImages,
 } from '../../database/dataAccess/Query/sqlQueries';
 import {
-    saveInspectionElementTitleGroupImage,
     saveInspectionDeviceState,
     saveInspectionImage,
     saveInspectionTitleGroupImage,
@@ -226,7 +225,7 @@ const InspectionDeviceStateScreen = () => {
 
     const handleSaveInspectionImage = (imagePath: string) => {
         saveInspectionImage(inspection.id, {
-            name: 'Inspection Device pictures',
+            name: 'Inspection_Image',
             storagePath: imagePath,
         });
     };
@@ -238,7 +237,7 @@ const InspectionDeviceStateScreen = () => {
                 imageSaveParams.titleId,
                 imageSaveParams.groupTypeId,
                 {
-                    name: 'Device pictures',
+                    name: 'Inspection_Title_Group_Image',
                     storagePath: imagePath,
                 },
             );
