@@ -32,6 +32,7 @@ import {
     TitleComponent,
     TypedQuestionGroupForUI,
     User,
+    DeviceStateElementForInspection,
 } from '../../types';
 import { executeQuery, executeQuerySimple, executeQuerySingle } from './baseQuery';
 import { inspectionTypeLookup } from '../../constants';
@@ -185,7 +186,8 @@ export const getInspectionDeviceStateByGroupType = async (
         SELECT
             dsc.id, ids.inspectionId, cet.deviceStateComponentId as deviceStateId, ids.id as inspectionDeviceStateId,
             ids.value, ids.note, dsc.name, dsc.groupTypeId, gt.name as groupTypeName, cet.titleComponentId, cet.isUsingNote, 
-            cet.displayOrder,  tc.name as titleComponentName, cet.id as componentElementTitleId, dsc.placeholder, cet.isUsingMeasurementCheckbox
+            cet.displayOrder,  tc.name as titleComponentName, cet.id as componentElementTitleId, dsc.placeholder, 
+            cet.isUsingMeasurementCheckbox
             
             FROM Component_Element_Title cet
             
@@ -312,17 +314,16 @@ export const getInspectionElementStateByGroupType = async (
 ): Promise<DeviceStateByInspection[]> => {
     const query = `
         SELECT
-            dsc.id, ids.inspectionId, cet.deviceStateComponentId as deviceStateId, ids.id as inspectionDeviceStateId, cet.deviceElementId,
-            ids.value, ids.note, dsc.name, dsc.groupTypeId, gt.name as groupTypeName, cet.titleComponentId, cet.isUsingNote, 
+            dsc.id, ids.inspectionId, cet.deviceStateComponentId, ids.id as inspectionDeviceStateId, cet.deviceElementId, 
+            ids.inspectionDeviceElementId, ids.value, ids.note, dsc.name, dsc.groupTypeId, cet.titleComponentId, gt.name as groupTypeName, cet.isUsingNote, 
             cet.displayOrder,  tc.name as titleComponentName, cet.id as componentElementTitleId, dsc.placeholder, cet.isUsingMeasurementCheckbox
             
             FROM Component_Element_Title cet
             
-            LEFT JOIN DeviceStateComponent dsc ON dsc.id = cet.deviceStateComponentId
-            LEFT JOIN GroupType gt ON gt.id=dsc.groupTypeId
-            LEFT JOIN TitleComponent tc ON tc.id = cet.titleComponentId
-            LEFT JOIN Inspection_DeviceState ids ON ids.componentElementTitleId = cet.id
-        
+                LEFT JOIN DeviceStateComponent dsc ON dsc.id = cet.deviceStateComponentId
+                LEFT JOIN GroupType gt ON gt.id=dsc.groupTypeId
+                LEFT JOIN TitleComponent tc ON tc.id = cet.titleComponentId
+                LEFT JOIN Inspection_DeviceState ids ON ids.componentElementTitleId = cet.id       
         WHERE 
             ids.inspectionId='${inspectionId}' AND dsc.stateTypeId = ${STATE_TYPES.DEVICE_ELEMENT} AND ids.inspectionDeviceElementId = '${inspectionElementId}'
         ORDER BY displayOrder
@@ -333,7 +334,7 @@ export const getInspectionElementStateByGroupType = async (
 export const getInspectionElementStateDetails = async (
     inspectionId: string,
     inspectionElementId: string,
-): Promise<DeviceStateComponentsForInspection[]> => {
+): Promise<DeviceStateElementForInspection[]> => {
     const inspectionDeviceStateByGroupType = await getInspectionElementStateByGroupType(
         inspectionId,
         inspectionElementId,
@@ -344,7 +345,7 @@ export const getInspectionElementStateDetails = async (
     const uniqueGroupTypeNames = [
         ...new Set(inspectionDeviceStateByGroupType.map((item) => item.groupTypeName)),
     ];
-    const finalResult: DeviceStateComponentsForInspection[] = [];
+    const finalResult: DeviceStateElementForInspection[] = [];
 
     for (const groupTypeName of uniqueGroupTypeNames) {
         const groupTypeItems = inspectionDeviceStateByGroupType.filter(
@@ -385,7 +386,12 @@ export const getInspectionElementStateDetails = async (
             titleComponents.push(titleComponent);
         }
 
-        finalResult.push({ groupTypeName, titleComponents });
+        finalResult.push({
+            groupTypeName,
+            titleComponents,
+            inspectionDeviceElementId:
+                inspectionDeviceStateByGroupType[0].inspectionDeviceElementId,
+        });
     }
 
     return finalResult;
@@ -459,21 +465,53 @@ export const getInspectionImages = async (inspectionId: string): Promise<ImageSt
     return executeQuery<ImageStorage>({ query });
 };
 
-export const getDeviceStateImages = async (
+export const getInspectionTitleGroupImages = async (
+    inspectionId: string,
     titleId: number,
-    groupTypeId: number,
-    elementId?: number,
+    groupId: number,
 ): Promise<ImageStorage[]> => {
     const query = `
-        SELECT s.* FROM DeviceState_Title_Group_Image g
+        SELECT s.* FROM Inspection_Title_Group_Image g
         LEFT JOIN ImageStorage s ON s.id = g.imageId
-        WHERE g.titleComponentId = ${titleId} AND g.groupTypeId = ${groupTypeId} AND g.deviceElementId ${
-        elementId ? '=' + elementId : 'IS NULL'
-    }`;
+        WHERE 
+            g.inspectionId = '${inspectionId}' and
+            g.titleComponentId = ${titleId} and
+            g.groupTypeId = ${groupId}
+    `;
     return executeQuery<ImageStorage>({ query });
 };
 
-export const getQuestionImages = async (inspectionQuestionId: string): Promise<ImageStorage[]> => {
+export const getInspectionElementTitleGroupImages = async (
+    inspectionDeviceElementId: string,
+    titleId: number,
+    groupId: number,
+): Promise<ImageStorage[]> => {
+    const query = `
+        SELECT s.* FROM Inspection_Element_Title_Group_Image g
+        LEFT JOIN ImageStorage s ON s.id = g.imageId
+        WHERE 
+            g.inspectionDeviceElementId = '${inspectionDeviceElementId}' and
+            g.titleComponentId = ${titleId} and
+            g.groupTypeId = ${groupId}
+    `;
+    return executeQuery<ImageStorage>({ query });
+};
+
+export const getInspectionElementImages = async (
+    inspectionDeviceElementId: string,
+): Promise<ImageStorage[]> => {
+    const query = `
+        SELECT s.* FROM Inspection_Element_Image g
+        LEFT JOIN ImageStorage s ON s.id = g.imageId
+        WHERE 
+            g.inspectionDeviceElementId = '${inspectionDeviceElementId}'
+    `;
+    return executeQuery<ImageStorage>({ query });
+};
+
+export const getInspectionQuestionImages = async (
+    inspectionQuestionId: string,
+): Promise<ImageStorage[]> => {
     const query = `
         SELECT s.* FROM InspectionQuestion_Image ii
         LEFT JOIN ImageStorage s ON s.id = ii.imageId

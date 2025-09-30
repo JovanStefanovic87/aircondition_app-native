@@ -15,12 +15,13 @@ import {
     getInspectionDeviceStateDetails,
     getInspectionById,
     getInspectionImages,
-    getDeviceStateImages,
+    getInspectionTitleGroupImages,
 } from '../../database/dataAccess/Query/sqlQueries';
 import {
-    saveDeviceStateImage,
+    saveInspectionElementTitleGroupImage,
     saveInspectionDeviceState,
     saveInspectionImage,
+    saveInspectionTitleGroupImage,
 } from '../../database/dataAccess/Command/sqlCommands';
 import { saveInspection } from '../../database/dataAccess/Command/sqlCommands';
 import { MediaType, CameraOptions, launchImageLibrary } from 'react-native-image-picker';
@@ -177,12 +178,16 @@ const InspectionDeviceStateScreen = () => {
         const galleryTitle = `${group.groupTypeName} - ${title.name}`;
         setGalleryTitle(galleryTitle);
 
-        const deviceImages = await getDeviceStateImages(titleId, groupTypeId);
+        const deviceImages = await getInspectionTitleGroupImages(
+            inspection.id,
+            titleId,
+            groupTypeId,
+        );
         if (deviceImages && deviceImages.length > 0) {
             const images = deviceImages.map((image) => ({
                 imageId: image.id,
                 imagePath: image.storagePath,
-                imageType: IMAGE_TYPES.DeviceState_Title_Group_Image as ImageTypesByDbTable,
+                imageType: IMAGE_TYPES.Inspection_Element_Title_Group_Image as ImageTypesByDbTable,
             }));
             setGalleryImages(images);
             setGalleryVisible(true);
@@ -220,7 +225,7 @@ const InspectionDeviceStateScreen = () => {
     };
 
     const handleSaveInspectionImage = (imagePath: string) => {
-        saveInspectionImage(newInspectionId, {
+        saveInspectionImage(inspection.id, {
             name: 'Inspection Device pictures',
             storagePath: imagePath,
         });
@@ -228,10 +233,15 @@ const InspectionDeviceStateScreen = () => {
 
     const handleSaveDeviceStateImage = (imagePath: string) => {
         imageSaveParams &&
-            saveDeviceStateImage(imageSaveParams.titleId, imageSaveParams.groupTypeId, {
-                name: 'Device pictures',
-                storagePath: imagePath,
-            });
+            saveInspectionTitleGroupImage(
+                inspection.id,
+                imageSaveParams.titleId,
+                imageSaveParams.groupTypeId,
+                {
+                    name: 'Device pictures',
+                    storagePath: imagePath,
+                },
+            );
     };
 
     const handleCameraToggleForDeviceState = (title: TitleComponent) => {

@@ -1,10 +1,16 @@
+import { getAdminApiUrl } from './helpers/functions';
+
 export const uploadImagesToS3 = async (
-    apiBaseUrl: string,
     imageUris: string[],
     inspectionId: string,
     imageIds: string[],
 ) => {
     try {
+        const adminApiUrl = getAdminApiUrl();
+        if (!adminApiUrl) {
+            throw new Error('Admin API URL is not defined');
+        }
+
         if (imageUris.length !== imageIds.length) {
             throw new Error('Number of imageUris must match number of imageIds');
         }
@@ -33,7 +39,7 @@ export const uploadImagesToS3 = async (
             formData.append('imageId', imageId);
         });
 
-        const apiUrl = `${apiBaseUrl}/api/s3/images`;
+        const apiUrl = `${adminApiUrl}/api/s3/images`;
 
         const response = await fetch(apiUrl, {
             method: 'POST',

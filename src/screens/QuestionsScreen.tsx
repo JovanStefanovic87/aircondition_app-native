@@ -13,9 +13,8 @@ import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { customColors } from '../assets/styles/customStyles';
 import { useInspectionStore } from '../store/store';
 import {
-    getDeviceStateImages,
     getInspectionQuestions,
-    getQuestionImages,
+    getInspectionQuestionImages,
 } from '../../database/dataAccess/Query/sqlQueries';
 import {
     saveInspectionQuestion,
@@ -65,7 +64,7 @@ const QuestionsScreen = () => {
 
     const onPressGallery = async (questionId: string) => {
         try {
-            const images = await getQuestionImages(questionId);
+            const images = await getInspectionQuestionImages(questionId);
             setGalleryImages(
                 images.map((img) => ({
                     imageId: img.id,
@@ -247,17 +246,14 @@ const QuestionsScreen = () => {
         setGalleryTitle(galleryTitle);
 
         if (selectedElementId) {
-            const deviceImages = await getDeviceStateImages(
-                titleId,
-                groupTypeId,
-                parseInt(selectedElementId),
-            );
+            const deviceImages = await getInspectionQuestionImages(selectedElementId);
             if (deviceImages && deviceImages.length > 0) {
                 setGalleryImages(
                     deviceImages.map((image) => ({
                         imageId: image.id,
                         imagePath: image.storagePath,
-                        imageType: IMAGE_TYPES.DeviceState_Title_Group_Image as ImageTypesByDbTable,
+                        imageType:
+                            IMAGE_TYPES.Inspection_Element_Title_Group_Image as ImageTypesByDbTable,
                     })),
                 );
 

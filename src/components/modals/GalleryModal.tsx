@@ -106,7 +106,7 @@ const GalleryModal: React.FC<Props> = ({ visible, images, onClose, title, setGal
                 case IMAGE_TYPES.DeviceElement_Image:
                     await deleteDeviceElementImage(selectedImage.imageId);
                     break;
-                case IMAGE_TYPES.DeviceState_Title_Group_Image:
+                case IMAGE_TYPES.Inspection_Element_Title_Group_Image:
                     await deleteDeviceStateImage(selectedImage.imageId);
                     break;
                 default:

@@ -15,13 +15,14 @@ import {
 import {
     getInspectionDeviceElements,
     getInspectionElementStateDetails,
-    getDeviceStateImages,
     getDeviceElementCompletionState,
     getInspectionType,
+    getInspectionElementTitleGroupImages,
 } from '../../database/dataAccess/Query/sqlQueries';
 import {
     DeviceElementCompletionState,
     DeviceStateComponentsForInspection,
+    DeviceStateElementForInspection,
     ImageDeviceStateSave,
     ImageGallery,
     ImageTypesByDbTable,
@@ -31,7 +32,9 @@ import {
 } from '../../database/types';
 import InspectionDeviceElementsMerged from '../components/image/InspectionDeviceElementsMerged';
 import {
-    saveDeviceStateImage,
+    saveDeviceElementImage,
+    saveInspectionElementTitleGroupImage,
+    saveInspectionDeviceElementImage,
     saveInspectionDeviceState,
 } from '../../database/dataAccess/Command/sqlCommands';
 import { customColors } from '../assets/styles/customStyles';
@@ -61,7 +64,7 @@ const ElementsStateScreen: React.FC = () => {
     const navigation = useNavigation<NavScreenNavigationProp>();
     const inspectionId = useInspectionStore((state) => state.inspectionId);
     const [inspectionDeviceStateDetails, setInspectionDeviceStateDetails] = useState<
-        DeviceStateComponentsForInspection[]
+        DeviceStateElementForInspection[]
     >([]);
     const [isCameraVisible, setCameraVisible] = useState(false);
     const [errorModalVisible, setErrorModalVisible] = useState(false);
@@ -129,7 +132,7 @@ const ElementsStateScreen: React.FC = () => {
     const saveDeviceStateAndUpdateInspection = (deviceState: InspectionDeviceStateUpdate) => {
         saveInspectionDeviceState(deviceState);
         const updatedInspection = inspectionDeviceStateDetails.map(
-            (group: DeviceStateComponentsForInspection) => ({
+            (group: DeviceStateElementForInspection) => ({
                 ...group,
                 titleComponents: group.titleComponents.map((title) => ({
                     ...title,
@@ -145,18 +148,17 @@ const ElementsStateScreen: React.FC = () => {
         checkAndUpdateCompletionStatus(updatedInspection);
     };
 
-    const handleUploadFromDevice = async (titleId: number, groupTypeId: number) => {
+    const handleUploadFromDevice = async (inspectionElementDeviceId: string) => {
         try {
             const result = await launchImageLibrary({ mediaType: 'photo' });
 
             if (result.assets && result.assets.length > 0) {
                 const imagePath = result.assets[0].uri;
-
                 await handleSaveDeviceElementImage(
                     imagePath,
-                    titleId,
-                    groupTypeId,
-                    selectedDeviceElementId ? parseInt(selectedDeviceElementId) : undefined,
+                    inspectionElementDeviceId,
+                    imageSaveParams?.titleId,
+                    imageSaveParams?.groupTypeId,
                 );
             }
         } catch (error) {
@@ -166,7 +168,11 @@ const ElementsStateScreen: React.FC = () => {
         }
     };
 
-    const handleDeviceStateGalleryClick = async (titleId: number, groupTypeId: number) => {
+    const handleDeviceStateGalleryClick = async (
+        titleId: number,
+        groupTypeId: number,
+        inspectionElementDeviceId: string,
+    ) => {
         if (!inspectionDeviceStateDetails) {
             console.error('InspectionDeviceStateDetails is not loaded.');
             return;
@@ -208,17 +214,18 @@ const ElementsStateScreen: React.FC = () => {
         setGalleryTitle(galleryTitle);
 
         if (selectedElementId) {
-            const deviceImages = await getDeviceStateImages(
+            const deviceImages = await getInspectionElementTitleGroupImages(
+                inspectionElementDeviceId,
                 titleId,
                 groupTypeId,
-                parseInt(selectedElementId),
             );
             if (deviceImages && deviceImages.length > 0) {
                 setGalleryImages(
                     deviceImages.map((image) => ({
                         imageId: image.id,
                         imagePath: image.storagePath,
-                        imageType: IMAGE_TYPES.DeviceState_Title_Group_Image as ImageTypesByDbTable,
+                        imageType:
+                            IMAGE_TYPES.Inspection_Element_Title_Group_Image as ImageTypesByDbTable,
                     })),
                 );
 
@@ -360,9 +367,9 @@ const ElementsStateScreen: React.FC = () => {
 
     const handleSaveDeviceElementImage = async (
         path: string,
+        inspectionDeviceElementId: string,
         titleId: number,
         groupTypeId: number,
-        deviceElementId?: number,
     ) => {
         try {
             const record = {
@@ -371,7 +378,12 @@ const ElementsStateScreen: React.FC = () => {
             };
 
             // Save the image record with the updated API
-            await saveDeviceStateImage(titleId, groupTypeId, record, deviceElementId);
+            await saveInspectionElementTitleGroupImage(
+                inspectionDeviceElementId,
+                titleId,
+                groupTypeId,
+                record,
+            );
             console.log('Image saved successfully');
         } catch (error) {
             console.error('Error saving device element image:', error);
@@ -393,11 +405,12 @@ const ElementsStateScreen: React.FC = () => {
                 visible={isCameraVisible}
                 onClose={handleCloseCamera}
                 saveImage={(path) =>
+                    imageSaveParams &&
                     handleSaveDeviceElementImage(
                         path,
-                        imageSaveParams?.titleId!,
-                        imageSaveParams?.groupTypeId!,
-                        selectedDeviceElementId ? parseInt(selectedDeviceElementId) : undefined,
+                        inspectionDeviceStateDetails[0].inspectionDeviceElementId,
+                        imageSaveParams?.titleId,
+                        imageSaveParams?.groupTypeId,
                     )
                 }
                 photoPreview={photoPreview}
@@ -453,14 +466,12 @@ const ElementsStateScreen: React.FC = () => {
                                                                 ?.titleComponentId,
                                                             title.deviceStateComponents[0]
                                                                 ?.groupTypeId,
+                                                            group.inspectionDeviceElementId,
                                                         )
                                                     }
                                                     onPressUpload={() =>
                                                         handleUploadFromDevice(
-                                                            title.deviceStateComponents[0]
-                                                                ?.titleComponentId,
-                                                            title.deviceStateComponents[0]
-                                                                ?.groupTypeId,
+                                                            group.inspectionDeviceElementId,
                                                         )
                                                     }
                                                 />
