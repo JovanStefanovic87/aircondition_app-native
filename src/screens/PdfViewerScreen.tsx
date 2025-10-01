@@ -64,16 +64,62 @@ const PdfViewerScreen = () => {
                         return values.length ? Math.max(...values) : null;
                     };
 
+                    const groupTypes = {
+                        Physicalisch: 1,
+                        Konstruktiv: 2,
+                        Mikrobiologisch: 3,
+                        Luftkeimzahlmessung: 4,
+                    };
+
+                    const measurementM = () => {
+                        const entry = relatedStates.find(
+                            (s) => s.groupTypeId === groupTypes.Mikrobiologisch,
+                        );
+                        if (!entry?.note) return null;
+                        const parts = entry.note.split('-');
+                        if (parts.length < 2) return null;
+
+                        const values = parts[1].split('/').map((v) => parseInt(v, 10));
+                        const sum = values.reduce((a, b) => a + b, 0);
+
+                        if (sum <= 24) return 1;
+                        if (sum <= 49) return 2;
+                        if (sum <= 99) return 3;
+                        return 4;
+                    };
+
+                    const measurementL = () => {
+                        const entry = relatedStates.find(
+                            (s) => s.groupTypeId === groupTypes.Luftkeimzahlmessung,
+                        );
+                        if (!entry?.note) return null;
+                        const parts = entry.note.split('-');
+                        if (parts.length < 3) return null;
+
+                        const first = parts[1].split('/').map((v) => parseInt(v, 10));
+                        const second = parts[2].split('/').map((v) => parseInt(v, 10));
+                        if (first.length !== second.length) return null;
+
+                        let result = 1;
+                        for (let i = 0; i < first.length; i++) {
+                            if (first[i] < second[i]) {
+                                result = 4;
+                                break;
+                            }
+                        }
+                        return result;
+                    };
+
                     return {
                         imageId: el.imageId,
                         imageTitle: el.imageTitle,
                         imageDataUri: el.imageDataUri,
                         elementPositionId: el.elementPositionId,
                         elementValues: {
-                            p: maxByGroup(1),
-                            k: maxByGroup(2),
-                            m: maxByGroup(3),
-                            l: maxByGroup(4),
+                            p: maxByGroup(groupTypes.Physicalisch),
+                            k: maxByGroup(groupTypes.Konstruktiv),
+                            m: measurementM(),
+                            l: measurementL(),
                         },
                     };
                 });
