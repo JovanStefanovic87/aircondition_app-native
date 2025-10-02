@@ -426,6 +426,7 @@ const ElementsStateScreen: React.FC = () => {
                             />
                         </View>
                     </View>
+
                     <RowContainerFlex>
                         {inspectionDeviceStateDetails.map((group, groupIndex) => (
                             <React.Fragment key={groupIndex}>

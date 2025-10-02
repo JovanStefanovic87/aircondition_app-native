@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
+import { View, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { getInspections } from '../../database/dataAccess/Query/sqlQueries';
 import { deleteInspection } from '../../database/dataAccess/Command/sqlCommands';
@@ -8,9 +8,9 @@ import { InspectionUpdate } from '../../database/types';
 import { useInspectionStore } from '../store/store';
 import Dropdown from '../components/input/DropdownWithValidation';
 import NoResultMessage from '../components/text/NoResultMessage';
-import PrimaryButton from '../components/buttons/PrimaryButton';
 import ConfirmDeleteModal from '../components/modals/ConfirmDeleteModal';
 import ErrorInformationModal from '../components/modals/ErrorInformationModal';
+import Icon from 'react-native-vector-icons/Ionicons'; // ✅ koristi react-native-vector-icons
 
 type AllInspectionsScreenNavigationProp = NavigationProp<Record<string, object>, string>;
 
@@ -79,21 +79,29 @@ const AllInspectionsScreen = () => {
             <ScrollView>
                 <View style={styles.listContainer}>
                     <View style={styles.headerOptions}>
-                        <Dropdown
-                            items={[
-                                { label: 'Gestartet Inspektionen', value: 0 },
-                                { label: 'Vollendet Inspektionen', value: 1 },
-                                { label: 'Finalisiert Inspektionen', value: 2 },
-                                { label: 'Gesperrt Inspektionen', value: 3 },
-                            ]}
-                            selectedValue={selectedStatus}
-                            setSelectedValue={(value) => setSelectedStatus(value)}
-                        />
-                        <PrimaryButton
-                            title="Neue Inspektion"
-                            onPress={() => navigation.navigate('InspectionBasicDetailsScreen')}
-                        />
+                        <View style={styles.dropdownWrapper}>
+                            <Dropdown
+                                items={[
+                                    { label: 'Gestartet Inspektionen', value: 0 },
+                                    { label: 'Vollendet Inspektionen', value: 1 },
+                                    { label: 'Finalisiert Inspektionen', value: 2 },
+                                    { label: 'Gesperrt Inspektionen', value: 3 },
+                                ]}
+                                selectedValue={selectedStatus}
+                                setSelectedValue={(value) => setSelectedStatus(value)}
+                            />
+                        </View>
+                        <TouchableOpacity
+                            style={styles.iconButton}
+                            onPress={() => {
+                                setInspectionId(null);
+                                navigation.navigate('InspectionBasicDetailsScreen');
+                            }}
+                        >
+                            <Icon name="add" size={28} color="white" />
+                        </TouchableOpacity>
                     </View>
+
                     <View>
                         {filteredInspections.length === 0 ? (
                             <NoResultMessage text="Keine Inspektion" />
@@ -103,7 +111,7 @@ const AllInspectionsScreen = () => {
                                     key={inspection.id}
                                     inspection={inspection}
                                     onPress={() => handlePress(inspection.id)}
-                                    onDelete={() => confirmDelete(inspection.id)} // koristi ConfirmDeleteModal
+                                    onDelete={() => confirmDelete(inspection.id)}
                                 />
                             ))
                         )}
@@ -135,12 +143,23 @@ const styles = StyleSheet.create({
     },
     headerOptions: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        alignItems: 'center',
         marginBottom: 20,
+        gap: 10,
+    },
+    dropdownWrapper: {
+        flex: 1,
+    },
+    iconButton: {
+        height: 44,
+        width: 50,
+        backgroundColor: '#007AFF',
+        borderRadius: 8,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     listContainer: {
         flex: 1,
-        gap: 20,
     },
 });
 
