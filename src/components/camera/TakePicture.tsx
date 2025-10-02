@@ -93,7 +93,6 @@ const TakePicture: React.FC<Props> = ({
     };
 
     const format = device ? findBestFormat(device) : null;
-    console.log('photoPreview', photoPreview);
     return (
         <Modal visible={visible} style={styles.container} animationType="fade">
             {photoPreview ? (

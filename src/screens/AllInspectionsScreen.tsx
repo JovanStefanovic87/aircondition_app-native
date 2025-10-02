@@ -26,6 +26,16 @@ const AllInspectionsScreen = () => {
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [inspectionToDelete, setInspectionToDelete] = useState<string | null>(null);
 
+    useEffect(() => {
+        navigation.setOptions({
+            headerLeft: () => (
+                <TouchableOpacity onPress={() => navigation.navigate('NavScreen' as never)}>
+                    <Icon name="arrow-back" size={24} color="white" style={{ marginLeft: 15 }} />
+                </TouchableOpacity>
+            ),
+        });
+    }, [navigation]);
+
     const fetchInspections = useCallback(async () => {
         try {
             const inspectionsData = await getInspections();
