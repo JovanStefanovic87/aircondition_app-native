@@ -1,3 +1,4 @@
+//src\components\camera\TakePicture.tsx
 import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, Image, PermissionsAndroid, Modal, Dimensions } from 'react-native';
 import { Camera, CameraDevice, useCameraDevice } from 'react-native-vision-camera';

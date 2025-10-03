@@ -54,6 +54,7 @@ const GalleryModal: React.FC<Props> = ({ visible, images, onClose, title, setGal
     }, [images]);
 
     const renderImage = ({ item, index }: { item: ImageGallery; index: number }) => {
+        console.log('🎨 Renderujem sliku:', item.imageId, item.imagePath);
         const dimensions = imageDimensions[index];
         const aspectRatio = dimensions ? dimensions.width / dimensions.height : 1;
 
@@ -99,24 +100,35 @@ const GalleryModal: React.FC<Props> = ({ visible, images, onClose, title, setGal
         if (!selectedImage) return;
 
         try {
+            console.log('🗑️ Pokušavam da obrišem sliku:', selectedImage);
+
             switch (selectedImage.imageType) {
                 case IMAGE_TYPES.Inspection_Image:
                     await deleteInspectionImage(selectedImage.imageId);
+                    console.log('✅ Obrisan Inspection_Image:', selectedImage.imageId);
                     break;
                 case IMAGE_TYPES.DeviceElement_Image:
                     await deleteDeviceElementImage(selectedImage.imageId);
+                    console.log('✅ Obrisan DeviceElement_Image:', selectedImage.imageId);
                     break;
                 case IMAGE_TYPES.Inspection_Element_Title_Group_Image:
                     await deleteDeviceStateImage(selectedImage.imageId);
+                    console.log('✅ Obrisan DeviceState_Image:', selectedImage.imageId);
                     break;
                 default:
+                    console.warn('⚠️ Nepoznat imageType:', selectedImage.imageType);
                     return;
             }
 
-            // Osveži slike nakon brisanja
-            setGalleryImages((prev) => prev.filter((img) => img.imageId !== selectedImage.imageId));
+            setGalleryImages((prev) => {
+                const filtered = prev.filter(
+                    (img) => img.imageId.toString() !== selectedImage.imageId.toString(),
+                );
+                console.log('📸 Novi images posle filtera:', filtered);
+                return filtered;
+            });
         } catch (error) {
-            console.error('Error deleting image:', error);
+            console.error('❌ Error deleting image:', error);
         } finally {
             setDeleteModalVisible(false);
             setSelectedImage(null);
@@ -138,7 +150,7 @@ const GalleryModal: React.FC<Props> = ({ visible, images, onClose, title, setGal
                             <FlatList
                                 data={images}
                                 renderItem={renderImage}
-                                keyExtractor={(_, index) => index.toString()}
+                                keyExtractor={(item) => item.imageId.toString()}
                                 numColumns={1}
                                 contentContainerStyle={styles.gridContainer}
                                 showsVerticalScrollIndicator={false}

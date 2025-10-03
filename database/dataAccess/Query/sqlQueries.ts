@@ -1,3 +1,4 @@
+//E:\Programiranje\DEV\AC_INSPECTOR\database\dataAccess\Query\sqlQueries.ts
 import { STATE_TYPES } from '../../../src/helpers/constants';
 import {
     Client,

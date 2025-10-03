@@ -48,6 +48,7 @@ import DeviceStateMerged from '../components/table/DeviceStateMerged';
 import GalleryModal from '../components/modals/GalleryModal';
 import TakePicture from '../components/camera/TakePicture';
 import { IMAGE_TYPES } from '../helpers/constants';
+import ElementImagesSection from '../components/image/ElementImagesSection';
 
 type NavScreenNavigationProp = NavigationProp<any, any>;
 
@@ -414,6 +415,7 @@ const ElementsStateScreen: React.FC = () => {
                 photoPreview={photoPreview}
                 setPhotoPreview={setPhotoPreview}
             />
+
             <GestureHandlerRootView style={styles.scrollContainer}>
                 <ScrollView style={styles.scrollView}>
                     <View>
@@ -425,6 +427,11 @@ const ElementsStateScreen: React.FC = () => {
                                 deviceElementCompleted={deviceElementCompleted}
                             />
                         </View>
+                        {selectedDeviceElementId && (
+                            <ElementImagesSection
+                                inspectionDeviceElementId={selectedDeviceElementId}
+                            />
+                        )}
                     </View>
 
                     <RowContainerFlex>
