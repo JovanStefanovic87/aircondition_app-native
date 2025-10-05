@@ -46,6 +46,8 @@ export const REPORT_DATA = {
     elementState: [
         {
             elementTitle: 'AUßENLUFTANSAUGUNG',
+            elementSymbolImage:
+                'https://ac-inspector-public.nbg1.your-objectstorage.com/ac/elements/zuluftkanal',
             imagePaths: [
                 'https://ac-inspector-public.nbg1.your-objectstorage.com/ac/images/industrial-ac',
                 'https://ac-inspector-public.nbg1.your-objectstorage.com/ac/images/industrial-ac',

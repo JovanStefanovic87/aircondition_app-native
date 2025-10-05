@@ -305,6 +305,7 @@ export type ImageStorage = {
     id: string;
     name: string;
     storagePath: string;
+    storagePathS3?: string;
 };
 
 export type InspectionAndImageStorage = {
@@ -475,7 +476,7 @@ export type InspectionQuestionInsert = {
 };
 
 export type InspectionElementsForReport = {
-    imageId: string;
+    inspectionDeviceElementId: string;
     imageTitle: string;
     elementValues: Record<string, number>;
     imageDataUri: string;

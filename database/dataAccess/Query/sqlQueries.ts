@@ -133,7 +133,7 @@ export const getInspectionElementsForReport = async (
 ): Promise<InspectionElementsForReport[]> => {
     const query = `
         SELECT 
-            ide.id as imageId, de.name as imageTitle, s.storagePathS3 as imageDataUri, ide.elementPositionId
+            ide.id as inspectionDeviceElementId, de.name as imageTitle, s.storagePathS3 as imageDataUri, ide.elementPositionId
         FROM Inspection_DeviceElement ide
             LEFT JOIN DeviceElement de ON de.id = ide.deviceElementId
             LEFT JOIN DeviceElement_Image dei ON dei.deviceElementId = de.id
@@ -497,7 +497,31 @@ export const getInspectionElementTitleGroupImages = async (
     return executeQuery<ImageStorage>({ query });
 };
 
+export const getInspectionElementTitleGroupImagesByElementId = async (
+    inspectionDeviceElementId: string,
+): Promise<ImageStorage[]> => {
+    const query = `
+        SELECT s.* FROM Inspection_Element_Title_Group_Image g
+        LEFT JOIN ImageStorage s ON s.id = g.imageId
+        WHERE 
+            g.inspectionDeviceElementId = '${inspectionDeviceElementId}'
+    `;
+    return executeQuery<ImageStorage>({ query });
+};
+
 export const getInspectionElementImages = async (
+    inspectionDeviceElementId: string,
+): Promise<ImageStorage[]> => {
+    const query = `
+        SELECT s.* FROM Inspection_Element_Image g
+        LEFT JOIN ImageStorage s ON s.id = g.imageId
+        WHERE 
+            g.inspectionDeviceElementId = '${inspectionDeviceElementId}'
+    `;
+    return executeQuery<ImageStorage>({ query });
+};
+
+export const getInspectionElementImagesByElementId = async (
     inspectionDeviceElementId: string,
 ): Promise<ImageStorage[]> => {
     const query = `

@@ -6,12 +6,49 @@ import { ReportData } from '../components/pdfview/helpers/types';
 import {
     getInspectionByIdWithDetails,
     getInspectionDeviceStateForReport,
+    getInspectionElementImages,
+    getInspectionElementImagesByElementId,
     getInspectionElementsForReport,
+    getInspectionElementStateDetails,
+    getInspectionElementTitleGroupImagesByElementId,
 } from '../../database/dataAccess/Query/sqlQueries';
 import { REPORT_DATA } from '../components/pdfview/ReportData';
-import { InspectionElementsForReport, InspectionDeviceStatesForReport } from '../../database/types';
+import {
+    InspectionElementsForReport,
+    InspectionDeviceStatesForReport,
+    ImageStorage,
+} from '../../database/types';
+import { getS3Url } from '../api/helpers/functions';
 
 type PdfViewerScreenRouteProp = RouteProp<any, 'PdfViewerScreen'>;
+
+function buildImagePathsWithS3Base(
+    inspectionImages: ImageStorage[],
+    generalImages: ImageStorage[],
+): string[] {
+    const baseUrl = getS3Url();
+    return [...inspectionImages, ...generalImages]
+        .map((img) => img.storagePathS3)
+        .filter((path): path is string => Boolean(path))
+        .map((path) => baseUrl + path);
+}
+
+type Issue = {
+    title: string;
+    value: number | null;
+    valueText: string | null;
+    comment: string | null;
+};
+
+type ElementResult = {
+    elementTitle: string;
+    elementSymbolImage: string;
+    imagePaths: string[];
+    state: {
+        groupTypeName: string;
+        issues: Issue[];
+    }[];
+};
 
 const PdfViewerScreen = () => {
     const route = useRoute<PdfViewerScreenRouteProp>();
@@ -28,11 +65,54 @@ const PdfViewerScreen = () => {
 
             const elements = await getInspectionElementsForReport(inspectionId);
 
-            // console.log('ELEMENTS', elements);
+            const titleComponentElementState: ElementResult[] = [];
+            for (const el of elements) {
+                const states = await getInspectionElementStateDetails(
+                    inspectionId,
+                    el.inspectionDeviceElementId,
+                );
+
+                const inspectionElementImages =
+                    await getInspectionElementTitleGroupImagesByElementId(
+                        el.inspectionDeviceElementId,
+                    );
+
+                const generalInspectionElementImages = await getInspectionElementImagesByElementId(
+                    el.inspectionDeviceElementId,
+                );
+
+                const elementImagePaths = buildImagePathsWithS3Base(
+                    inspectionElementImages,
+                    generalInspectionElementImages,
+                );
+
+                const mappedStates = states.map((state) => {
+                    const issues: Issue[] = state.titleComponents.flatMap((tc) =>
+                        tc.deviceStateComponents
+                            .filter((comp) => comp.value !== null && comp.value !== 1)
+                            .map((comp) => ({
+                                title: tc.name ?? comp.name ?? '',
+                                value: comp.value,
+                                valueText: comp.name ?? null,
+                                comment: comp.note ?? null,
+                            })),
+                    );
+
+                    return {
+                        groupTypeName: state.groupTypeName,
+                        issues,
+                    };
+                });
+
+                titleComponentElementState.push({
+                    elementTitle: el.imageTitle,
+                    elementSymbolImage: el.imageDataUri,
+                    imagePaths: elementImagePaths,
+                    state: mappedStates,
+                });
+            }
 
             const statesPerElement = await getInspectionDeviceStateForReport(inspectionId);
-
-            // console.log('STATES PER ELEMENT', statesPerElement);
 
             type Result = {
                 imageId: string;
@@ -53,7 +133,7 @@ const PdfViewerScreen = () => {
             ): Result[] => {
                 return elements.map((el) => {
                     const relatedStates = states.filter(
-                        (s) => s.inspectionDeviceElementId === el.imageId,
+                        (s) => s.inspectionDeviceElementId === el.inspectionDeviceElementId,
                     );
 
                     const maxByGroup = (groupTypeId: number) => {
@@ -111,7 +191,7 @@ const PdfViewerScreen = () => {
                     };
 
                     return {
-                        imageId: el.imageId,
+                        imageId: el.inspectionDeviceElementId,
                         imageTitle: el.imageTitle,
                         imageDataUri: el.imageDataUri,
                         elementPositionId: el.elementPositionId,
@@ -126,8 +206,6 @@ const PdfViewerScreen = () => {
             };
 
             const elementsWithState = mergeElementsAndStates(elements, statesPerElement);
-
-            console.log('MERGED', elementsWithState);
 
             const report: ReportData = {
                 ...REPORT_DATA,
@@ -174,12 +252,7 @@ const PdfViewerScreen = () => {
                     ],
                 },
                 elements: elementsWithState,
-                // elements: inspection.elements.map((element) => ({
-                //     imageId: element.id,
-                //     imageTitle: element.name,
-                //     elementValues: element.imagePath,
-                //     imageDataUri: element.state,
-                // })),
+                elementState: titleComponentElementState,
             };
 
             setPdfReportData(report);
