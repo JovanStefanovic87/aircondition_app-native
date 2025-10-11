@@ -32,6 +32,56 @@ function buildImagePathsWithS3Base(
         .filter((path): path is string => Boolean(path))
         .map((path) => baseUrl + path);
 }
+const groupTypes = {
+    PHYSIKALISCH: 'PHYSIKALISCH',
+    KONSTRUKTIV: 'KONSTRUKTIV',
+    MIKROBIOLOGISCH: 'MIKROBIOLOGISCH',
+    LUFTKEIMZAHLMESSUNG: 'LUFTKEIMZAHLMESSUNG',
+};
+
+const parseNoteValue = (
+    note: string,
+    groupTypeName: string,
+): { value: number | null; valueText: string | null } => {
+    if (!note) return { value: null, valueText: null };
+
+    const parts = note.split('-');
+
+    if (groupTypeName === groupTypes.MIKROBIOLOGISCH) {
+        if (parts.length < 2) return { value: null, valueText: null };
+
+        const values = parts[1].split('/').map((v) => parseInt(v, 10));
+        const sum = values.reduce((a, b) => a + b, 0);
+
+        let value: number;
+        if (sum <= 24) value = 1;
+        else if (sum <= 49) value = 2;
+        else if (sum <= 99) value = 3;
+        else value = 4;
+
+        return { value, valueText: parts[1] };
+    }
+
+    if (groupTypeName === groupTypes.LUFTKEIMZAHLMESSUNG) {
+        if (parts.length < 3) return { value: null, valueText: null };
+
+        const first = parts[1].split('/').map((v) => parseInt(v, 10));
+        const second = parts[2].split('/').map((v) => parseInt(v, 10));
+        if (first.length !== second.length) return { value: null, valueText: null };
+
+        let result = 1;
+        for (let i = 0; i < first.length; i++) {
+            if (first[i] < second[i]) {
+                result = 4;
+                break;
+            }
+        }
+
+        return { value: result, valueText: `${parts[1]}-${parts[2]}` };
+    }
+
+    return { value: null, valueText: null };
+};
 
 type Issue = {
     title: string;
@@ -87,19 +137,45 @@ const PdfViewerScreen = () => {
                 );
 
                 const mappedStates = states.map((state) => {
-                    const issues: Issue[] = state.titleComponents.flatMap((tc) =>
-                        tc.deviceStateComponents
-                            .filter((comp) => comp.value !== null && comp.value !== 1)
-                            .map((comp) => ({
-                                title: tc.name ?? comp.name ?? '',
-                                value: comp.value,
-                                valueText: comp.name ?? null,
-                                comment: comp.note ?? null,
-                            })),
-                    );
+                    let issues: Issue[] = [];
+
+                    const { groupTypeName } = state;
+
+                    // Special case for MIKROBIOLOGISCH and LUFTKEIMZAHLMESSUNG
+                    if (
+                        groupTypeName === groupTypes.MIKROBIOLOGISCH ||
+                        groupTypeName === groupTypes.LUFTKEIMZAHLMESSUNG
+                    ) {
+                        const note = state.titleComponents?.[0]?.deviceStateComponents?.[0]?.note;
+                        const { value, valueText } = parseNoteValue(note ?? '', groupTypeName);
+
+                        if (value !== null) {
+                            issues.push({
+                                title:
+                                    groupTypeName === groupTypes.MIKROBIOLOGISCH
+                                        ? 'Analyse'
+                                        : 'Messung',
+                                value,
+                                valueText,
+                                comment: null,
+                            });
+                        }
+                    } else {
+                        // Default handling for other group types
+                        issues = state.titleComponents.flatMap((tc) =>
+                            tc.deviceStateComponents
+                                .filter((comp) => comp.value !== null && comp.value !== 1)
+                                .map((comp) => ({
+                                    title: tc.name ?? comp.name ?? '',
+                                    value: comp.value,
+                                    valueText: comp.name ?? null,
+                                    comment: comp.note ?? null,
+                                })),
+                        );
+                    }
 
                     return {
-                        groupTypeName: state.groupTypeName,
+                        groupTypeName,
                         issues,
                     };
                 });
