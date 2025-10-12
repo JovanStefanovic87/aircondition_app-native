@@ -55,10 +55,10 @@ export const parseNoteValue = (
 
 export const buildImagePathsWithS3Base = (
     inspectionImages: ImageStorage[],
-    generalImages: ImageStorage[],
+    generalImages?: ImageStorage[],
 ): string[] => {
     const baseUrl = getS3Url();
-    return [...inspectionImages, ...generalImages]
+    return [...inspectionImages, ...(generalImages || [])]
         .map((img) => img.storagePathS3)
         .filter((path): path is string => Boolean(path))
         .map((path) => baseUrl + path);

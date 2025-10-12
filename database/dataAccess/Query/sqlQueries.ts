@@ -481,6 +481,16 @@ export const getInspectionTitleGroupImages = async (
     return executeQuery<ImageStorage>({ query });
 };
 
+export const getInspectionStateImages = async (inspectionId: string): Promise<ImageStorage[]> => {
+    const query = `
+        SELECT s.* FROM Inspection_Title_Group_Image g
+        LEFT JOIN ImageStorage s ON s.id = g.imageId
+        WHERE 
+            g.inspectionId = '${inspectionId}'
+    `;
+    return executeQuery<ImageStorage>({ query });
+};
+
 export const getInspectionElementTitleGroupImages = async (
     inspectionDeviceElementId: string,
     titleId: number,

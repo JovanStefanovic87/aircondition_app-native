@@ -1,12 +1,4 @@
 export const REPORT_DATA = {
-    company: {
-        name: 'AC-Inspektor GmbH',
-        address: 'Am Hardtwald 6',
-        city: '76275 Ettlingen',
-        phone: '+49 (0) 7243 3699 101',
-        email: 'kontakt@ac-inspektor.com',
-        inspectionTechnician: 'Luka Poljaković',
-    },
     client: {
         name: 'ERLANGER STADTWERKE AG',
         address: 'ÄUSSERE BRUCKER STRASSE 33, 91052 ERLANGEN',
@@ -28,12 +20,7 @@ export const REPORT_DATA = {
         date: '01.12.2020',
         next: '01.12.2023',
 
-        images: [
-            {
-                imagePath:
-                    'https://ac-inspector-public.nbg1.your-objectstorage.com/ac/images/industrial-ac',
-            },
-        ],
+        images: ['https://ac-inspector-public.nbg1.your-objectstorage.com/ac/images/industrial-ac'],
         stateImages: [
             {
                 title: 'ANLAGE',

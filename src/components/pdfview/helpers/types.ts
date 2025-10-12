@@ -1,5 +1,5 @@
 export type ReportData = {
-    company: Company;
+    company?: Company;
     client: Client;
     device: Device;
     inspection: Inspection;
@@ -39,7 +39,7 @@ type Inspection = {
     type: string;
     date: string;
     next: string;
-    images: Image[];
+    images: string[];
     stateImages: StateImage[];
 };
 

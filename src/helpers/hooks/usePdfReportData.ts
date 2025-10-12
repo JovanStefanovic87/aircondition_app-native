@@ -8,6 +8,8 @@ import {
     getInspectionElementsForReport,
     getInspectionElementStateDetails,
     getInspectionElementTitleGroupImagesByElementId,
+    getInspectionImages,
+    getInspectionStateImages,
 } from '../../../database/dataAccess/Query/sqlQueries';
 import { REPORT_DATA } from '../../components/pdfview/ReportData';
 import {
@@ -28,6 +30,8 @@ export const usePdfReportData = (inspectionId: string) => {
                 setPdfReportData(REPORT_DATA);
                 return;
             }
+            const inspectionImages = await getInspectionImages(inspectionId);
+            const inspectionStateImages = await getInspectionStateImages(inspectionId);
 
             const elements = await getInspectionElementsForReport(inspectionId);
             const titleComponentElementState: ElementResult[] = [];
@@ -106,14 +110,6 @@ export const usePdfReportData = (inspectionId: string) => {
 
             const report: ReportData = {
                 ...REPORT_DATA,
-                company: {
-                    name: 'AC-Inspektor GmbH',
-                    address: 'Am Hardtwald 6',
-                    city: '76275 Ettlingen',
-                    phone: '+49 (0) 7243 3699 101',
-                    email: 'kontakt@ac-inspektor.com',
-                    inspectionTechnician: 'Luka Poljaković',
-                },
                 client: {
                     name: inspection.clientName,
                     address: `${inspection.clientAddress}, ${inspection.clientCity}`,
@@ -133,18 +129,11 @@ export const usePdfReportData = (inspectionId: string) => {
                     type: inspection.inspectionTypeName,
                     date: inspection.inspectionDate,
                     next: inspection.nextInspectionDate,
-                    images: [
-                        {
-                            imagePath:
-                                'https://ac-inspector-public.nbg1.your-objectstorage.com/ac/images/industrial-ac',
-                        },
-                    ],
+                    images: buildImagePathsWithS3Base(inspectionImages),
                     stateImages: [
                         {
                             title: 'ANLAGE',
-                            imagePaths: [
-                                'https://ac-inspector-public.nbg1.your-objectstorage.com/ac/images/industrial-ac',
-                            ],
+                            imagePaths: buildImagePathsWithS3Base(inspectionStateImages),
                         },
                     ],
                 },
