@@ -254,28 +254,4 @@ export const REPORT_DATA = {
                 'https://ac-inspector-public.nbg1.your-objectstorage.com/ac/elements/außenluftkanal',
         },
     ],
-
-    microbiology: {
-        text: 'Messwerte Bestimmung der Gesamtkeimzahl durch Abklatschproben nach DIN 10113-3.\n\n< 25 G-KBE/25 cm2 : Der hygienisch-mikrobiologische Zustand der untersuchten Flächen ist als gut oder sehr gut zu bewerten.\nKein Handeln erforderlich.\n\n25 bis 99 G-KBE/25 cm2 : Der hygienisch-mikrobiologische Zustand der untersuchten Flächen ist als grenzwertig einzuschätzen.\nUrsache suchen, beseitigen.\nDiese Elemente sollen gründlich gereinigt oder demnächst ausgewechselt werden. In den Wartungsplan aufnehmen.\n\n>= 100 G-KBE/25 cm2 : Der hygienisch-mikrobiologische Zustand der untersuchten Flächen ist als unzureichend zu bewerten.\nUrsache suchen, beseitigen.\nDiese Elemente sollen dringend gründlich gereinigt, gegebenenfalls zusätzlich desinfiziert oder bei Bedarf ausgetauscht werden.\nSofortiges Handeln ist erforderlich.\n\nDie Platten entweder bis 100 G-KBE/Platte oder bis 300 G-KBE ausgezählt.\nJeweils die Summe der Platten für Bakterien und Pilze/Hefen, z.B. 20 KBE/25 cm2 Bakterien und 15 KBE/25 cm2 Pilze ergibt 35 G-KBE/25 cm2, das bedeutet eine Einordnung in die Kategorie 25 bis 99 G-KBE (G-KBE = Gesamtkeimzahl).\nn.b. (nicht beurteilbar) = wegen Überwucherung mit Bakterien ist keine Bestimmung möglich.\n\nBestimmung der Gesamtkeimzahl durch Abklatschproben nach DIN 10113-3 (CASO-Agar sowie bei Differenzierung DG 18-Agar auf Rodac-Platte).',
-        labData: [
-            {
-                barcode: ' 2153844048127',
-                elementName: 'Filter F7',
-                zoneTitle: 'Gehäuse',
-                'g-kbe': 17,
-                mold: 3,
-                yeast: 0,
-                resultValue: 1,
-            },
-            {
-                barcode: ' 2153844048128',
-                elementName: 'Ventilator',
-                zoneTitle: ' Schaufelrad',
-                'g-kbe': 31,
-                mold: 24,
-                yeast: 0,
-                resultValue: 2,
-            },
-        ],
-    },
 };

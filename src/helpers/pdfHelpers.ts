@@ -29,7 +29,7 @@ export const parseNoteValue = (
         else if (sum <= 99) value = 3;
         else value = 4;
 
-        return { value, valueText: parts[1] };
+        return { value, valueText: note };
     }
 
     if (groupTypeName === groupTypes.LUFTKEIMZAHLMESSUNG) {
@@ -47,7 +47,7 @@ export const parseNoteValue = (
             }
         }
 
-        return { value: result, valueText: `${parts[1]}-${parts[2]}` };
+        return { value: result, valueText: note };
     }
 
     return { value: null, valueText: null };

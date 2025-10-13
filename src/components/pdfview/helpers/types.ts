@@ -6,7 +6,6 @@ export type ReportData = {
     elementState: ElementState[];
     created_on: string;
     elements: ReportElement[];
-    microbiology: Microbiology;
 };
 
 type Company = {
@@ -80,19 +79,4 @@ type ReportElement = {
         l: number;
     };
     imageDataUri: string;
-};
-
-type Microbiology = {
-    text: string;
-    labData: LabData[];
-};
-
-type LabData = {
-    barcode: string;
-    elementName: string;
-    zoneTitle: string;
-    'g-kbe': number;
-    mold: number;
-    yeast: number;
-    resultValue: number;
 };

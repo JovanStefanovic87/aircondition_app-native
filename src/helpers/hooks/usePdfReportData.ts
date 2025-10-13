@@ -26,10 +26,6 @@ export const usePdfReportData = (inspectionId: string) => {
     useEffect(() => {
         const fetchInspection = async () => {
             const inspection = await getInspectionByIdWithDetails(inspectionId);
-            if (!inspection) {
-                setPdfReportData(REPORT_DATA);
-                return;
-            }
             const inspectionImages = await getInspectionImages(inspectionId);
             const inspectionStateImages = await getInspectionStateImages(inspectionId);
 
@@ -109,7 +105,7 @@ export const usePdfReportData = (inspectionId: string) => {
             const elementsWithState = mergeElementsAndStates(elements, statesPerElement);
 
             const report: ReportData = {
-                ...REPORT_DATA,
+                created_on: inspection.createdAt,
                 client: {
                     name: inspection.clientName,
                     address: `${inspection.clientAddress}, ${inspection.clientCity}`,
