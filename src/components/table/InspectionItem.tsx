@@ -9,7 +9,10 @@ import PdfButton from '../buttons/PdfButton';
 import EditButton from '../buttons/EditButton';
 import DuplicateButton from '../buttons/DuplicateButton';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { copyInspection } from '../../../database/dataAccess/Command/sqlCommands';
+import {
+    copyInspection,
+    syncInspectionImagesToS3,
+} from '../../../database/dataAccess/Command/sqlCommands';
 import { useInspectionStore } from '../../store/store';
 import DeleteButton from '../buttons/DeleteButton';
 
@@ -68,6 +71,21 @@ const InspectionItem: React.FC<Props> = ({ inspection, onPress, onDelete }) => {
                             if (onDelete) onDelete();
                         }}
                     />
+
+                    {/* Novo dugme za sinhronizaciju */}
+                    <TouchableOpacity
+                        style={styles.syncButton}
+                        onPress={async (e) => {
+                            e.stopPropagation();
+                            try {
+                                await syncInspectionImagesToS3(inspection.id);
+                            } catch (error) {
+                                console.error('Error syncing images:', error);
+                            }
+                        }}
+                    >
+                        <TextMain text="Sync" isBold={true} />
+                    </TouchableOpacity>
                 </View>
                 <View style={styles.flexEnd}>
                     {inspection.inspectionStatusId ? <CheckedIcon /> : <DangerIcon />}
@@ -97,10 +115,6 @@ const InspectionItem: React.FC<Props> = ({ inspection, onPress, onDelete }) => {
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        gap: 5,
-    },
     flexEnd: {
         flexDirection: 'row',
         justifyContent: 'flex-end',
@@ -131,6 +145,13 @@ const styles = StyleSheet.create({
     infoContainer: {
         paddingVertical: 10,
         gap: 6,
+    },
+    syncButton: {
+        marginLeft: 10,
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 6,
+        backgroundColor: customColors.blueDark,
     },
 });
 

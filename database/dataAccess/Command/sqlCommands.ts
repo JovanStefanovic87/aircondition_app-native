@@ -1,3 +1,4 @@
+//AC_INSPECTOR\database\dataAccess\Command\sqlCommands.ts
 import { uploadImagesToS3 } from '../../../src/api/s3ImageUpload';
 import { INSPECTION_TYPES } from '../../../src/helpers/constants';
 import { deleteFile } from '../../../src/helpers/universalFunctions';
@@ -293,6 +294,7 @@ export const saveQuestionImage = async (
  * @param inspectionId - The ID of the inspection
  */
 export const syncInspectionImagesToS3 = async (inspectionId: string) => {
+    console.log('inspectionId', inspectionId);
     try {
         const images = await getAllInspectionImages(inspectionId);
 
