@@ -72,9 +72,8 @@ export const executeUpdateOrInsertWithGuid = async <T extends DatabaseRecord>(
             );
         });
     } catch (error) {
-        console.error('Error opening database: ', error);
-        // TODO: LOG ERROR
-        // throw error;
+        console.log(error);
+        throw new Error(error?.message || 'Unknown error occurred executeUpdateOrInsertWithGuid');
     }
 };
 
@@ -110,9 +109,8 @@ export const executeUpdate = async <T extends DatabaseRecord>(
             });
         });
     } catch (error) {
-        console.error('Error opening database: ', error);
-        // TODO: LOG ERROR
-        // throw error;
+        console.log(error);
+        throw new Error(error?.message || 'Unknown error occurred executeUpdate');
     }
 };
 
@@ -144,9 +142,8 @@ export const executeInsertWithGuid = async <T extends DatabaseRecord>(
             });
         });
     } catch (error) {
-        console.error('Error opening database: ', error);
-        // TODO: LOG ERROR
-        // throw error;
+        console.log(error);
+        throw new Error(error?.message || 'Unknown error occurred executeInsertWithGuid');
     }
 };
 
@@ -177,9 +174,8 @@ export const executeInsert = async <T extends DatabaseRecord>(
             });
         });
     } catch (error) {
-        console.error('Error opening database: ', error);
-        // TODO: LOG ERROR
-        // throw error;
+        console.log(error);
+        throw new Error(error?.message || 'Unknown error occurred executeInsert');
     }
 };
 
@@ -206,9 +202,8 @@ export const executeDeleteById = async (tableName: string, id: number | string) 
             });
         });
     } catch (error) {
-        console.error('Error opening database: ', error);
-        // TODO: LOG ERROR
-        // throw error;
+        console.log(error);
+        throw new Error(error?.message || 'Unknown error occurred executeDeleteById');
     }
 };
 
@@ -241,20 +236,26 @@ export const executeDeleteByConditions = async (
             });
         });
     } catch (error) {
-        console.error('Error opening database: ', error);
-        // TODO: LOG ERROR
-        // throw error;
+        console.error(error);
+        throw new Error(error?.message || 'Unknown error occurred executeDeleteByConditions');
     }
 };
 
 export const executeUpdateArray = async <T extends DatabaseRecord>(
     tableName: string,
     records: Partial<T>,
-): Promise<string | void> => {
+): Promise<void> => {
     try {
         const db = getDatabase();
 
-        return new Promise<string | void>((resolve, reject) => {
+        return new Promise<void>((resolve, reject) => {
+            let completed = 0;
+            const total = records.length;
+
+            if (total === 0) {
+                return resolve();
+            }
+
             db.transaction((tx) => {
                 records.forEach((record) => {
                     if (record.id) {
@@ -267,19 +268,29 @@ export const executeUpdateArray = async <T extends DatabaseRecord>(
                         tx.executeSql(
                             `UPDATE ${tableName} SET ${placeholders} WHERE id = ?`,
                             [...values, id],
-                            () => {},
+                            () => {
+                                completed++;
+                                if (completed === total) {
+                                    resolve();
+                                }
+                            },
                             (error) => {
                                 console.log('Error updating record: ', error);
                                 reject(error);
+                                return true;
                             },
                         );
+                    } else {
+                        completed++;
+                        if (completed === total) {
+                            resolve();
+                        }
                     }
                 });
             });
         });
     } catch (error) {
-        console.error('Error opening database: ', error);
-        // TODO: LOG ERROR
-        // throw error;
+        console.log('Outer error:', error);
+        throw new Error(error?.message || 'Unknown error in executeUpdateArray');
     }
 };

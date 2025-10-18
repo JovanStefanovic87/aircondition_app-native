@@ -107,7 +107,7 @@ const TakePicture: React.FC<Props> = ({
                         resizeMode="cover"
                     />
                     <View style={styles.buttonContainer}>
-                        <PrimaryButton title="speichern" onPress={handleAcceptPhoto} />
+                        <PrimaryButton title="Speichern" onPress={handleAcceptPhoto} />
                         <PrimaryButton title="Wiederholung" onPress={handleRejectPhoto} />
                     </View>
                 </View>

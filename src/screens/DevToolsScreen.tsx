@@ -32,7 +32,7 @@ import {
 import ErrorInformationModal from '../components/modals/ErrorInformationModal';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { uploadImagesToS3 } from '../api/s3ImageUpload';
+import { uploadImagesToCloudS3 } from '../api/s3ImageUpload';
 
 type NavScreenNavigationProp = NavigationProp<any, any>;
 

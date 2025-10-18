@@ -317,9 +317,8 @@ export type InspectionAndImageStorage = {
 };
 
 export type UploadResponse = {
-    fileName: string;
-    s3Key: string;
-    success: boolean;
+    id: string;
+    storagePathS3: string;
 };
 
 export type DeviceElement = {
