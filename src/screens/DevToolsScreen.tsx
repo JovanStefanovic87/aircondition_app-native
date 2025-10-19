@@ -23,16 +23,13 @@ import { getStoredUser } from '../../database/dataAccess/Helper/auth';
 import {
     copyInspection,
     deleteInspectionDeviceElement,
-    deleteUser,
     saveDeviceElementsSortOrder,
     saveInspectionDeviceElement,
     saveQuestionImage,
-    syncInspectionImagesToS3,
 } from '../../database/dataAccess/Command/sqlCommands';
 import ErrorInformationModal from '../components/modals/ErrorInformationModal';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { uploadImagesToCloudS3 } from '../api/s3ImageUpload';
 
 type NavScreenNavigationProp = NavigationProp<any, any>;
 
@@ -54,10 +51,6 @@ const DevToolsScreen: React.FC = () => {
         getQuestionImages: async () => console.log(await getInspectionQuestionImages('id')),
         getAllImages: async () => console.log(await getAllImageStorages()),
         getAllInspectionImages: async () => console.log(await getAllInspectionImages(inspectionId)),
-        saveImagesToS3: async () => {
-            const images = await syncInspectionImagesToS3(inspectionId);
-            console.log('Images uploaded to S3:', images);
-        },
         deviceByGroupType: async () => console.log(await getInspectionDeviceStateByGroupType('')),
         getAllInspections: async () => console.log(await getInspections()),
         getInspectionElements: async () =>
@@ -144,12 +137,6 @@ const DevToolsScreen: React.FC = () => {
                         iconName="database"
                         iconColor="red"
                         onPress={handle.getAllInspectionImages}
-                    />
-                    <NavButton
-                        buttonText="Save Images to S3"
-                        iconName="database"
-                        iconColor="red"
-                        onPress={handle.saveImagesToS3}
                     />
                     <NavButton
                         buttonText="Device Elements by Group Type"

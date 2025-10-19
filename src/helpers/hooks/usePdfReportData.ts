@@ -50,6 +50,7 @@ export const usePdfReportData = (inspectionId: string) => {
                 const elementImagePaths = buildImagePathsWithS3Base(
                     inspectionElementImages,
                     generalInspectionElementImages,
+                    true,
                 );
 
                 const mappedStates = states.map((state) => {
