@@ -20,6 +20,7 @@ import {
 import IconOverImageButton from '../buttons/IconOverImageButton';
 import { IMAGE_TYPES } from '../../helpers/constants';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
+import { useInspectionStore } from '../../store/store';
 
 interface Props {
     visible: boolean;
@@ -32,6 +33,7 @@ interface Props {
 const { width } = Dimensions.get('window'); // Širina ekrana
 
 const GalleryModal: React.FC<Props> = ({ visible, images, onClose, title, setGalleryImages }) => {
+    const { setIsLoading, setLoadingText, setError } = useInspectionStore();
     const [imageDimensions, setImageDimensions] = useState<{ width: number; height: number }[]>([]);
     const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
     const [selectedImage, setSelectedImage] = useState<ImageGallery | null>(null);
@@ -100,36 +102,32 @@ const GalleryModal: React.FC<Props> = ({ visible, images, onClose, title, setGal
         if (!selectedImage) return;
 
         try {
-            console.log('🗑️ Pokušavam da obrišem sliku:', selectedImage);
+            setIsLoading(true);
+            setLoadingText('Bild wird gelöscht...');
 
             switch (selectedImage.imageType) {
                 case IMAGE_TYPES.Inspection_Image:
                     await deleteInspectionImage(selectedImage.imageId);
-                    console.log('✅ Obrisan Inspection_Image:', selectedImage.imageId);
                     break;
                 case IMAGE_TYPES.DeviceElement_Image:
                     await deleteDeviceElementImage(selectedImage.imageId);
-                    console.log('✅ Obrisan DeviceElement_Image:', selectedImage.imageId);
                     break;
                 case IMAGE_TYPES.Inspection_Element_Title_Group_Image:
                     await deleteDeviceStateImage(selectedImage.imageId);
-                    console.log('✅ Obrisan DeviceState_Image:', selectedImage.imageId);
                     break;
                 default:
-                    console.warn('⚠️ Nepoznat imageType:', selectedImage.imageType);
+                    setError('Unbekannter Bildtyp.');
                     return;
             }
 
-            setGalleryImages((prev) => {
-                const filtered = prev.filter(
-                    (img) => img.imageId.toString() !== selectedImage.imageId.toString(),
-                );
-                console.log('📸 Novi images posle filtera:', filtered);
-                return filtered;
-            });
+            setGalleryImages((prev) =>
+                prev.filter((img) => img.imageId.toString() !== selectedImage.imageId.toString()),
+            );
         } catch (error) {
             console.error('❌ Error deleting image:', error);
+            setError('Fehler beim Löschen des Bildes.');
         } finally {
+            setIsLoading(false);
             setDeleteModalVisible(false);
             setSelectedImage(null);
         }

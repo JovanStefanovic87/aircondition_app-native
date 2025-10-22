@@ -5,7 +5,7 @@ import { Camera, CameraDevice, useCameraDevice } from 'react-native-vision-camer
 import CameraButton from '../buttons/CameraButton';
 import CloseCameraButton from '../buttons/CloseCameraButton';
 import PrimaryButton from '../buttons/PrimaryButton';
-import ErrorInformationModal from '../modals/ErrorInformationModal';
+import { useInspectionStore } from '../../store/store';
 
 interface Props {
     visible: boolean;
@@ -24,21 +24,24 @@ const TakePicture: React.FC<Props> = ({
 }) => {
     const cameraRef = useRef<Camera>(null);
     const device = useCameraDevice('back');
+    const { setIsLoading, setLoadingText, setError } = useInspectionStore();
     const [hasPermission, setHasPermission] = useState(false);
-    const [errorModalVisible, setErrorModalVisible] = useState(false);
-    const [errorMessage, setErrorMessage] = useState<string | null>(null);
-    const { width, height } = Dimensions.get('window');
+    const { width } = Dimensions.get('window');
 
     const takePicture = async () => {
-        if (cameraRef.current) {
-            try {
-                const photo = await cameraRef.current.takePhoto();
-                if (photo && photo.path) {
-                    setPhotoPreview('file://' + photo.path);
-                }
-            } catch (error) {
-                console.error('Error taking photo:', error);
+        if (!cameraRef.current) return;
+        try {
+            setIsLoading(true);
+            setLoadingText('Foto wird aufgenommen...');
+            const photo = await cameraRef.current.takePhoto();
+            if (photo?.path) {
+                setPhotoPreview('file://' + photo.path);
             }
+        } catch (error: any) {
+            console.error('Fehler beim Fotografieren:', error);
+            setError('Fehler beim Fotografieren.');
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -77,23 +80,15 @@ const TakePicture: React.FC<Props> = ({
             if (granted === PermissionsAndroid.RESULTS.GRANTED) {
                 setHasPermission(true);
             } else {
+                setError('Kamerazugriff verweigert.');
                 setHasPermission(false);
             }
         } catch (error) {
-            setErrorMessage(error.message);
-            setErrorModalVisible(true);
+            setError('Fehler beim Anfordern der Kameraberechtigung.');
             setHasPermission(false);
         }
     };
 
-    // Pronađi format sa najvećom rezolucijom
-    const findBestFormat = (device: CameraDevice) => {
-        return device?.formats
-            ?.filter((f) => Math.abs(f.photoWidth / f.photoHeight - 16 / 9) < 0.01) // Filtriraj samo 16:9
-            ?.sort((a, b) => b.photoWidth - a.photoWidth)[0]; // Najveća dostupna rezolucija
-    };
-
-    const format = device ? findBestFormat(device) : null;
     return (
         <Modal visible={visible} style={styles.container} animationType="fade">
             {photoPreview ? (
@@ -128,11 +123,6 @@ const TakePicture: React.FC<Props> = ({
             )}
             {!photoPreview && <CameraButton onPress={takePicture} />}
             <CloseCameraButton onPress={handleCloseCamera} />
-            <ErrorInformationModal
-                visible={errorModalVisible}
-                message={errorMessage}
-                onClose={() => setErrorModalVisible(false)}
-            />
         </Modal>
     );
 };

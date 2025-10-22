@@ -21,46 +21,32 @@ import {
     saveQuestionImage,
 } from '../../database/dataAccess/Command/sqlCommands';
 import IconButton from '../components/buttons/IconButton';
-import {
-    DeviceStateComponentsForInspection,
-    ImageGallery,
-    ImageTypesByDbTable,
-    TypedQuestionGroupForUI,
-} from '../../database/types';
+import { ImageGallery, ImageTypesByDbTable, TypedQuestionGroupForUI } from '../../database/types';
 import QuestionButton from '../components/buttons/QustionButton';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import PrimaryButton from '../components/buttons/PrimaryButton';
 import GalleryModal from '../components/modals/GalleryModal';
 import TakePicture from '../components/camera/TakePicture';
-import ErrorInformationModal from '../components/modals/ErrorInformationModal';
 import { IMAGE_TYPES } from '../helpers/constants';
 
 type NewInspectionScreenNavigationProp = NavigationProp<Record<string, object>, string>;
 
 const QuestionsScreen = () => {
+    const { setIsLoading, setLoadingText, setError } = useInspectionStore();
     const navigation = useNavigation<NewInspectionScreenNavigationProp>();
     const inspectionId = useInspectionStore((state) => state.inspectionId);
     const [questionsData, setQuestionsData] = useState<TypedQuestionGroupForUI[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
     const [responses, setResponses] = useState<
         Record<number, { answerId: string | null; comment: string }>
     >({});
-    const [selectedDeviceElementId, setSelectedDeviceElementId] = useState<string | null>(null);
     const [allCompleted, setAllCompleted] = useState<boolean>(false);
     const [selectedTab, setSelectedTab] = useState<number | null>(null);
     const [isCameraVisible, setCameraVisible] = useState(false);
-    const [errorModalVisible, setErrorModalVisible] = useState(false);
     const [imageSaveParams, setImageSaveParams] = useState<ImageDeviceStateSave | null>(null);
-    const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
     const [isGalleryVisible, setGalleryVisible] = useState(false);
     const [galleryImages, setGalleryImages] = useState<ImageGallery[]>([]);
     const [galeryTitle, setGalleryTitle] = useState<string | null>(null);
     const [photoPreview, setPhotoPreview] = useState<string | null>(null);
-    const [inspectionDeviceStateDetails, setInspectionDeviceStateDetails] = useState<
-        DeviceStateComponentsForInspection[]
-    >([]);
-    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const onPressGallery = async (questionId: string) => {
         try {
@@ -76,8 +62,7 @@ const QuestionsScreen = () => {
             setGalleryVisible(true);
         } catch (error) {
             console.error('Failed to load question images:', error);
-            setErrorMessage('Greška pri učitavanju slika.');
-            setErrorModalVisible(true);
+            setError('Fehler beim Laden der Bilder.');
         }
     };
 
@@ -92,6 +77,9 @@ const QuestionsScreen = () => {
     useEffect(() => {
         const fetchQuestions = async () => {
             try {
+                setIsLoading(true);
+                setLoadingText('Lade Fragen...');
+
                 const data = await getInspectionQuestions(inspectionId);
                 setQuestionsData(data);
 
@@ -122,7 +110,8 @@ const QuestionsScreen = () => {
             } catch (err) {
                 setError('Fehler beim Abrufen der Fragen');
             } finally {
-                setLoading(false);
+                setIsLoading(false);
+                setLoadingText(null);
             }
         };
 
@@ -204,66 +193,6 @@ const QuestionsScreen = () => {
         setImageSaveParams({ questionId, groupId });
     };
 
-    const handleDeviceStateGalleryClick = async (titleId: number, groupTypeId: number) => {
-        if (!inspectionDeviceStateDetails) {
-            console.error('InspectionDeviceStateDetails is not loaded.');
-            return;
-        }
-
-        const group = inspectionDeviceStateDetails.find((group) =>
-            group.titleComponents.some((title) =>
-                title.deviceStateComponents.some(
-                    (deviceState) =>
-                        deviceState.titleComponentId === titleId &&
-                        deviceState.groupTypeId === groupTypeId,
-                ),
-            ),
-        );
-
-        if (!group) {
-            console.error(
-                `Group containing titleId: ${titleId} and groupTypeId: ${groupTypeId} not found`,
-            );
-            return;
-        }
-
-        const title = group.titleComponents.find((title) =>
-            title.deviceStateComponents.some(
-                (deviceState) =>
-                    deviceState.titleComponentId === titleId &&
-                    deviceState.groupTypeId === groupTypeId,
-            ),
-        );
-
-        if (!title) {
-            console.error(
-                `Title with titleId: ${titleId} and groupTypeId: ${groupTypeId} not found`,
-            );
-            return;
-        }
-
-        const galleryTitle = `${group.groupTypeName} - ${title.name}`;
-        setGalleryTitle(galleryTitle);
-
-        if (selectedElementId) {
-            const deviceImages = await getInspectionQuestionImages(selectedElementId);
-            if (deviceImages && deviceImages.length > 0) {
-                setGalleryImages(
-                    deviceImages.map((image) => ({
-                        imageId: image.id,
-                        imagePath: image.storagePath,
-                        imageType:
-                            IMAGE_TYPES.Inspection_Element_Title_Group_Image as ImageTypesByDbTable,
-                    })),
-                );
-
-                setGalleryVisible(true);
-            } else {
-                console.log('No images found for this titleId and groupTypeId.');
-            }
-        }
-    };
-
     const handleSaveDeviceElementImage = async (path: string, questionId: string) => {
         try {
             const record = {
@@ -274,8 +203,7 @@ const QuestionsScreen = () => {
             console.log('Image saved successfully');
         } catch (error) {
             console.error('Error saving device element image:', error);
-            setErrorMessage('Failed to save the image. Please try again.');
-            setErrorModalVisible(true);
+            setError('Fehler beim Speichern des Bildes. Bitte versuchen Sie es erneut.');
         }
     };
 
@@ -284,11 +212,6 @@ const QuestionsScreen = () => {
             style={styles.container}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
-            <ErrorInformationModal
-                visible={errorModalVisible}
-                message={errorMessage}
-                onClose={() => setErrorModalVisible(false)}
-            />
             <GalleryModal
                 visible={isGalleryVisible}
                 images={galleryImages}
@@ -312,179 +235,167 @@ const QuestionsScreen = () => {
                 setPhotoPreview={setPhotoPreview}
             />
             <GestureHandlerRootView style={styles.scrollContainer}>
-                {loading ? (
-                    <Text>Laden...</Text>
-                ) : error ? (
-                    <Text style={styles.error}>{error}</Text>
-                ) : (
-                    <>
-                        {/* Tabs za inspekcije */}
-                        <View style={styles.tabsContainer}>
-                            {questionsData.map((type) => (
-                                <TouchableOpacity
-                                    key={type.inspectionTypeId}
+                <>
+                    {/* Tabs za inspekcije */}
+                    <View style={styles.tabsContainer}>
+                        {questionsData.map((type) => (
+                            <TouchableOpacity
+                                key={type.inspectionTypeId}
+                                style={[
+                                    styles.tab,
+                                    selectedTab === type.inspectionTypeId && styles.activeTab,
+                                ]}
+                                onPress={() => setSelectedTab(type.inspectionTypeId)}
+                            >
+                                <Text
+                                    numberOfLines={1}
+                                    ellipsizeMode="tail"
+                                    adjustsFontSizeToFit
+                                    minimumFontScale={0.8}
                                     style={[
-                                        styles.tab,
-                                        selectedTab === type.inspectionTypeId && styles.activeTab,
+                                        styles.tabText,
+                                        selectedTab === type.inspectionTypeId &&
+                                            styles.activeTabText,
                                     ]}
-                                    onPress={() => setSelectedTab(type.inspectionTypeId)}
                                 >
-                                    <Text
-                                        numberOfLines={1}
-                                        ellipsizeMode="tail"
-                                        adjustsFontSizeToFit
-                                        minimumFontScale={0.8}
-                                        style={[
-                                            styles.tabText,
-                                            selectedTab === type.inspectionTypeId &&
-                                                styles.activeTabText,
-                                        ]}
-                                    >
-                                        {type.inspectionTypeName}
-                                    </Text>
-                                </TouchableOpacity>
-                            ))}
-                        </View>
+                                    {type.inspectionTypeName}
+                                </Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
 
-                        {/* Prikaz pitanja za izabranu inspekciju */}
-                        <ScrollView style={styles.scrollView}>
-                            {questionsData
-                                .filter((type) => type.inspectionTypeId === selectedTab)
-                                .map((type) => (
-                                    <View
-                                        key={type.inspectionTypeId}
-                                        style={styles.inspectionContainer}
-                                    >
-                                        {type.questionsByGroup.map((group) => (
-                                            <View key={group.groupId} style={styles.groupContainer}>
-                                                <View style={styles.groupHeader}>
-                                                    <Text
-                                                        style={styles.groupTitle}
-                                                        numberOfLines={2}
-                                                        ellipsizeMode="middle"
-                                                    >
-                                                        {group.name}
-                                                    </Text>
+                    {/* Prikaz pitanja za izabranu inspekciju */}
+                    <ScrollView style={styles.scrollView}>
+                        {questionsData
+                            .filter((type) => type.inspectionTypeId === selectedTab)
+                            .map((type) => (
+                                <View
+                                    key={type.inspectionTypeId}
+                                    style={styles.inspectionContainer}
+                                >
+                                    {type.questionsByGroup.map((group) => (
+                                        <View key={group.groupId} style={styles.groupContainer}>
+                                            <View style={styles.groupHeader}>
+                                                <Text
+                                                    style={styles.groupTitle}
+                                                    numberOfLines={2}
+                                                    ellipsizeMode="middle"
+                                                >
+                                                    {group.name}
+                                                </Text>
 
-                                                    {group.questions.length > 0 && (
-                                                        <TouchableOpacity
-                                                            style={styles.allYesButton}
-                                                            onPress={() => {
-                                                                const hasNein =
-                                                                    group.questions.some(
-                                                                        (q) =>
-                                                                            responses[
-                                                                                q
-                                                                                    .inspectionQuestionId
-                                                                            ]?.answerId === 2,
-                                                                    );
-
-                                                                if (hasNein) {
-                                                                    setErrorMessage(
-                                                                        'Mindestens eine Frage wurde mit "Nein" beantwortet.',
-                                                                    );
-                                                                    setErrorModalVisible(true);
-                                                                } else {
-                                                                    group.questions.forEach((q) => {
-                                                                        handleResponse(
-                                                                            q.inspectionQuestionId,
-                                                                            'Ja',
-                                                                        );
-                                                                    });
-                                                                }
-                                                            }}
-                                                        >
-                                                            <Text style={styles.allYesButtonText}>
-                                                                JA
-                                                            </Text>
-                                                        </TouchableOpacity>
-                                                    )}
-                                                </View>
-                                                {group.questions.map((q) => (
-                                                    <View
-                                                        key={q.inspectionQuestionId}
-                                                        style={styles.questionContainer}
-                                                    >
-                                                        <Text style={styles.questionText}>
-                                                            {q.questionNumber}. {q.fullDescription}
-                                                        </Text>
-                                                        <View style={styles.buttonContainer}>
-                                                            {[
-                                                                {
-                                                                    label: 'Ja',
-                                                                    color: customColors.greenMid,
-                                                                },
-                                                                {
-                                                                    label: 'Nein',
-                                                                    color: customColors.redLight,
-                                                                },
-                                                                {
-                                                                    label: 'Nicht relevant',
-                                                                    color: '#9E9E9E',
-                                                                },
-                                                            ].map(({ label, color }) => (
-                                                                <QuestionButton
-                                                                    key={label}
-                                                                    label={label}
-                                                                    responses={responses}
-                                                                    q={q}
-                                                                    color={color}
-                                                                    handleResponse={handleResponse}
-                                                                />
-                                                            ))}
-                                                        </View>
-                                                        <View style={styles.buttonContainer}>
-                                                            <TextInput
-                                                                style={styles.commentInput}
-                                                                placeholder="Kommentar eingeben..."
-                                                                value={
+                                                {group.questions.length > 0 && (
+                                                    <TouchableOpacity
+                                                        style={styles.allYesButton}
+                                                        onPress={() => {
+                                                            const hasNein = group.questions.some(
+                                                                (q) =>
                                                                     responses[
                                                                         q.inspectionQuestionId
-                                                                    ]?.comment || ''
-                                                                }
-                                                                onChangeText={(text) =>
-                                                                    handleCommentChange(
+                                                                    ]?.answerId === 2,
+                                                            );
+
+                                                            if (hasNein) {
+                                                                setError(
+                                                                    'Mindestens eine Frage wurde mit "Nein" beantwortet.',
+                                                                );
+                                                            } else {
+                                                                group.questions.forEach((q) => {
+                                                                    handleResponse(
                                                                         q.inspectionQuestionId,
-                                                                        text,
+                                                                        'Ja',
+                                                                    );
+                                                                });
+                                                            }
+                                                        }}
+                                                    >
+                                                        <Text style={styles.allYesButtonText}>
+                                                            JA
+                                                        </Text>
+                                                    </TouchableOpacity>
+                                                )}
+                                            </View>
+                                            {group.questions.map((q) => (
+                                                <View
+                                                    key={q.inspectionQuestionId}
+                                                    style={styles.questionContainer}
+                                                >
+                                                    <Text style={styles.questionText}>
+                                                        {q.questionNumber}. {q.fullDescription}
+                                                    </Text>
+                                                    <View style={styles.buttonContainer}>
+                                                        {[
+                                                            {
+                                                                label: 'Ja',
+                                                                color: customColors.greenMid,
+                                                            },
+                                                            {
+                                                                label: 'Nein',
+                                                                color: customColors.redLight,
+                                                            },
+                                                            {
+                                                                label: 'Nicht relevant',
+                                                                color: '#9E9E9E',
+                                                            },
+                                                        ].map(({ label, color }) => (
+                                                            <QuestionButton
+                                                                key={label}
+                                                                label={label}
+                                                                responses={responses}
+                                                                q={q}
+                                                                color={color}
+                                                                handleResponse={handleResponse}
+                                                            />
+                                                        ))}
+                                                    </View>
+                                                    <View style={styles.buttonContainer}>
+                                                        <TextInput
+                                                            style={styles.commentInput}
+                                                            placeholder="Kommentar eingeben..."
+                                                            value={
+                                                                responses[q.inspectionQuestionId]
+                                                                    ?.comment || ''
+                                                            }
+                                                            onChangeText={(text) =>
+                                                                handleCommentChange(
+                                                                    q.inspectionQuestionId,
+                                                                    text,
+                                                                )
+                                                            }
+                                                            onBlur={() =>
+                                                                handleCommentBlur(
+                                                                    q.inspectionQuestionId,
+                                                                )
+                                                            }
+                                                        />
+                                                        <View style={styles.cameraIconsContainer}>
+                                                            <IconButton
+                                                                icon="camera"
+                                                                onPress={() =>
+                                                                    toggleCameraDevice(
+                                                                        q.inspectionQuestionId,
+                                                                        Number(group.groupId),
                                                                     )
                                                                 }
-                                                                onBlur={() =>
-                                                                    handleCommentBlur(
+                                                            />
+                                                            <IconButton
+                                                                icon="image"
+                                                                onPress={() =>
+                                                                    onPressGallery(
                                                                         q.inspectionQuestionId,
                                                                     )
                                                                 }
                                                             />
-                                                            <View
-                                                                style={styles.cameraIconsContainer}
-                                                            >
-                                                                <IconButton
-                                                                    icon="camera"
-                                                                    onPress={() =>
-                                                                        toggleCameraDevice(
-                                                                            q.inspectionQuestionId,
-                                                                            Number(group.groupId),
-                                                                        )
-                                                                    }
-                                                                />
-                                                                <IconButton
-                                                                    icon="image"
-                                                                    onPress={() =>
-                                                                        onPressGallery(
-                                                                            q.inspectionQuestionId,
-                                                                        )
-                                                                    }
-                                                                />
-                                                            </View>
                                                         </View>
                                                     </View>
-                                                ))}
-                                            </View>
-                                        ))}
-                                    </View>
-                                ))}
-                        </ScrollView>
-                    </>
-                )}
+                                                </View>
+                                            ))}
+                                        </View>
+                                    ))}
+                                </View>
+                            ))}
+                    </ScrollView>
+                </>
             </GestureHandlerRootView>
             <View style={styles.rightAlign}>
                 <PrimaryButton

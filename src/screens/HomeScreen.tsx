@@ -1,24 +1,15 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, ScrollView } from 'react-native';
+import { StyleSheet, View, ScrollView } from 'react-native';
 import PrimaryButton from '../components/buttons/PrimaryButton';
 import SubmitButton from '../components/buttons/SubmitButton';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import EmojisContainer from '../components/table/DeviceState';
-import EmojisColumnContainer from '../components/containers/DeviceStateTableContainer';
 import InputText from '../components/input/InputText';
 import InputNumber from '../components/input/InputNumeric';
-import AssemblyPartsSourceContainer from '../components/containers/AssemblyPartsSourceContainer';
 import ZoneButton from '../components/buttons/ZoneButton';
 
 const HomeScreen = () => {
-    const [selectedTab, setSelectedTab] = useState('Tab 1');
     const [inputValue, setInputValue] = useState<number | null>(null);
     const [inputTextValue, setInputTextValue] = useState<string>('');
-    const image1 = 'aussenluftkanal';
-    const image2 = 'gefahrstoffschran';
-    const image3 = 'schalldampfer';
-
-    const pickerPlaceholder = 'Select a tab...';
 
     return (
         <GestureHandlerRootView style={styles.scrollContainer}>
@@ -28,17 +19,6 @@ const HomeScreen = () => {
                         <PrimaryButton title="Dugme" onPress={() => {}} />
                         <SubmitButton isDisabled={false} value="Submit" />
                     </View>
-                    {/* <AssemblyPartsSourceContainer
-                        selectedTab={selectedTab}
-                        setSelectedTab={setSelectedTab}
-                        pickerPlaceholder={pickerPlaceholder}
-                        images={[image1, image2, image3]}
-                    />
-                    <EmojisColumnContainer title="ANLAGE" isComplited={true}>
-                        <EmojisContainer description="Analge" green red yellow orange />
-                        <EmojisContainer description="Analge" green red yellow orange />
-                        <EmojisContainer description="Analge" green red yellow orange />
-                    </EmojisColumnContainer> */}
                 </View>
                 <InputText
                     value={inputTextValue}
