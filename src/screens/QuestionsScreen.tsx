@@ -1,14 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-    View,
-    Text,
-    ScrollView,
-    StyleSheet,
-    TextInput,
-    KeyboardAvoidingView,
-    Platform,
-    TouchableOpacity,
-} from 'react-native';
+import { View, ScrollView, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { customColors } from '../assets/styles/customStyles';
 import { useInspectionStore } from '../store/store';
@@ -20,14 +11,13 @@ import {
     saveInspectionQuestion,
     saveQuestionImage,
 } from '../../database/dataAccess/Command/sqlCommands';
-import IconButton from '../components/buttons/IconButton';
 import { ImageGallery, ImageTypesByDbTable, TypedQuestionGroupForUI } from '../../database/types';
-import QuestionButton from '../components/buttons/QustionButton';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import PrimaryButton from '../components/buttons/PrimaryButton';
 import GalleryModal from '../components/modals/GalleryModal';
 import TakePicture from '../components/camera/TakePicture';
 import { IMAGE_TYPES } from '../helpers/constants';
+import { RenderTabs, RenderQuestionsByType } from '../components/questions_screen_content';
 
 type NewInspectionScreenNavigationProp = NavigationProp<Record<string, object>, string>;
 
@@ -236,164 +226,27 @@ const QuestionsScreen = () => {
             />
             <GestureHandlerRootView style={styles.scrollContainer}>
                 <>
-                    {/* Tabs za inspekcije */}
-                    <View style={styles.tabsContainer}>
-                        {questionsData.map((type) => (
-                            <TouchableOpacity
-                                key={type.inspectionTypeId}
-                                style={[
-                                    styles.tab,
-                                    selectedTab === type.inspectionTypeId && styles.activeTab,
-                                ]}
-                                onPress={() => setSelectedTab(type.inspectionTypeId)}
-                            >
-                                <Text
-                                    numberOfLines={1}
-                                    ellipsizeMode="tail"
-                                    adjustsFontSizeToFit
-                                    minimumFontScale={0.8}
-                                    style={[
-                                        styles.tabText,
-                                        selectedTab === type.inspectionTypeId &&
-                                            styles.activeTabText,
-                                    ]}
-                                >
-                                    {type.inspectionTypeName}
-                                </Text>
-                            </TouchableOpacity>
-                        ))}
-                    </View>
+                    <RenderTabs
+                        questionsData={questionsData}
+                        selectedTab={selectedTab}
+                        setSelectedTab={setSelectedTab}
+                    />
 
                     {/* Prikaz pitanja za izabranu inspekciju */}
                     <ScrollView style={styles.scrollView}>
-                        {questionsData
-                            .filter((type) => type.inspectionTypeId === selectedTab)
-                            .map((type) => (
-                                <View
-                                    key={type.inspectionTypeId}
-                                    style={styles.inspectionContainer}
-                                >
-                                    {type.questionsByGroup.map((group) => (
-                                        <View key={group.groupId} style={styles.groupContainer}>
-                                            <View style={styles.groupHeader}>
-                                                <Text
-                                                    style={styles.groupTitle}
-                                                    numberOfLines={2}
-                                                    ellipsizeMode="middle"
-                                                >
-                                                    {group.name}
-                                                </Text>
-
-                                                {group.questions.length > 0 && (
-                                                    <TouchableOpacity
-                                                        style={styles.allYesButton}
-                                                        onPress={() => {
-                                                            const hasNein = group.questions.some(
-                                                                (q) =>
-                                                                    responses[
-                                                                        q.inspectionQuestionId
-                                                                    ]?.answerId === 2,
-                                                            );
-
-                                                            if (hasNein) {
-                                                                setError(
-                                                                    'Mindestens eine Frage wurde mit "Nein" beantwortet.',
-                                                                );
-                                                            } else {
-                                                                group.questions.forEach((q) => {
-                                                                    handleResponse(
-                                                                        q.inspectionQuestionId,
-                                                                        'Ja',
-                                                                    );
-                                                                });
-                                                            }
-                                                        }}
-                                                    >
-                                                        <Text style={styles.allYesButtonText}>
-                                                            JA
-                                                        </Text>
-                                                    </TouchableOpacity>
-                                                )}
-                                            </View>
-                                            {group.questions.map((q) => (
-                                                <View
-                                                    key={q.inspectionQuestionId}
-                                                    style={styles.questionContainer}
-                                                >
-                                                    <Text style={styles.questionText}>
-                                                        {q.questionNumber}. {q.fullDescription}
-                                                    </Text>
-                                                    <View style={styles.buttonContainer}>
-                                                        {[
-                                                            {
-                                                                label: 'Ja',
-                                                                color: customColors.greenMid,
-                                                            },
-                                                            {
-                                                                label: 'Nein',
-                                                                color: customColors.redLight,
-                                                            },
-                                                            {
-                                                                label: 'Nicht relevant',
-                                                                color: '#9E9E9E',
-                                                            },
-                                                        ].map(({ label, color }) => (
-                                                            <QuestionButton
-                                                                key={label}
-                                                                label={label}
-                                                                responses={responses}
-                                                                q={q}
-                                                                color={color}
-                                                                handleResponse={handleResponse}
-                                                            />
-                                                        ))}
-                                                    </View>
-                                                    <View style={styles.buttonContainer}>
-                                                        <TextInput
-                                                            style={styles.commentInput}
-                                                            placeholder="Kommentar eingeben..."
-                                                            value={
-                                                                responses[q.inspectionQuestionId]
-                                                                    ?.comment || ''
-                                                            }
-                                                            onChangeText={(text) =>
-                                                                handleCommentChange(
-                                                                    q.inspectionQuestionId,
-                                                                    text,
-                                                                )
-                                                            }
-                                                            onBlur={() =>
-                                                                handleCommentBlur(
-                                                                    q.inspectionQuestionId,
-                                                                )
-                                                            }
-                                                        />
-                                                        <View style={styles.cameraIconsContainer}>
-                                                            <IconButton
-                                                                icon="camera"
-                                                                onPress={() =>
-                                                                    toggleCameraDevice(
-                                                                        q.inspectionQuestionId,
-                                                                        Number(group.groupId),
-                                                                    )
-                                                                }
-                                                            />
-                                                            <IconButton
-                                                                icon="image"
-                                                                onPress={() =>
-                                                                    onPressGallery(
-                                                                        q.inspectionQuestionId,
-                                                                    )
-                                                                }
-                                                            />
-                                                        </View>
-                                                    </View>
-                                                </View>
-                                            ))}
-                                        </View>
-                                    ))}
-                                </View>
-                            ))}
+                        <RenderQuestionsByType
+                            questionsData={questionsData}
+                            selectedTab={selectedTab}
+                            responses={responses}
+                            handleResponse={handleResponse}
+                            handleCommentChange={handleCommentChange}
+                            handleCommentBlur={handleCommentBlur}
+                            toggleCameraDevice={toggleCameraDevice}
+                            onPressGallery={onPressGallery}
+                            setIsLoading={setIsLoading}
+                            setLoadingText={setLoadingText}
+                            setError={setError}
+                        />
                     </ScrollView>
                 </>
             </GestureHandlerRootView>
@@ -431,7 +284,7 @@ const styles = StyleSheet.create({
         gap: 10,
     },
     inspectionContainer: {
-        marginBottom: 30, // Razmak između različitih inspekcija
+        marginBottom: 30,
         padding: 15,
         backgroundColor: customColors.blueLighter,
         borderRadius: 10,

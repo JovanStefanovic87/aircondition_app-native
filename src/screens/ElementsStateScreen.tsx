@@ -80,13 +80,17 @@ const ElementsStateScreen: React.FC = () => {
             try {
                 setIsLoading(true);
                 setLoadingText('Lade Geräte-Elemente...');
+
                 const result = await getInspectionElementStateDetails(
                     inspectionId,
                     selectedElementId,
                 );
-                if (result) {
+
+                if (result && result.length > 0) {
                     setInspectionDeviceStateDetails(result);
                     initializeCompletionStatus(result);
+                } else {
+                    setInspectionDeviceStateDetails([]);
                 }
             } catch (error) {
                 console.error('Error fetching inspection device state details:', error);
@@ -95,8 +99,9 @@ const ElementsStateScreen: React.FC = () => {
                 setIsLoading(false);
             }
         };
+
         fetchInitialData();
-    }, [selectedElementId, inspectionId, selectedDeviceElementId]);
+    }, [inspectionId, selectedElementId, selectedDeviceElementId]);
 
     const isCompleteCheckPerElement = async () => {
         const elementCheck = await getDeviceElementCompletionState(inspectionId);
@@ -445,7 +450,7 @@ const ElementsStateScreen: React.FC = () => {
                                         (component) => component.groupTypeId === groupIndex + 1,
                                     );
 
-                                    if (filteredComponents.length === 0) return null; // Ako nema podataka, preskačemo render
+                                    if (filteredComponents.length === 0) return null;
 
                                     return (
                                         <AutoFitTableContainer
@@ -454,7 +459,7 @@ const ElementsStateScreen: React.FC = () => {
                                         >
                                             <DeviceStateColumnContainer
                                                 title={`${group.groupTypeName} - ${titleName}`}
-                                                group={{ ...group, titleComponents: [title] }} // Osiguravamo da je title tačan
+                                                group={{ ...group, titleComponents: [title] }}
                                                 setIsGroupCompleted={(isCompleted) =>
                                                     updateCompletionStatus(groupId, isCompleted)
                                                 }

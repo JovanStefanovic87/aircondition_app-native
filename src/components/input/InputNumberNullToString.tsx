@@ -36,9 +36,13 @@ const InputNumberNullToString: React.FC<Props> = ({
         setIsTablet(isTabletDevice);
     }, []);
 
-    /*  useEffect(() => {
-        setInputText(!value ? 'z.A.' : value.toString());
-    }, [value]); */
+    useEffect(() => {
+        if (value === null || value === undefined || value === 0) {
+            setInputText('');
+        } else {
+            setInputText(value.toString());
+        }
+    }, [value]);
 
     const handleChange = (text: string) => {
         const formattedText = text.replace(/[^0-9.,]/g, '');
