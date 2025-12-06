@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { ReportData } from '../../components/pdfview/helpers/types';
 import {
     getInspectionByIdWithDetails,
+    getInspectionDeviceStateByGroupType,
     getInspectionDeviceStateForReport,
     getInspectionElementImagesByElementId,
     getInspectionElementsForReport,
@@ -28,6 +29,36 @@ export const usePdfReportData = (inspectionId: string) => {
             const inspection = await getInspectionByIdWithDetails(inspectionId);
             const inspectionImages = await getInspectionImages(inspectionId);
             const inspectionStateImages = await getInspectionStateImages(inspectionId);
+            const inspectionGeneralState = await getInspectionDeviceStateByGroupType(inspectionId);
+
+            const mappedState = Object.values(
+                inspectionGeneralState.reduce((acc, item) => {
+                    if (!item.value || item.value === 1) return acc;
+                    if (!acc[item.groupTypeName]) {
+                        acc[item.groupTypeName] = {
+                            groupTypeName: item.groupTypeName,
+                            issues: [],
+                        };
+                    }
+
+                    acc[item.groupTypeName].issues.push({
+                        title: item.titleComponentName,
+                        value: item.value,
+                        valueText: item.name,
+                        comment: item.note,
+                    });
+
+                    return acc;
+                }, {} as Record<string, { groupTypeName: string; issues: any[] }>),
+            );
+            const inspectionData = {
+                type: inspection.inspectionTypeName,
+                date: inspection.inspectionDate,
+                next: inspection.nextInspectionDate,
+                images: buildImagePathsWithS3Base(inspectionImages),
+                imagePaths: buildImagePathsWithS3Base(inspectionStateImages),
+                state: mappedState,
+            };
 
             const elements = await getInspectionElementsForReport(inspectionId);
             const titleComponentElementState: ElementResult[] = [];
@@ -122,18 +153,7 @@ export const usePdfReportData = (inspectionId: string) => {
                     lastMaintenance: inspection.lastMaintenance,
                     id: inspection.barcode,
                 },
-                inspection: {
-                    type: inspection.inspectionTypeName,
-                    date: inspection.inspectionDate,
-                    next: inspection.nextInspectionDate,
-                    images: buildImagePathsWithS3Base(inspectionImages),
-                    stateImages: [
-                        {
-                            title: 'ANLAGE',
-                            imagePaths: buildImagePathsWithS3Base(inspectionStateImages),
-                        },
-                    ],
-                },
+                inspection: inspectionData,
                 elements: elementsWithState,
                 elementState: titleComponentElementState,
             };

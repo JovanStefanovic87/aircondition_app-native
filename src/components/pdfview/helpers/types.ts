@@ -39,7 +39,8 @@ type Inspection = {
     date: string;
     next: string;
     images: string[];
-    stateImages: StateImage[];
+    imagePaths: string[];
+    state?: GroupState[];
 };
 
 type Image = {
