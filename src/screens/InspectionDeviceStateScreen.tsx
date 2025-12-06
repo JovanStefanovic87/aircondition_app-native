@@ -1,8 +1,4 @@
-/**
- * SECOND PAGE OF INSPECTION
- * General device state editing screen.
- */
-
+//src\screens\InspectionDeviceStateScreen.tsx
 import React, { useState, useEffect } from 'react';
 import { useInspectionStore } from '../store/store';
 import { StyleSheet, View, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
@@ -48,6 +44,7 @@ import GalleryModal from '../components/modals/GalleryModal';
 type NewInspectionScreenNavigationProp = NavigationProp<Record<string, object>, string>;
 
 const InspectionDeviceStateScreen = () => {
+    const { setIsLoading, setLoadingText, setError } = useInspectionStore();
     const navigation = useNavigation<NewInspectionScreenNavigationProp>();
     const newInspectionId = useInspectionStore((state) => state.inspectionId);
     const [inspection, setInspection] = useState<Inspection>(null);
@@ -55,7 +52,6 @@ const InspectionDeviceStateScreen = () => {
         useState<DeviceStateComponentsForInspection[]>(null);
     const [isCameraVisible, setCameraVisible] = useState(false);
     const [allCompleted, setAllCompleted] = useState<boolean[]>([]);
-    const [avatarSource, setAvatarSource] = useState(null);
     const [isInspectionImage, setIsInspectionImage] = useState(false);
     const [imageSaveParams, setImageSaveParams] = useState<ImageDeviceStateSave | null>(null);
     const [galleryImages, setGalleryImages] = useState<ImageGallery[]>([]);
@@ -65,13 +61,22 @@ const InspectionDeviceStateScreen = () => {
 
     useEffect(() => {
         const fetchInspectionDetails = async () => {
-            const inspectionDeviceStateDetailsResult = await getInspectionDeviceStateDetails(
-                newInspectionId,
-            );
+            try {
+                setIsLoading(true);
+                setLoadingText('Lade Inspektionsdetails...');
 
-            setInspectionDeviceStateDetails(inspectionDeviceStateDetailsResult);
-            const inspectionResult = await getInspectionById(newInspectionId);
-            setInspection(inspectionResult);
+                const [deviceStateDetails, inspectionData] = await Promise.all([
+                    getInspectionDeviceStateDetails(newInspectionId),
+                    getInspectionById(newInspectionId),
+                ]);
+
+                setInspectionDeviceStateDetails(deviceStateDetails);
+                setInspection(inspectionData);
+            } catch (err: any) {
+                setError('Fehler beim Laden der Inspektionsdetails.');
+            } finally {
+                setIsLoading(false);
+            }
         };
 
         fetchInspectionDetails();
@@ -111,87 +116,89 @@ const InspectionDeviceStateScreen = () => {
     };
 
     const handleGalleryClick = async () => {
-        const inspectionImages = await getInspectionImages(newInspectionId);
-        if (inspectionImages && inspectionImages.length > 0) {
-            const images = inspectionImages.map((image) => ({
-                imageId: image.id,
-                imagePath: image.storagePath,
-                imageType: IMAGE_TYPES.Inspection_Image as ImageTypesByDbTable,
-            }));
+        try {
+            setIsLoading(true);
+            setLoadingText('Bilder werden geladen...');
 
-            setGalleryImages(images);
-            setGalleryVisible(true);
+            const inspectionImages = await getInspectionImages(newInspectionId);
+            if (inspectionImages && inspectionImages.length > 0) {
+                const images = inspectionImages.map((image) => ({
+                    imageId: image.id,
+                    imagePath: image.storagePath,
+                    imageType: IMAGE_TYPES.Inspection_Image as ImageTypesByDbTable,
+                }));
+                setGalleryImages(images);
+                setGalleryVisible(true);
+            } else {
+                setError('Keine Bilder für diese Inspektion gefunden.');
+            }
+        } catch (err) {
+            setError('Fehler beim Laden der Bilder.');
+        } finally {
+            setIsLoading(false);
         }
     };
 
     const handleUploadFromDevice = async () => {
-        const result = await launchImageLibrary({ mediaType: 'photo' });
-        if (result.assets && result.assets.length > 0) {
-            const imagePath = result.assets[0].uri;
-            if (isInspectionImage) {
-                handleSaveInspectionImage(imagePath);
-            } else {
-                handleSaveDeviceStateImage(imagePath);
+        try {
+            setIsLoading(true);
+            setLoadingText('Bild wird hochgeladen...');
+            const result = await launchImageLibrary({ mediaType: 'photo' });
+            if (result.assets && result.assets.length > 0) {
+                const imagePath = result.assets[0].uri;
+                if (isInspectionImage) {
+                    handleSaveInspectionImage(imagePath);
+                } else {
+                    handleSaveDeviceStateImage(imagePath);
+                }
             }
+        } catch (err) {
+            setError('Fehler beim Hochladen des Bildes.');
+        } finally {
+            setIsLoading(false);
         }
     };
 
     const handleDeviceStateGalleryClick = async (titleId: number, groupTypeId: number) => {
-        if (!inspectionDeviceStateDetails) {
-            console.error('InspectionDeviceStateDetails is not loaded.');
-            return;
-        }
+        try {
+            setIsLoading(true);
+            setLoadingText('Gerätebilder werden geladen...');
 
-        const group = inspectionDeviceStateDetails.find((group) =>
-            group.titleComponents.some((title) =>
-                title.deviceStateComponents.some(
-                    (deviceState) =>
-                        deviceState.titleComponentId === titleId &&
-                        deviceState.groupTypeId === groupTypeId,
-                ),
-            ),
-        );
-
-        if (!group) {
-            console.error(
-                `Group containing titleId: ${titleId} and groupTypeId: ${groupTypeId} not found`,
+            const deviceImages = await getInspectionTitleGroupImages(
+                inspection.id,
+                titleId,
+                groupTypeId,
             );
-            return;
-        }
 
-        const title = group.titleComponents.find((title) =>
-            title.deviceStateComponents.some(
-                (deviceState) =>
-                    deviceState.titleComponentId === titleId &&
-                    deviceState.groupTypeId === groupTypeId,
-            ),
-        );
-
-        if (!title) {
-            console.error(
-                `Title with titleId: ${titleId} and groupTypeId: ${groupTypeId} not found`,
-            );
-            return;
-        }
-
-        const galleryTitle = `${group.groupTypeName} - ${title.name}`;
-        setGalleryTitle(galleryTitle);
-
-        const deviceImages = await getInspectionTitleGroupImages(
-            inspection.id,
-            titleId,
-            groupTypeId,
-        );
-        if (deviceImages && deviceImages.length > 0) {
-            const images = deviceImages.map((image) => ({
-                imageId: image.id,
-                imagePath: image.storagePath,
-                imageType: IMAGE_TYPES.Inspection_Element_Title_Group_Image as ImageTypesByDbTable,
-            }));
-            setGalleryImages(images);
-            setGalleryVisible(true);
-        } else {
-            console.log('No images found for this titleId and groupTypeId.');
+            if (deviceImages && deviceImages.length > 0) {
+                const images = deviceImages.map((image) => ({
+                    imageId: image.id,
+                    imagePath: image.storagePath,
+                    imageType:
+                        IMAGE_TYPES.Inspection_Element_Title_Group_Image as ImageTypesByDbTable,
+                }));
+                setGalleryImages(images);
+                const group = inspectionDeviceStateDetails.find((g) =>
+                    g.titleComponents.some((t) =>
+                        t.deviceStateComponents.some(
+                            (s) => s.titleComponentId === titleId && s.groupTypeId === groupTypeId,
+                        ),
+                    ),
+                );
+                const title = group?.titleComponents.find((t) =>
+                    t.deviceStateComponents.some(
+                        (s) => s.titleComponentId === titleId && s.groupTypeId === groupTypeId,
+                    ),
+                );
+                setGalleryTitle(`${group?.groupTypeName ?? ''} - ${title?.name ?? ''}`);
+                setGalleryVisible(true);
+            } else {
+                setError('Keine Bilder für diese Gruppe gefunden.');
+            }
+        } catch (err) {
+            setError('Fehler beim Laden der Gerätebilder.');
+        } finally {
+            setIsLoading(false);
         }
     };
 

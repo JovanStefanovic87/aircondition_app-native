@@ -1,8 +1,4 @@
-/**
- * FOURTH PAGE OF INSPECTION
- * Editing the state of the elements
- */
-
+//src\screens\ElementsStateScreen.tsx
 import React, { useEffect, useState } from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -37,7 +33,6 @@ import {
 } from '../../database/dataAccess/Command/sqlCommands';
 import { customColors } from '../assets/styles/customStyles';
 import PrimaryButton from '../components/buttons/PrimaryButton';
-import ErrorInformationModal from '../components/modals/ErrorInformationModal';
 import RowContainerFlex from '../components/containers/RowContainerFlex';
 import AutoFitTableContainer from '../components/containers/AutoFitTableContainer';
 import DeviceStateColumnContainer from '../components/containers/DeviceStateTableContainer';
@@ -53,6 +48,7 @@ import ElementImagesSection from '../components/image/ElementImagesSection';
 type NavScreenNavigationProp = NavigationProp<any, any>;
 
 const ElementsStateScreen: React.FC = () => {
+    const { setIsLoading, setLoadingText, setError } = useInspectionStore();
     const setInspectionDeviceElements = useInspectionDeviceElementsStore(
         (state) => state.setInspectionDeviceElements,
     );
@@ -66,8 +62,6 @@ const ElementsStateScreen: React.FC = () => {
         DeviceStateElementForInspection[]
     >([]);
     const [isCameraVisible, setCameraVisible] = useState(false);
-    const [errorModalVisible, setErrorModalVisible] = useState(false);
-    const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [elementCompleted, setElementCompleted] = useState<{ [key: string]: boolean } | null>(
         null,
     );
@@ -84,20 +78,30 @@ const ElementsStateScreen: React.FC = () => {
     useEffect(() => {
         const fetchInitialData = async () => {
             try {
+                setIsLoading(true);
+                setLoadingText('Lade Geräte-Elemente...');
+
                 const result = await getInspectionElementStateDetails(
                     inspectionId,
                     selectedElementId,
                 );
-                if (result) {
+
+                if (result && result.length > 0) {
                     setInspectionDeviceStateDetails(result);
                     initializeCompletionStatus(result);
+                } else {
+                    setInspectionDeviceStateDetails([]);
                 }
             } catch (error) {
                 console.error('Error fetching inspection device state details:', error);
+                setError('Fehler beim Laden der Geräte-Elemente.');
+            } finally {
+                setIsLoading(false);
             }
         };
+
         fetchInitialData();
-    }, [selectedElementId, inspectionId, selectedDeviceElementId]);
+    }, [inspectionId, selectedElementId, selectedDeviceElementId]);
 
     const isCompleteCheckPerElement = async () => {
         const elementCheck = await getDeviceElementCompletionState(inspectionId);
@@ -109,13 +113,16 @@ const ElementsStateScreen: React.FC = () => {
     useEffect(() => {
         const fetchInspectionType = async () => {
             try {
+                setIsLoading(true);
+                setLoadingText('Lade Inspektionstyp...');
                 const type = await getInspectionType(inspectionId);
                 setInspectionType(type);
             } catch (error) {
-                console.error('Error fetching inspection type:', error);
+                setError('Fehler beim Laden des Inspektionstyps.');
+            } finally {
+                setIsLoading(false);
             }
         };
-
         fetchInspectionType();
     }, [inspectionId]);
 
@@ -162,8 +169,6 @@ const ElementsStateScreen: React.FC = () => {
             }
         } catch (error) {
             console.error('Error uploading image:', error);
-            setErrorMessage('Fehler beim Hochladen des Bildes.');
-            setErrorModalVisible(true);
         }
     };
 
@@ -253,8 +258,7 @@ const ElementsStateScreen: React.FC = () => {
                 navigation.navigate('AllInspectionsScreen');
             }
         } else {
-            setErrorMessage('Niet alle elementen zijn voltooid. Vul alstublieft alle velden in.');
-            setErrorModalVisible(true);
+            setError('Nicht alle Elemente sind abgeschlossen. Bitte füllen Sie alle Felder aus.');
         }
     };
 
@@ -337,11 +341,14 @@ const ElementsStateScreen: React.FC = () => {
         setInspectionDeviceElements: (elements: InspectionDeviceElement[]) => void,
     ) => {
         try {
+            setIsLoading(true);
+            setLoadingText('Lade Inspektionsgeräte...');
             const elements = await getInspectionDeviceElements(inspectionId);
             setInspectionDeviceElements(elements);
         } catch (error) {
-            setErrorMessage(error.message);
-            setErrorModalVisible(true);
+            setError('Fehler beim Laden der Geräte-Elemente.');
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -371,23 +378,19 @@ const ElementsStateScreen: React.FC = () => {
         groupTypeId: number,
     ) => {
         try {
-            const record = {
-                storagePath: path,
-                name: 'Inspection_Element_Title_Group_Image',
-            };
-
-            // Save the image record with the updated API
+            setIsLoading(true);
+            setLoadingText('Speichere Bild...');
+            const record = { storagePath: path, name: 'Inspection_Element_Title_Group_Image' };
             await saveInspectionElementTitleGroupImage(
                 inspectionDeviceElementId,
                 titleId,
                 groupTypeId,
                 record,
             );
-            console.log('Image saved successfully');
         } catch (error) {
-            console.error('Error saving device element image:', error);
-            setErrorMessage('Failed to save the image. Please try again.');
-            setErrorModalVisible(true);
+            setError('Fehler beim Speichern des Bildes.');
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -447,7 +450,7 @@ const ElementsStateScreen: React.FC = () => {
                                         (component) => component.groupTypeId === groupIndex + 1,
                                     );
 
-                                    if (filteredComponents.length === 0) return null; // Ako nema podataka, preskačemo render
+                                    if (filteredComponents.length === 0) return null;
 
                                     return (
                                         <AutoFitTableContainer
@@ -456,7 +459,7 @@ const ElementsStateScreen: React.FC = () => {
                                         >
                                             <DeviceStateColumnContainer
                                                 title={`${group.groupTypeName} - ${titleName}`}
-                                                group={{ ...group, titleComponents: [title] }} // Osiguravamo da je title tačan
+                                                group={{ ...group, titleComponents: [title] }}
                                                 setIsGroupCompleted={(isCompleted) =>
                                                     updateCompletionStatus(groupId, isCompleted)
                                                 }
@@ -510,11 +513,6 @@ const ElementsStateScreen: React.FC = () => {
                     isDisabled={!allElementsCompleted}
                 />
             </View>
-            <ErrorInformationModal
-                visible={errorModalVisible}
-                message={errorMessage}
-                onClose={() => setErrorModalVisible(false)}
-            />
         </View>
     );
 };

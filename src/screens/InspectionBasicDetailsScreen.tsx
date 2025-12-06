@@ -1,9 +1,4 @@
-/**
- * FIRST PAGE OF INSPECTION
- * Creating a new inspection with basic details
- * Input fields for barcode, device type, facility name, location, inspection type, contract number
- */
-
+//src\screens\InspectionBasicDetailsScreen.tsx
 import React, { useState, useEffect } from 'react';
 import {
     StyleSheet,
@@ -46,6 +41,7 @@ type InspectionType = {
 };
 
 const InspectionBasicDetailsScreen = () => {
+    const { setIsLoading, setLoadingText, setError } = useInspectionStore();
     const navigation = useNavigation<NewInspectionScreenNavigationProp>();
     const inspectionId = useInspectionStore((state) => state.inspectionId);
     const [isScannerOpen, setScannerOpen] = useState(false);
@@ -82,20 +78,31 @@ const InspectionBasicDetailsScreen = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const fetchedDeviceTypes = await getDeviceTypes();
-            const fetchedInspectionTypes = await getInspectionTypes();
-            setDeviceTypes(fetchedDeviceTypes);
-            setInspectionTypes(fetchedInspectionTypes);
+            try {
+                setIsLoading(true);
+                setLoadingText('Lade Gerätetypen und Inspektionstypen...');
 
-            if (!form.userId) {
-                const storedUser = await getStoredUser();
-                //ovde dobijam null
-                const userId = storedUser?.id ?? '';
-                if (!userId) {
-                    console.log('Fehler: Kein Benutzer angemeldet');
-                    return;
+                const [fetchedDeviceTypes, fetchedInspectionTypes] = await Promise.all([
+                    getDeviceTypes(),
+                    getInspectionTypes(),
+                ]);
+
+                setDeviceTypes(fetchedDeviceTypes);
+                setInspectionTypes(fetchedInspectionTypes);
+
+                if (!form.userId) {
+                    const storedUser = await getStoredUser();
+                    const userId = storedUser?.id ?? '';
+                    if (!userId) {
+                        setError('Kein Benutzer angemeldet.');
+                        return;
+                    }
+                    setForm((prevForm) => ({ ...prevForm, userId }));
                 }
-                setForm((prevForm) => ({ ...prevForm, userId }));
+            } catch (err: any) {
+                setError('Fehler beim Laden der Gerätetypen.');
+            } finally {
+                setIsLoading(false);
             }
         };
 
@@ -105,30 +112,38 @@ const InspectionBasicDetailsScreen = () => {
     useEffect(() => {
         const fetchInspectionData = async () => {
             if (!inspectionId) return;
+            try {
+                setIsLoading(true);
+                setLoadingText('Inspektionsdaten werden geladen...');
 
-            const inspectionData = await getInspectionById(inspectionId);
-            const storedUser = await getStoredUser();
-            const fallbackUserId = storedUser?.id ?? '';
+                const inspectionData = await getInspectionById(inspectionId);
+                const storedUser = await getStoredUser();
+                const fallbackUserId = storedUser?.id ?? '';
 
-            if (inspectionData) {
-                setForm({
-                    clientName: inspectionData.clientName ?? '',
-                    clientAddress: inspectionData.clientAddress ?? '',
-                    clientCity: inspectionData.clientCity ?? '',
-                    endClientName: inspectionData.endClientName ?? '',
-                    endClientAddress: inspectionData.endClientAddress ?? '',
-                    endClientCity: inspectionData.endClientCity ?? '',
-                    barcode: inspectionData.barcode ?? '',
-                    deviceTypeId: inspectionData.deviceTypeId ?? null,
-                    inspectionTypeId: inspectionData.inspectionTypeId ?? null,
-                    facilityName: inspectionData.facilityName ?? '',
-                    location: inspectionData.location ?? '',
-                    contractNumber: inspectionData.contractNumber ?? '',
-                    createdAt: inspectionData.createdAt ?? '',
-                    inspectionDate: inspectionData.inspectionDate ?? '',
-                    userId: inspectionData.userId ?? fallbackUserId,
-                    inspectionStatusId: inspectionData.inspectionStatusId ?? 0,
-                });
+                if (inspectionData) {
+                    setForm({
+                        clientName: inspectionData.clientName ?? '',
+                        clientAddress: inspectionData.clientAddress ?? '',
+                        clientCity: inspectionData.clientCity ?? '',
+                        endClientName: inspectionData.endClientName ?? '',
+                        endClientAddress: inspectionData.endClientAddress ?? '',
+                        endClientCity: inspectionData.endClientCity ?? '',
+                        barcode: inspectionData.barcode ?? '',
+                        deviceTypeId: inspectionData.deviceTypeId ?? null,
+                        inspectionTypeId: inspectionData.inspectionTypeId ?? null,
+                        facilityName: inspectionData.facilityName ?? '',
+                        location: inspectionData.location ?? '',
+                        contractNumber: inspectionData.contractNumber ?? '',
+                        createdAt: inspectionData.createdAt ?? '',
+                        inspectionDate: inspectionData.inspectionDate ?? '',
+                        userId: inspectionData.userId ?? fallbackUserId,
+                        inspectionStatusId: inspectionData.inspectionStatusId ?? 0,
+                    });
+                }
+            } catch (err: any) {
+                setError('Fehler beim Laden der Inspektion.');
+            } finally {
+                setIsLoading(false);
             }
         };
 
@@ -136,7 +151,6 @@ const InspectionBasicDetailsScreen = () => {
     }, [inspectionId]);
 
     const submit = async () => {
-        // Revalidate all fields on every submit
         const errors: string[] = [];
         const newValidation: Record<string, boolean> = {
             barcode: true,
@@ -159,31 +173,38 @@ const InspectionBasicDetailsScreen = () => {
             newValidation.barcode = false;
         }
 
-        // Update validation state
         setValidation(newValidation);
 
         if (errors.length > 0) {
-            console.log(errors.map((error) => `${error} is required`));
+            setError('Bitte alle Pflichtfelder ausfüllen.');
             return;
         }
 
-        if (inspectionId) {
-            // ✅ UPDATE postojeće inspekcije
-            await saveInspection({ ...form, id: inspectionId });
-            console.log('Izmena inspekcije:', inspectionId);
+        try {
+            setIsLoading(true);
+            setLoadingText(
+                inspectionId
+                    ? 'Inspektion wird aktualisiert...'
+                    : 'Neue Inspektion wird gespeichert...',
+            );
 
-            useInspectionStore.getState().setInspectionId(inspectionId);
-            (navigation as any).replace('InspectionDeviceStateScreen', { inspectionId });
-        } else {
-            // ✅ NOVO kreiranje inspekcije
-            const formattedCreatedAt = moment().format('YYYY-MM-DDTHH:mm:ss[Z]');
-            const newId = await saveInspection({ ...form, createdAt: formattedCreatedAt });
-            console.log('Nova inspekcija:', newId);
-
-            if (newId) {
-                useInspectionStore.getState().setInspectionId(newId);
-                (navigation as any).replace('InspectionDeviceStateScreen', { inspectionId: newId });
+            if (inspectionId) {
+                await saveInspection({ ...form, id: inspectionId });
+                (navigation as any).replace('InspectionDeviceStateScreen', { inspectionId });
+            } else {
+                const formattedCreatedAt = moment().format('YYYY-MM-DDTHH:mm:ss[Z]');
+                const newId = await saveInspection({ ...form, createdAt: formattedCreatedAt });
+                if (newId) {
+                    useInspectionStore.getState().setInspectionId(newId);
+                    (navigation as any).replace('InspectionDeviceStateScreen', {
+                        inspectionId: newId,
+                    });
+                }
             }
+        } catch (err: any) {
+            setError('Fehler beim Speichern der Inspektion.');
+        } finally {
+            setIsLoading(false);
         }
     };
 

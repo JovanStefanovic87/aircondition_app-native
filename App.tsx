@@ -1,3 +1,4 @@
+// App.tsx
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -13,6 +14,8 @@ import { checkSession } from './database/dataAccess/Helper/auth';
 import LoginScreen from './src/screens/LoginScreen';
 import { AuthProvider, useAuth } from './src/context/AuthContext';
 import { ActivityIndicator, View, Text } from 'react-native';
+import { useInspectionStore } from './src/store/store';
+import GlobalUI from './src/components/ui/GlobalUI';
 
 const Stack = createNativeStackNavigator();
 
@@ -42,6 +45,7 @@ const AppNavigator = () => {
 
 const App = () => {
     const [loading, setLoading] = useState(true);
+    const { isLoading, loadingText } = useInspectionStore(); // ✅ koristi hook
 
     useEffect(() => {
         const initializeApp = async () => {
@@ -80,6 +84,7 @@ const App = () => {
         <AuthProvider>
             <NavigationContainer>
                 <AppNavigator />
+                <GlobalUI />
             </NavigationContainer>
         </AuthProvider>
     );

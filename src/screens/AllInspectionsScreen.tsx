@@ -10,7 +10,7 @@ import Dropdown from '../components/input/DropdownWithValidation';
 import NoResultMessage from '../components/text/NoResultMessage';
 import ConfirmDeleteModal from '../components/modals/ConfirmDeleteModal';
 import ErrorInformationModal from '../components/modals/ErrorInformationModal';
-import Icon from 'react-native-vector-icons/Ionicons'; // ✅ koristi react-native-vector-icons
+import Icon from 'react-native-vector-icons/Ionicons';
 
 type AllInspectionsScreenNavigationProp = NavigationProp<Record<string, object>, string>;
 
@@ -20,7 +20,6 @@ const AllInspectionsScreen = () => {
     const setInspectionId = useInspectionStore((state) => state.setInspectionId);
     const [selectedStatus, setSelectedStatus] = useState<number>(0);
 
-    // Modal state
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
     const [errorModalVisible, setErrorModalVisible] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);

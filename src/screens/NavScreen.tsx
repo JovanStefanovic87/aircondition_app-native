@@ -1,5 +1,6 @@
+// /src/screens/NavScreen.tsx
 import React from 'react';
-import { View, ScrollView, StyleSheet, SafeAreaView, Button } from 'react-native';
+import { View, ScrollView, StyleSheet } from 'react-native';
 import { vw } from 'react-native-css-vh-vw';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
@@ -15,18 +16,44 @@ const NavScreen: React.FC = () => {
     const setInspectionId = useInspectionStore((state) => state.setInspectionId);
     const { setIsLoggedIn } = useAuth();
 
-    const handleNewInspectionPress = () => {
-        setInspectionId(null);
-        navigation.navigate('InspectionBasicDetailsScreen');
+    const { setIsLoading, setLoadingText, setError } = useInspectionStore();
+
+    const handleNewInspectionPress = async () => {
+        try {
+            setIsLoading(true);
+            setLoadingText('Neue Inspektion wird vorbereitet...');
+            setInspectionId(null);
+            navigation.navigate('InspectionBasicDetailsScreen');
+        } catch (err: any) {
+            setError('Fehler beim Starten der Inspektion.');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
-    const handleAllInspectionsPress = () => {
-        navigation.navigate('AllInspectionsScreen');
+    const handleAllInspectionsPress = async () => {
+        try {
+            setIsLoading(true);
+            setLoadingText('Lade alle Inspektionen...');
+            navigation.navigate('AllInspectionsScreen');
+        } catch (err: any) {
+            setError('Fehler beim Laden der Inspektionen.');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleLogoutUser = async () => {
-        await logoutUser();
-        setIsLoggedIn(false);
+        try {
+            setIsLoading(true);
+            setLoadingText('Abmeldung läuft...');
+            await logoutUser();
+            setIsLoggedIn(false);
+        } catch (err: any) {
+            setError('Fehler beim Abmelden.');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -85,21 +112,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         gap: vw(4),
         marginTop: vw(4),
-    },
-    image: {
-        width: 100,
-        height: 100,
-    },
-    imagesContainer: {
-        display: 'flex',
-        width: '100%',
-        paddingHorizontal: 10,
-        flexDirection: 'column',
-        gap: 20,
-    },
-    picker: {
-        height: 50,
-        width: '100%',
     },
 });
 

@@ -1,21 +1,25 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, View, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import Pdf from 'react-native-pdf';
 import RNFetchBlob from 'react-native-blob-util';
 import base64 from 'react-native-base64';
 import { ReportData } from './helpers/types';
+import { useInspectionStore } from '../../store/store';
 
 type JsreportPdfViewerProps = {
     inspectionData?: ReportData;
 };
 
 const JsreportPdfViewer = ({ inspectionData }: JsreportPdfViewerProps) => {
+    const { setIsLoading, setLoadingText, setError } = useInspectionStore();
     const [pdfPath, setPdfPath] = useState<string | null>(null);
-    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchAndSavePdf = async () => {
             try {
+                setIsLoading(true);
+                setLoadingText('PDF-Bericht wird generiert...');
+
                 const authHeader = 'Basic ' + base64.encode('ac-admin:svN4geZabMBN4h');
 
                 const response = await fetch(
@@ -34,7 +38,7 @@ const JsreportPdfViewer = ({ inspectionData }: JsreportPdfViewerProps) => {
                     },
                 );
 
-                if (!response.ok) throw new Error('Failed to fetch PDF');
+                if (!response.ok) throw new Error('Fehler beim Generieren des PDF-Berichts');
 
                 const blob = await response.blob();
                 const reader = new FileReader();
@@ -49,15 +53,16 @@ const JsreportPdfViewer = ({ inspectionData }: JsreportPdfViewerProps) => {
                 reader.readAsDataURL(blob);
             } catch (error) {
                 console.error('PDF fetch/save error:', error);
+                setError('Fehler beim Generieren des PDF-Berichts.');
             } finally {
-                setLoading(false);
+                setIsLoading(false);
+                setLoadingText(null);
             }
         };
 
         fetchAndSavePdf();
     }, []);
 
-    if (loading) return <ActivityIndicator size="large" style={styles.loader} />;
     if (!pdfPath) return <View style={styles.errorContainer} />;
 
     return <Pdf source={{ uri: `file://${pdfPath}` }} style={styles.pdf} trustAllCerts={true} />;

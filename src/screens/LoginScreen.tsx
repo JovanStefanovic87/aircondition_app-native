@@ -1,11 +1,10 @@
+// /src/screens/LoginScreen.tsx
 import React, { useState } from 'react';
 import {
     View,
     Text,
     TextInput,
     TouchableOpacity,
-    Alert,
-    ActivityIndicator,
     StyleSheet,
     Dimensions,
     ScrollView,
@@ -17,6 +16,7 @@ import {
 import { loginUser } from '../../database/dataAccess/Helper/auth';
 import { useAuth } from '../context/AuthContext';
 import NavButton from '../components/buttons/NavButton';
+import { useInspectionStore } from '../store/store';
 
 const { width } = Dimensions.get('window');
 const isSmallScreen = width < 360;
@@ -24,23 +24,24 @@ const isSmallScreen = width < 360;
 const LoginPage = ({ navigation }) => {
     const [userName, setUserName] = useState('');
     const [password, setPassword] = useState('');
-    const [loading, setLoading] = useState(false);
     const { setIsLoggedIn } = useAuth();
+    const { setIsLoading, setLoadingText, setError } = useInspectionStore();
 
-    const handleLogin = () => {
+    const handleLogin = async () => {
         if (!userName || !password) {
-            Alert.alert('Fehler', 'Bitte E-Mail und Passwort eingeben.');
+            setError('Bitte E-Mail und Passwort eingeben.');
             return;
         }
 
-        setLoading(true);
+        setIsLoading(true);
+        setLoadingText('Anmeldung läuft...');
 
         loginUser(userName, password, (success, user, error) => {
-            setLoading(false);
+            setIsLoading(false);
             if (success && user) {
                 setIsLoggedIn(true);
             } else {
-                Alert.alert('Fehler', error || 'Login fehlgeschlagen.');
+                setError(error || 'Login fehlgeschlagen.');
             }
         });
     };
@@ -57,8 +58,10 @@ const LoginPage = ({ navigation }) => {
                         keyboardShouldPersistTaps="handled"
                     >
                         <View style={styles.inner}>
+                            <Text style={styles.title}>Anmeldung</Text>
+
                             <TextInput
-                                placeholder="Gebruikersnaam"
+                                placeholder="Benutzername"
                                 value={userName}
                                 onChangeText={setUserName}
                                 style={styles.input}
@@ -74,17 +77,10 @@ const LoginPage = ({ navigation }) => {
                                 onSubmitEditing={handleLogin}
                             />
 
-                            {loading ? (
-                                <ActivityIndicator
-                                    size="large"
-                                    color="#2563eb"
-                                    style={styles.loader}
-                                />
-                            ) : (
-                                <TouchableOpacity onPress={handleLogin} style={styles.button}>
-                                    <Text style={styles.buttonText}>Anmelden</Text>
-                                </TouchableOpacity>
-                            )}
+                            <TouchableOpacity onPress={handleLogin} style={styles.button}>
+                                <Text style={styles.buttonText}>Anmelden</Text>
+                            </TouchableOpacity>
+
                             {__DEV__ && (
                                 <NavButton
                                     onPress={() => navigation.navigate('DevToolsScreen')}
@@ -106,14 +102,14 @@ const styles = StyleSheet.create({
         flexGrow: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        padding: 16,
+        padding: isSmallScreen ? 10 : 16,
         backgroundColor: '#f3f4f6',
     },
     inner: {
         width: '100%',
         alignItems: 'center',
         maxWidth: 800,
-        padding: 24,
+        padding: isSmallScreen ? 16 : 24,
         borderRadius: 12,
         backgroundColor: '#ffffff',
         shadowColor: '#000',
@@ -123,44 +119,36 @@ const styles = StyleSheet.create({
         elevation: 4,
     },
     title: {
-        fontSize: isSmallScreen ? 24 : 28,
-        marginBottom: 30,
+        fontSize: isSmallScreen ? 22 : 28,
         fontWeight: 'bold',
         color: '#111827',
+        marginBottom: isSmallScreen ? 20 : 30,
         textAlign: 'center',
     },
     input: {
         width: '100%',
-        paddingVertical: 14,
-        paddingHorizontal: 18,
+        paddingVertical: isSmallScreen ? 10 : 14,
+        paddingHorizontal: isSmallScreen ? 14 : 18,
         borderWidth: 1.5,
         borderColor: '#94a3b8',
         borderRadius: 10,
-        marginBottom: 16,
+        marginBottom: isSmallScreen ? 12 : 16,
         backgroundColor: '#f9fafb',
-        fontSize: 17,
+        fontSize: isSmallScreen ? 15 : 17,
         color: 'black',
     },
-    keepLoggedInText: {
-        fontSize: 16,
-        color: '#374151',
-        textAlign: 'left',
-        marginBottom: 20,
-    },
     button: {
-        paddingVertical: 24,
-        paddingHorizontal: 64,
+        paddingVertical: isSmallScreen ? 18 : 24,
+        paddingHorizontal: isSmallScreen ? 48 : 64,
         backgroundColor: '#2563eb',
         borderRadius: 8,
         alignItems: 'center',
+        marginTop: isSmallScreen ? 10 : 20,
     },
     buttonText: {
         color: 'white',
-        fontSize: 16,
+        fontSize: isSmallScreen ? 15 : 16,
         fontWeight: 'bold',
-    },
-    loader: {
-        marginTop: 24,
     },
 });
 
