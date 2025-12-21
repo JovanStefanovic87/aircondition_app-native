@@ -62,7 +62,7 @@ const ElementImagesSection: React.FC<Props> = ({ inspectionDeviceElementId }) =>
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Afbeeldingen van het artikel</Text>
+            <Text style={styles.title}>Bilder des Elements</Text>
             <View style={styles.row}>
                 <IconButton icon="camera" onPress={() => setCameraVisible(true)} />
                 <IconButton icon="upload" onPress={handleUpload} />
@@ -72,7 +72,7 @@ const ElementImagesSection: React.FC<Props> = ({ inspectionDeviceElementId }) =>
             <GalleryModal
                 visible={isGalleryVisible}
                 images={images}
-                title="Afbeeldingen van het artikel"
+                title="Bilder des Elements"
                 onClose={() => setGalleryVisible(false)}
                 setGalleryImages={setImages}
             />

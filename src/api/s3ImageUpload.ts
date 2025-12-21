@@ -1,5 +1,22 @@
 import { HETZNER_BUCKET_NAME, HETZNER_S3_ENDPOINT } from './helpers/constants';
 import { getAdminApiUrl } from './helpers/functions';
+import ImageResizer from 'react-native-image-resizer';
+
+export const resizeImageForPdf = async (uri: string) => {
+    const resized = await ImageResizer.createResizedImage(
+        uri,
+        1200,
+        1200,
+        'JPEG',
+        70,
+        0,
+        undefined,
+        false,
+        { mode: 'contain' },
+    );
+
+    return resized.uri;
+};
 
 export const uploadImagesToCloudS3 = async (
     imageUris: string[],
@@ -69,6 +86,7 @@ export const uploadImagesToS3 = async (
     extensions: string[],
 ) => {
     const adminApiUrl = getAdminApiUrl();
+
     const response = await fetch(`${adminApiUrl}/api/upload-url`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -77,30 +95,28 @@ export const uploadImagesToS3 = async (
 
     if (!response.ok) {
         const err = await response.text();
-        console.log(`Failed to get upload URLs: ${err}`);
-        throw new Error(`Upload-URLs konnten nicht abgerufen werden: ${err}`);
+        throw new Error(err);
     }
 
     const presignedUrls = await response.json();
 
     await Promise.all(
         presignedUrls.map(async ({ id, url }, index) => {
-            const uri = imageUris[index];
-            const ext = extensions[index];
-            const type = ext === 'jpg' || ext === 'jpeg' ? 'image/jpeg' : 'image/png';
+            const originalUri = imageUris[index];
 
-            const res = await fetch(uri);
+            const resizedUri = await resizeImageForPdf(originalUri);
+
+            const res = await fetch(resizedUri);
             const blob = await res.blob();
 
             const putRes = await fetch(url, {
                 method: 'PUT',
-                headers: { 'Content-Type': type },
+                headers: { 'Content-Type': 'image/jpeg' },
                 body: blob,
             });
 
             if (!putRes.ok) {
-                console.log(`Upload failed for imageId: ${id}`);
-                throw new Error(`Upload für Bild-ID fehlgeschlagen: ${id}`);
+                throw new Error(`Upload failed for imageId: ${id}`);
             }
         }),
     );
@@ -113,3 +129,55 @@ export const uploadImagesToS3 = async (
         )}/${HETZNER_BUCKET_NAME}/${Key}`,
     }));
 };
+
+// export const uploadImagesToS3 = async (
+//     imageUris: string[],
+//     inspectionId: string,
+//     imageIds: string[],
+//     extensions: string[],
+// ) => {
+//     const adminApiUrl = getAdminApiUrl();
+//     const response = await fetch(`${adminApiUrl}/api/upload-url`, {
+//         method: 'POST',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify({ inspectionId, imageIds, extensions }),
+//     });
+
+//     if (!response.ok) {
+//         const err = await response.text();
+//         console.log(`Failed to get upload URLs: ${err}`);
+//         throw new Error(`Upload-URLs konnten nicht abgerufen werden: ${err}`);
+//     }
+
+//     const presignedUrls = await response.json();
+
+//     await Promise.all(
+//         presignedUrls.map(async ({ id, url }, index) => {
+//             const uri = imageUris[index];
+//             const ext = extensions[index];
+//             const type = ext === 'jpg' || ext === 'jpeg' ? 'image/jpeg' : 'image/png';
+
+//             const res = await fetch(uri);
+//             const blob = await res.blob();
+
+//             const putRes = await fetch(url, {
+//                 method: 'PUT',
+//                 headers: { 'Content-Type': type },
+//                 body: blob,
+//             });
+
+//             if (!putRes.ok) {
+//                 console.log(`Upload failed for imageId: ${id}`);
+//                 throw new Error(`Upload für Bild-ID fehlgeschlagen: ${id}`);
+//             }
+//         }),
+//     );
+
+//     return presignedUrls.map(({ id, Key }) => ({
+//         id,
+//         storagePathS3: `https://${HETZNER_S3_ENDPOINT?.replace(
+//             /^https?:\/\//,
+//             '',
+//         )}/${HETZNER_BUCKET_NAME}/${Key}`,
+//     }));
+// };

@@ -1,4 +1,7 @@
-//src\screens\InspectionDeviceStateScreen.tsx
+/**
+ * SECOND PAGE OF INSPECTION
+ * Recording the general state of the device
+ */
 import React, { useState, useEffect } from 'react';
 import { useInspectionStore } from '../store/store';
 import { StyleSheet, View, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';

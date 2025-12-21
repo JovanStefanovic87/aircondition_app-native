@@ -81,7 +81,7 @@ const InputNumberNullToString: React.FC<Props> = ({
             onChangeText={handleChange}
             onBlur={onBlur}
             placeholderTextColor={customColors.placeholder}
-            keyboardType={'numeric'}
+            keyboardType={'default'}
         />
     ) : null;
 };

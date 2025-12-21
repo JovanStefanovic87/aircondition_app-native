@@ -1,4 +1,8 @@
-//src\screens\InspectionBasicDetailsScreen.tsx
+/**
+ * FIRST PAGE OF INSPECTION
+ * Basic details about the inspection and device
+ */
+
 import React, { useState, useEffect } from 'react';
 import {
     StyleSheet,

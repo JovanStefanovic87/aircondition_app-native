@@ -1,4 +1,7 @@
-//src\screens\ElementsStateScreen.tsx
+/**
+ * FORTH PAGE OF INSPECTION
+ * Recording the state of selected elements
+ */
 import React, { useEffect, useState } from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
