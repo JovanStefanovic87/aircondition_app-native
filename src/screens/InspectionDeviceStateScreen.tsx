@@ -267,8 +267,6 @@ const InspectionDeviceStateScreen = () => {
         setScannerOpen(true);
     };
 
-    console.log('inspectionDeviceStateDetails', JSON.stringify(inspectionDeviceStateDetails));
-
     const handleScannerResult = (result: string) => {
         if (!scannerTargetId || !inspectionDeviceStateDetails) return;
 

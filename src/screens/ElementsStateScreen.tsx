@@ -47,6 +47,7 @@ import GalleryModal from '../components/modals/GalleryModal';
 import TakePicture from '../components/camera/TakePicture';
 import { IMAGE_TYPES } from '../helpers/constants';
 import ElementImagesSection from '../components/image/ElementImagesSection';
+import BarcodeScanner from '../components/camera/BarcodeScanner';
 
 type NavScreenNavigationProp = NavigationProp<any, any>;
 
@@ -77,6 +78,33 @@ const ElementsStateScreen: React.FC = () => {
     const [isGalleryVisible, setGalleryVisible] = useState(false);
     const [galeryTitle, setGalleryTitle] = useState<string | null>(null);
     const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+
+    const [isScannerOpen, setScannerOpen] = useState(false);
+    const [scannerTargetId, setScannerTargetId] = useState<string | null>(null);
+
+    const openScannerForDeviceState = (inspectionDeviceStateId: string) => {
+        setScannerTargetId(inspectionDeviceStateId);
+        setScannerOpen(true);
+    };
+
+    const handleScannerResult = (result: string) => {
+        if (!scannerTargetId) return;
+
+        const deviceState = inspectionDeviceStateDetails
+            .flatMap((g) => g.titleComponents)
+            .flatMap((t) => t.deviceStateComponents)
+            .find((s) => s.inspectionDeviceStateId === scannerTargetId);
+
+        if (!deviceState) return;
+
+        saveDeviceStateAndUpdateInspection({
+            id: scannerTargetId,
+            value: deviceState.value,
+            note: result,
+        });
+
+        setScannerTargetId(null);
+    };
 
     useEffect(() => {
         const fetchInitialData = async () => {
@@ -397,6 +425,20 @@ const ElementsStateScreen: React.FC = () => {
         }
     };
 
+    console.log('Rendering ElementsStateScreen', JSON.stringify(inspectionDeviceStateDetails));
+
+    if (isScannerOpen) {
+        return (
+            <View style={styles.container}>
+                <BarcodeScanner
+                    isScannerOpen={isScannerOpen}
+                    setScannerOpen={setScannerOpen}
+                    setScanResult={handleScannerResult}
+                />
+            </View>
+        );
+    }
+
     return (
         <View style={styles.container}>
             <GalleryModal
@@ -489,15 +531,29 @@ const ElementsStateScreen: React.FC = () => {
                                                 />
 
                                                 <View style={styles.iconsGroupContainer}>
-                                                    {filteredComponents.map((deviceState) => (
-                                                        <DeviceStateMerged
-                                                            key={deviceState.id}
-                                                            deviceState={deviceState}
-                                                            saveInspectionDeviceState={
-                                                                saveDeviceStateAndUpdateInspection
-                                                            }
-                                                        />
-                                                    ))}
+                                                    {filteredComponents.map((deviceState) => {
+                                                        const enableScanner =
+                                                            group.groupTypeName ===
+                                                                'MIKROBIOLOGISCH' ||
+                                                            group.groupTypeName ===
+                                                                'LUFTKEIMZAHLMESSUNG';
+
+                                                        return (
+                                                            <DeviceStateMerged
+                                                                key={deviceState.id}
+                                                                groupTypeName={group.groupTypeName}
+                                                                deviceState={deviceState}
+                                                                saveInspectionDeviceState={
+                                                                    saveDeviceStateAndUpdateInspection
+                                                                }
+                                                                onOpenScanner={
+                                                                    enableScanner
+                                                                        ? openScannerForDeviceState
+                                                                        : undefined
+                                                                }
+                                                            />
+                                                        );
+                                                    })}
                                                 </View>
                                             </DeviceStateColumnContainer>
                                         </AutoFitTableContainer>
