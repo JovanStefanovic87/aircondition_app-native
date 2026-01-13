@@ -9,11 +9,17 @@ import IconButton from '../buttons/IconButton';
 import { DeviceStateComponent, InspectionDeviceStateUpdate } from '../../../database/types';
 import { customColors } from '../../assets/styles/customStyles';
 
+type SmileyColorProps = {
+    color: number;
+    SmileyComponent: React.FC<{ isActive: boolean; isVisible: boolean; onClick: () => void }>;
+    isVisible: boolean;
+};
+
 interface Props {
     deviceState: DeviceStateComponent;
     groupTypeName: string;
     saveInspectionDeviceState: (deviceState: InspectionDeviceStateUpdate) => void;
-    onOpenScanner: (deviceStateId: string) => void;
+    onOpenScanner?: (deviceStateId: string) => void;
 }
 
 const DeviceStateMerged: React.FC<Props> = ({
@@ -32,62 +38,68 @@ const DeviceStateMerged: React.FC<Props> = ({
         placeholder,
     } = deviceState;
 
-    const [activeColor, setActiveColor] = useState<number>(value);
+    const [activeColor, setActiveColor] = useState<number | null>(value);
     const [noteValue, setNoteValue] = useState<string>(note);
-    const [mounted, setMounted] = useState(false);
+    const [isMounted, setIsMounted] = useState(false);
+
+    const GREEN = 1;
+    const YELLOW = 2;
+    const ORANGE = 3;
+    const RED = 4;
 
     useEffect(() => {
-        if (mounted) {
+        setActiveColor(value);
+    }, [value]);
+
+    useEffect(() => {
+        if (isMounted) {
             saveInspectionDeviceState({
                 id: inspectionDeviceStateId,
                 value: activeColor,
                 note: noteValue,
             });
         } else {
-            setMounted(true);
+            setIsMounted(true);
         }
     }, [activeColor, noteValue]);
 
-    const hasColor = (color: number) => deviceStateValues.some((s) => s.stateValueId === color);
+    const handleColorClick = (color: number) => {
+        setActiveColor((prev) => (prev === color ? null : color));
+    };
+
+    const checkColor = (color: number) =>
+        deviceStateValues.some((smiley) => smiley.stateValueId === color);
+
+    const smileyColors: SmileyColorProps[] = [
+        { color: GREEN, SmileyComponent: GreenSmiley, isVisible: checkColor(GREEN) },
+        { color: YELLOW, SmileyComponent: YellowSmiley, isVisible: checkColor(YELLOW) },
+        { color: ORANGE, SmileyComponent: OrangeSmiley, isVisible: checkColor(ORANGE) },
+        { color: RED, SmileyComponent: RedSmiley, isVisible: checkColor(RED) },
+    ];
 
     return (
         <View style={styles.container}>
             <Text style={styles.title}>{name}</Text>
 
             <View style={styles.row}>
-                {hasColor(1) && (
-                    <GreenSmiley
-                        isActive={activeColor === 1}
-                        isVisible
-                        onClick={() => setActiveColor(1)}
+                {smileyColors.map(({ color, SmileyComponent, isVisible }) => (
+                    <SmileyComponent
+                        key={color}
+                        isActive={activeColor === color}
+                        isVisible={isVisible}
+                        onClick={() => handleColorClick(color)}
                     />
-                )}
-                {hasColor(2) && (
-                    <YellowSmiley
-                        isActive={activeColor === 2}
-                        isVisible
-                        onClick={() => setActiveColor(2)}
-                    />
-                )}
-                {hasColor(3) && (
-                    <OrangeSmiley
-                        isActive={activeColor === 3}
-                        isVisible
-                        onClick={() => setActiveColor(3)}
-                    />
-                )}
-                {hasColor(4) && (
-                    <RedSmiley
-                        isActive={activeColor === 4}
-                        isVisible
-                        onClick={() => setActiveColor(4)}
-                    />
-                )}
+                ))}
             </View>
 
-            {(groupTypeName === 'MIKROBIOLOGISCH' || groupTypeName === 'LUFTKEIMZAHLMESSUNG') && (
-                <IconButton icon="barcode" onPress={() => onOpenScanner(inspectionDeviceStateId)} />
-            )}
+            {onOpenScanner &&
+                (groupTypeName === 'MIKROBIOLOGISCH' ||
+                    groupTypeName === 'LUFTKEIMZAHLMESSUNG') && (
+                    <IconButton
+                        icon="barcode"
+                        onPress={() => onOpenScanner(inspectionDeviceStateId)}
+                    />
+                )}
 
             <InputText
                 value={noteValue}
@@ -100,9 +112,24 @@ const DeviceStateMerged: React.FC<Props> = ({
 };
 
 const styles = StyleSheet.create({
-    container: { paddingHorizontal: 10 },
-    row: { flexDirection: 'row', justifyContent: 'space-between', marginVertical: 8 },
-    title: { fontSize: 16, fontWeight: 'bold', color: customColors.black },
+    container: {
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        paddingHorizontal: 10,
+    },
+    row: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginVertical: 8,
+        width: '100%',
+    },
+    title: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginBottom: 8,
+        color: customColors.black,
+    },
 });
 
 export default DeviceStateMerged;
