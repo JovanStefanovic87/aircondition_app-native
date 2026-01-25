@@ -8,7 +8,7 @@ const tabletThreshold = 600;
 interface Props {
     value: number | null | string;
     placeholder?: string;
-    setValue: (value: number) => void;
+    setValue: (value: number | null) => void;
     onBlur?: () => void;
     width?: DimensionValue;
     minWidth?: DimensionValue;
@@ -18,7 +18,7 @@ interface Props {
 
 const InputNumberNullToString: React.FC<Props> = ({
     value,
-    placeholder = 'z.A.',
+    placeholder = 'k.A.',
     setValue,
     onBlur,
     width = '100%',
@@ -37,22 +37,16 @@ const InputNumberNullToString: React.FC<Props> = ({
     }, []);
 
     useEffect(() => {
-        if (value === null || value === undefined || value === 0) {
+        if (value === null || value === undefined) {
             setInputText('');
         } else {
-            setInputText(value.toString());
+            setInputText(String(value));
         }
     }, [value]);
 
     const handleChange = (text: string) => {
         const formattedText = text.replace(/[^0-9.,]/g, '');
-        if (formattedText === '') {
-            setInputText('');
-            setValue(0);
-        } else {
-            setInputText(formattedText);
-            setValue(Number(formattedText.replace(/,/g, '')));
-        }
+        setInputText(formattedText);
     };
 
     const styles = StyleSheet.create({
@@ -73,13 +67,23 @@ const InputNumberNullToString: React.FC<Props> = ({
 
     const inputStyles = [styles.input, { width, minWidth }, !isValid && styles.inputInvalid];
 
+    const handleBlurInternal = () => {
+        if (inputText === '') {
+            setValue(null);
+        } else {
+            setValue(Number(inputText.replace(/,/g, '')));
+        }
+
+        onBlur?.();
+    };
+
     return isVisible ? (
         <TextInput
             value={inputText}
             placeholder={placeholder}
             style={inputStyles}
             onChangeText={handleChange}
-            onBlur={onBlur}
+            onBlur={handleBlurInternal}
             placeholderTextColor={customColors.placeholder}
             keyboardType={'default'}
         />

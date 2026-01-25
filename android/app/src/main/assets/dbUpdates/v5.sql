@@ -1,3 +1,5 @@
+
+
 INSERT INTO QuestionGroup (id, name, groupSymbol, groupReference) VALUES (1, 'Gesamtanlage', '1/14', '(siehe Abschnitt 6)');
 INSERT INTO QuestionGroup (id, name, groupSymbol, groupReference) VALUES (2, 'Außenluftdurchlass', '2/14', '(siehe Abschnitt 6.3.1)');
 INSERT INTO QuestionGroup (id, name, groupSymbol, groupReference) VALUES (3, 'Dezentrale RLT-Geräte/-Endgeräte', '3/14', '(siehe Abschnitt 6.3.2) Grundsätzlich gelten für alle Komponenten der dezentralen Geräte die gleichen Anforderungen wie für Komponenten in zentralen Anlagen. Die Prüfung und Dokumentation der Prüfergebnisse erfolgt in den entsprechenden Zeilen dieser Tabelle bei den Komponenten.');

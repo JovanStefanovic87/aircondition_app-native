@@ -1,4 +1,4 @@
--- update_v2.sql
+
 
 CREATE TABLE IF NOT EXISTS DeviceElementType (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -10,13 +10,12 @@ CREATE TABLE IF NOT EXISTS DeviceElementPosition (
   name TEXT
 );
 
-
 CREATE TABLE IF NOT EXISTS DeviceElement (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT,
   imageFileName TEXT,
   deviceElementTypeId INTEGER,
-  isDeleted BOOL DEFAULT false,
+  isDeleted INTEGER DEFAULT 0,
   FOREIGN KEY (deviceElementTypeId) REFERENCES DeviceElementType(id)
 );
 
@@ -30,9 +29,8 @@ CREATE TABLE IF NOT EXISTS ImageStorage (
 CREATE TABLE IF NOT EXISTS TitleComponent (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT,
-  isUsingImage BOOL DEFAULT false
+  isUsingImage INTEGER DEFAULT 0
 );
-
 
 CREATE TABLE IF NOT EXISTS GroupType (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -57,16 +55,15 @@ CREATE TABLE IF NOT EXISTS DeviceStateComponent (
 CREATE TABLE IF NOT EXISTS Component_Element_Title (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   deviceStateComponentId INTEGER,
-  titleComponentId INTEGER NULL,
-  deviceElementId INTEGER NULL,
+  titleComponentId INTEGER,
+  deviceElementId INTEGER,
   displayOrder INTEGER,
-  isUsingNote BOOL DEFAULT false,
-  isUsingMeasurementCheckbox BOOL DEFAULT false,
+  isUsingNote INTEGER DEFAULT 0,
+  isUsingMeasurementCheckbox INTEGER DEFAULT 0,
   FOREIGN KEY (deviceStateComponentId) REFERENCES DeviceStateComponent(id),
   FOREIGN KEY (titleComponentId) REFERENCES TitleComponent(id),
   FOREIGN KEY (deviceElementId) REFERENCES DeviceElement(id)
 );
-
 
 CREATE TABLE IF NOT EXISTS QuestionGroup (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -89,12 +86,12 @@ CREATE TABLE IF NOT EXISTS QuestionComponent (
 
 CREATE TABLE IF NOT EXISTS AnswerType (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  name VARCHAR(20)
+  name TEXT
 );
 
 CREATE TABLE IF NOT EXISTS StateValue (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  name VARCHAR(20)
+  name TEXT
 );
 
 CREATE TABLE IF NOT EXISTS Inspection_Question (
@@ -108,20 +105,6 @@ CREATE TABLE IF NOT EXISTS Inspection_Question (
   FOREIGN KEY (answerId) REFERENCES AnswerType(id)
 );
 
-
-CREATE TABLE IF NOT EXISTS Inspection_DeviceState (
-  id TEXT PRIMARY KEY,
-  inspectionId TEXT,
-  componentElementTitleId INTEGER,
-  inspectionDeviceElementId TEXT NULL,
-  value REAL NULL,
-  note TEXT,
-  isMeasurementPossible BOOLEAN NULL,
-  FOREIGN KEY (inspectionId) REFERENCES Inspection(id),
-  FOREIGN KEY (componentElementTitleId) REFERENCES Component_Element_Title(id)
-  FOREIGN KEY (inspectionDeviceElementId) REFERENCES Inspection_DeviceElement(id)
-);
-
 CREATE TABLE IF NOT EXISTS Inspection_DeviceElement (
   id TEXT PRIMARY KEY,
   inspectionId TEXT,
@@ -131,6 +114,19 @@ CREATE TABLE IF NOT EXISTS Inspection_DeviceElement (
   FOREIGN KEY (inspectionId) REFERENCES Inspection(id),
   FOREIGN KEY (deviceElementId) REFERENCES DeviceElement(id),
   FOREIGN KEY (elementPositionId) REFERENCES DeviceElementPosition(id)
+);
+
+CREATE TABLE IF NOT EXISTS Inspection_DeviceState (
+  id TEXT PRIMARY KEY,
+  inspectionId TEXT,
+  componentElementTitleId INTEGER,
+  inspectionDeviceElementId TEXT,
+  value REAL,
+  note TEXT,
+  isMeasurementPossible INTEGER,
+  FOREIGN KEY (inspectionId) REFERENCES Inspection(id),
+  FOREIGN KEY (componentElementTitleId) REFERENCES Component_Element_Title(id),
+  FOREIGN KEY (inspectionDeviceElementId) REFERENCES Inspection_DeviceElement(id)
 );
 
 CREATE TABLE IF NOT EXISTS Device_StateValue (
@@ -157,8 +153,6 @@ CREATE TABLE IF NOT EXISTS DeviceElement_Image (
   FOREIGN KEY (imageId) REFERENCES ImageStorage(id)
 );
 
-
--- Description: Images under title(ex."ANLAGE") and group(ex."PHYSIKALISCH") per inspection and device element -- Step 4
 CREATE TABLE IF NOT EXISTS Inspection_Element_Title_Group_Image (
   id TEXT PRIMARY KEY,
   inspectionDeviceElementId TEXT NOT NULL,
@@ -170,7 +164,6 @@ CREATE TABLE IF NOT EXISTS Inspection_Element_Title_Group_Image (
   FOREIGN KEY (groupTypeId) REFERENCES GroupType(id)
 );
 
--- Description: Images under title(ex."ANLAGE") and group(ex."PHYSIKALISCH") per inspection -- Step 2
 CREATE TABLE IF NOT EXISTS Inspection_Title_Group_Image (
   id TEXT PRIMARY KEY,
   inspectionId TEXT NOT NULL,
@@ -182,7 +175,6 @@ CREATE TABLE IF NOT EXISTS Inspection_Title_Group_Image (
   FOREIGN KEY (groupTypeId) REFERENCES GroupType(id)
 );
 
-
 CREATE TABLE IF NOT EXISTS Inspection_Element_Image (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   inspectionDeviceElementId TEXT NOT NULL,
@@ -190,8 +182,6 @@ CREATE TABLE IF NOT EXISTS Inspection_Element_Image (
   FOREIGN KEY (inspectionDeviceElementId) REFERENCES Inspection_DeviceElement(id),
   FOREIGN KEY (imageId) REFERENCES ImageStorage(id)
 );
-
-
 
 INSERT INTO DeviceElementPosition (id, name) VALUES (1, 'BEFORE');
 INSERT INTO DeviceElementPosition (id, name) VALUES (2, 'BETWEEN');
@@ -211,47 +201,47 @@ INSERT INTO GroupType (name) VALUES ('MIKROBIOLOGISCH');
 INSERT INTO GroupType (name) VALUES ('LUFTKEIMZAHLMESSUNG');
 INSERT INTO GroupType (name) VALUES ('UMLAUFWASSERUNTERSUCHUNG');
 
-INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (1, 'ANLAGE', true);
-INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (2, 'ANLAGE', false);
-INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (3, 'GESAMT', true);
-INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (4, 'AUSSEN', true);
-INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (5, 'DÄMPFELEMENT', true);
-INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (6, 'LAMELLEN', true);
-INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (7, 'RAHMEN, GESAMT', true);
-INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (8, 'KONDENSATWANNE', true);
-INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (9, 'GEHÄUSE', true);
-INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (10, 'FILTER', true);
-INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (11, 'REGISTER', true);
-INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (12, 'VENTILATORGEHÄUSE', true);
-INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (13, 'SCHAUFELRAD', true);
-INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (14, 'BODEN', true);
-INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (15, 'BECKEN', true);
-INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (16, 'DAMPFLANZE', true);
-INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (17, 'SPRÜHDÜSEN', true);
-INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (18, 'LUFTAUSLASS', true);
-INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (19, 'KÜHLERREGISTER', true);
-INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (20, 'ABLUFTKANAL', true);
-INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (21, 'VENTILATOR', true);
-INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (22, 'JALOUSIEKLAPPEN', true);
-INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (23, 'KÜHLER', true);
-INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (24, 'MATERIAL', true);
-INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (25, 'GEHÄUSE / RAHMEN', true);
-INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (26, 'DÜSEN', true);
-INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (27, 'MEDIEN', true);
-INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (28, 'KANAL', true);
-INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (29, 'GLAS', false);
-INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (30, 'SYSTEM', false);
-INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (31, 'FLÄCHE', false);
-INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (32, 'DÄMPFELEMENT', false);
-INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (33, 'GESAMT', false);
-INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (34, 'LAMELLEN', false);
-INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (35, 'KONDENSATWANNE', false);
-INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (36, 'GEHÄUSE', false);
-INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (37, 'FILTER', false);
-INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (38, 'SCHAUFELRAD', false);
-INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (39, 'BECKEN', false);
-INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (40, 'LUFTAUSLASS', false);
-INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (41, 'KÜHLER', false);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (1, 'ANLAGE', 1);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (2, 'ANLAGE', 0);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (3, 'GESAMT', 1);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (4, 'AUSSEN', 1);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (5, 'DÄMPFELEMENT', 1);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (6, 'LAMELLEN', 1);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (7, 'RAHMEN, GESAMT', 1);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (8, 'KONDENSATWANNE', 1);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (9, 'GEHÄUSE', 1);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (10, 'FILTER', 1);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (11, 'REGISTER', 1);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (12, 'VENTILATORGEHÄUSE', 1);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (13, 'SCHAUFELRAD', 1);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (14, 'BODEN', 1);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (15, 'BECKEN', 1);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (16, 'DAMPFLANZE', 1);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (17, 'SPRÜHDÜSEN', 1);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (18, 'LUFTAUSLASS', 1);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (19, 'KÜHLERREGISTER', 1);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (20, 'ABLUFTKANAL', 1);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (21, 'VENTILATOR', 1);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (22, 'JALOUSIEKLAPPEN', 1);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (23, 'KÜHLER', 1);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (24, 'MATERIAL', 1);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (25, 'GEHÄUSE / RAHMEN', 1);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (26, 'DÜSEN', 1);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (27, 'MEDIEN', 1);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (28, 'KANAL', 1);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (29, 'GLAS', 0);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (30, 'SYSTEM', 0);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (31, 'FLÄCHE', 0);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (32, 'DÄMPFELEMENT', 0);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (33, 'GESAMT', 0);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (34, 'LAMELLEN', 0);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (35, 'KONDENSATWANNE', 0);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (36, 'GEHÄUSE', 0);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (37, 'FILTER', 0);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (38, 'SCHAUFELRAD', 0);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (39, 'BECKEN', 0);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (40, 'LUFTAUSLASS', 0);
+INSERT INTO TitleComponent (id, name, isUsingImage) VALUES (41, 'KÜHLER', 0);
 
 
 INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId) VALUES (1, 'Gehäuse-/ Türabdichtung fehlt / defekt', 2, 1);
@@ -268,17 +258,17 @@ INSERT INTO DeviceStateComponent (id, name, groupTypeId, stateTypeId) VALUES (11
 
 
 
-INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (1, 1, 1, NULL, 2, true);
-INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (2, 2, 1, NULL, 3, true);
-INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (3, 3, 1, NULL, 4, true);
-INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (4, 4, 1, NULL, 5, true);
-INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (5, 5, 1, NULL, 6, true);
-INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (6, 6, 1, NULL, 7, true);
-INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (7, 7, 1, NULL, 8, true);
-INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (8, 8, 1, NULL, 9, true);
-INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (9, 9, 1, NULL, 10, true);
-INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (10, 10, 1, NULL, 11, true);
-INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (11, 11, 1, NULL, 1, true);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (1, 1, 1, NULL, 2, 1);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (2, 2, 1, NULL, 3, 1);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (3, 3, 1, NULL, 4, 1);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (4, 4, 1, NULL, 5, 1);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (5, 5, 1, NULL, 6, 1);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (6, 6, 1, NULL, 7, 1);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (7, 7, 1, NULL, 8, 1);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (8, 8, 1, NULL, 9, 1);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (9, 9, 1, NULL, 10, 1);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (10, 10, 1, NULL, 11, 1);
+INSERT INTO Component_Element_Title (id, deviceStateComponentId, titleComponentId, deviceElementId, displayOrder, isUsingNote) VALUES (11, 11, 1, NULL, 1, 1);
 
 
 

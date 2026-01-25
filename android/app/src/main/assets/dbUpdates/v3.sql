@@ -1,5 +1,7 @@
 -- update_v3.sql
 
+
+
 CREATE TABLE IF NOT EXISTS Inspection_Image (
   id TEXT PRIMARY KEY,
   inspectionId TEXT,
@@ -176,3 +178,4 @@ INSERT INTO DeviceElement_Image(deviceElementId, imageId) VALUES (45, '77167d57-
 INSERT INTO DeviceElement_Image(deviceElementId, imageId) VALUES (46, '46b5c6d7-e8f9-4a0b-1c2d-3e4f5g6h7i8j');
 INSERT INTO DeviceElement_Image(deviceElementId, imageId) VALUES (47, '57c6d7e8-f9g0-4b1c-2d3e-4f5g6h7i8j9k');
 INSERT INTO DeviceElement_Image(deviceElementId, imageId) VALUES (48, '68d7e8f9-g0h1-4c2d-3e4f-5g6h7i8j9k0l');
+
