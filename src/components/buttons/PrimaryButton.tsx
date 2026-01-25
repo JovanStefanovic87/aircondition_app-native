@@ -28,11 +28,10 @@ const PrimaryButton: React.FC<Props> = ({ onPress, title = 'Speichern', isDisabl
 
 const styles = StyleSheet.create({
     button: {
-        padding: 10,
+        paddingVertical: 12,
+        paddingHorizontal: 24,
         borderRadius: 8,
         alignItems: 'center',
-        width: '100%',
-        maxWidth: 200,
     },
 });
 

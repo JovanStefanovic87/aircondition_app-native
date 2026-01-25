@@ -1,14 +1,30 @@
+// src/components/text/TextWhite.tsx
+
 import React from 'react';
-import { Text } from 'react-native';
+import { Text, TextProps } from 'react-native';
 import { customColors } from '../../assets/styles/customStyles';
 
-const TextWhite = ({ text = '' }) => <Text style={styles.text}>{text}</Text>;
+interface Props extends TextProps {
+    text?: string;
+}
+
+const TextWhite: React.FC<Props> = ({ text = '', style, ...rest }) => (
+    <Text
+        {...rest}
+        style={[styles.text, style]}
+        numberOfLines={1}
+        ellipsizeMode="clip"
+        allowFontScaling={false}
+    >
+        {text}
+    </Text>
+);
 
 const styles = {
     text: {
         color: customColors.white,
         fontSize: 20,
-        textAlign: 'center' as 'center',
+        textAlign: 'center' as const,
     },
 };
 

@@ -81,6 +81,8 @@ const ElementsStateScreen: React.FC = () => {
 
     const [isScannerOpen, setScannerOpen] = useState(false);
     const [scannerTargetId, setScannerTargetId] = useState<string | null>(null);
+    const [hasElementImages, setHasElementImages] = useState(false);
+    const [elementImagesMap, setElementImagesMap] = useState<Record<string, boolean>>({});
 
     const openScannerForDeviceState = (inspectionDeviceStateId: string) => {
         setScannerTargetId(inspectionDeviceStateId);
@@ -280,16 +282,22 @@ const ElementsStateScreen: React.FC = () => {
     };
 
     const submit = async () => {
+        if (!hasElementImages) {
+            setError('Mindestens ein Bild für das Element ist erforderlich.');
+            return;
+        }
+
         const isPageCompleted = await isAllCompleted();
 
-        if (isPageCompleted) {
-            if ([1, 2, 6].includes(inspectionType)) {
-                navigation.navigate('QuestionsScreen');
-            } else {
-                navigation.navigate('AllInspectionsScreen');
-            }
+        if (!isPageCompleted) {
+            setError('Nicht alle Elemente sind abgeschlossen.');
+            return;
+        }
+
+        if ([1, 2, 6].includes(inspectionType)) {
+            navigation.navigate('QuestionsScreen');
         } else {
-            setError('Nicht alle Elemente sind abgeschlossen. Bitte füllen Sie alle Felder aus.');
+            navigation.navigate('AllInspectionsScreen');
         }
     };
 
@@ -425,7 +433,16 @@ const ElementsStateScreen: React.FC = () => {
         }
     };
 
-    console.log('Rendering ElementsStateScreen', JSON.stringify(inspectionDeviceStateDetails));
+    const canProceed = allElementsCompleted && hasElementImages;
+
+    const mergedDeviceElementCompleted = deviceElementCompleted.map((el) => {
+        const hasImages = elementImagesMap[el.inspectionDeviceElementId];
+
+        return {
+            ...el,
+            isCompleted: el.isCompleted && hasImages === true,
+        };
+    });
 
     if (isScannerOpen) {
         return (
@@ -472,12 +489,18 @@ const ElementsStateScreen: React.FC = () => {
                                 selectedElementId={selectedElementId}
                                 setSelectedElementId={setSelectedElementId}
                                 setSelectedDeviceElementId={setSelectedDeviceElementId}
-                                deviceElementCompleted={deviceElementCompleted}
+                                deviceElementCompleted={mergedDeviceElementCompleted}
                             />
                         </View>
                         {selectedDeviceElementId && (
                             <ElementImagesSection
                                 inspectionDeviceElementId={selectedDeviceElementId}
+                                onImagesChange={(hasImages) =>
+                                    setElementImagesMap((prev) => ({
+                                        ...prev,
+                                        [selectedDeviceElementId]: hasImages,
+                                    }))
+                                }
                             />
                         )}
                     </View>
@@ -566,11 +589,7 @@ const ElementsStateScreen: React.FC = () => {
                 <View style={styles.horizontalLine}></View>
             </GestureHandlerRootView>
             <View style={styles.rightAlign}>
-                <PrimaryButton
-                    title="Nächster Schritt"
-                    onPress={submit}
-                    isDisabled={!allElementsCompleted}
-                />
+                <PrimaryButton title="Nächster Schritt" onPress={submit} isDisabled={!canProceed} />
             </View>
         </View>
     );
