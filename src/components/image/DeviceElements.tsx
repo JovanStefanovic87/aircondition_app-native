@@ -16,9 +16,10 @@ type Props = {
     deviceElementTypes: { id: number; name: string }[];
 };
 
-const calculateWidth = (selectedElementsCount: number) => {
-    const elementsPerRow = Math.min(Math.ceil(selectedElementsCount / 2), 8);
-    return windowWidth / elementsPerRow;
+const ELEMENTS_PER_ROW = 4;
+
+const calculateWidth = () => {
+    return windowWidth / ELEMENTS_PER_ROW;
 };
 
 const DeviceElements: FC<Props> = ({
@@ -40,7 +41,7 @@ const DeviceElements: FC<Props> = ({
 
     const renderItem = (item: DeviceElement) => {
         return (
-            <View key={item.id} style={{ width: calculateWidth(deviceElementsCount) }}>
+            <View key={item.id} style={{ width: calculateWidth() }}>
                 <DeviceElementImg
                     deviceElement={item}
                     options={[
@@ -72,7 +73,7 @@ const DeviceElements: FC<Props> = ({
             const newIndex = currentIndex + 1;
             setCurrentIndex(newIndex);
             scrollViewRef.current?.scrollTo({
-                x: newIndex * calculateWidth(deviceElementsCount),
+                x: newIndex * calculateWidth(),
                 animated: true,
             });
         }
@@ -83,7 +84,7 @@ const DeviceElements: FC<Props> = ({
             const newIndex = currentIndex - 1;
             setCurrentIndex(newIndex);
             scrollViewRef.current?.scrollTo({
-                x: newIndex * calculateWidth(deviceElementsCount),
+                x: newIndex * calculateWidth(),
                 animated: true,
             });
         }
@@ -120,8 +121,7 @@ const DeviceElements: FC<Props> = ({
                         showsHorizontalScrollIndicator={false}
                         onScroll={(event) => {
                             const index = Math.round(
-                                event.nativeEvent.contentOffset.x /
-                                    calculateWidth(deviceElementsCount),
+                                event.nativeEvent.contentOffset.x / calculateWidth(),
                             );
                             setCurrentIndex(index);
                         }}

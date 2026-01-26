@@ -1,5 +1,5 @@
 import React, { FC, useRef, useState, useEffect, useMemo, useCallback } from 'react';
-import { View, ScrollView, StyleSheet, Dimensions, TouchableOpacity, Text } from 'react-native';
+import { View, ScrollView, Dimensions, TouchableOpacity, Text } from 'react-native';
 import { useInspectionStore, useInspectionDeviceElementsStore } from '../../store/store';
 import { InspectionDeviceElement } from '../../../database/types';
 import styles from '../../assets/styles/imageStyles';
@@ -12,6 +12,10 @@ import TextTitle from '../text/TextTitle';
 const windowWidth = Dimensions.get('window').width;
 const tabletThreshold = 600;
 
+// 🔒 JEDINA MATEMATIKA
+const MAX_PER_SCREEN = 6;
+const ELEMENT_WIDTH = windowWidth / MAX_PER_SCREEN;
+
 type Props = {
     inspectionDeviceElements: InspectionDeviceElement[];
     positionId: number;
@@ -20,231 +24,155 @@ type Props = {
 const InspectionDeviceElements: FC<Props> = ({ inspectionDeviceElements, positionId }) => {
     const scrollViewRef = useRef<ScrollView>(null);
     const inspectionId = useInspectionStore((state) => state.inspectionId);
-    const [currentIndex, setCurrentIndex] = useState(0);
+
     const [filteredElements, setFilteredElements] = useState<InspectionDeviceElement[]>([]);
-    const [isTablet, setIsTablet] = useState(false);
+    const [currentIndex, setCurrentIndex] = useState(0);
     const [focusedDeviceId, setFocusedDeviceId] = useState<string | null>(null);
+    const [isTablet, setIsTablet] = useState(false);
+
     const setInspectionDeviceElements = useInspectionDeviceElementsStore(
         (state) => state.setInspectionDeviceElements,
     );
+
+    const scrollViewPosition = useRef(0);
+
     const [errorModalVisible, setErrorModalVisible] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
-    const [prevFilteredElementsLength, setPrevFilteredElementsLength] = useState(100);
-    const mountedRef = useRef(false);
-    const selectedElementsCount = filteredElements.length;
-    const scrollViewPosition = useRef(0);
 
     useEffect(() => {
         setIsTablet(windowWidth >= tabletThreshold);
     }, []);
 
     useEffect(() => {
-        const mappedDeviceElements = inspectionDeviceElements.map((element) => ({
-            ...element,
-            name: element.imageFileName.split('.')[0],
-        }));
+        const mapped = inspectionDeviceElements
+            .map((e) => ({
+                ...e,
+                name: e.imageFileName.split('.')[0],
+            }))
+            .sort((a, b) => a.deviceOrder - b.deviceOrder);
 
-        const sortedElements = mappedDeviceElements.sort((a, b) => a.deviceOrder - b.deviceOrder);
-
-        if (JSON.stringify(sortedElements) !== JSON.stringify(filteredElements)) {
-            setFilteredElements(sortedElements);
-        }
+        setFilteredElements(mapped);
     }, [inspectionDeviceElements]);
-
-    useEffect(() => {
-        if (mountedRef.current) {
-            if (filteredElements.length > prevFilteredElementsLength) {
-                const lastIndex = filteredElements.length - 1;
-                scrollViewRef.current?.scrollTo({
-                    x: lastIndex * (isTablet ? windowWidth * 0.1 : windowWidth * 0.33),
-                    animated: true,
-                });
-                setCurrentIndex(lastIndex);
-            } else {
-                setCurrentIndex(currentIndex);
-            }
-            setPrevFilteredElementsLength(filteredElements.length);
-        } else {
-            mountedRef.current = true;
-        }
-    }, [filteredElements]);
 
     const handleFocusChange = useCallback(
         (deviceId: string, focused: boolean) => {
-            if (focused) {
-                const focusedIndex = filteredElements.findIndex(
-                    (element) => element.id.toString() === deviceId,
-                );
-                if (focusedIndex !== -1) {
-                    setCurrentIndex(focusedIndex);
-                }
-                setFocusedDeviceId(deviceId);
-            } else {
+            if (!focused) {
                 setFocusedDeviceId(null);
+                return;
+            }
+
+            const idx = filteredElements.findIndex((el) => el.id.toString() === deviceId);
+
+            if (idx !== -1) {
+                setFocusedDeviceId(deviceId);
+                setCurrentIndex(idx);
             }
         },
         [filteredElements],
     );
 
     const handleDeleteElement = useCallback(
-        (deletedElementId: string) => {
+        (deletedId: string) => {
             try {
-                const deletedElement = filteredElements.find(
-                    (element) => element.id === deletedElementId,
-                );
-                if (!deletedElement) return;
+                const deleted = filteredElements.find((e) => e.id === deletedId);
+                if (!deleted) return;
 
-                const deletedElementOrder = deletedElement.deviceOrder;
-                const updatedElements = filteredElements.filter(
-                    (element) => element.id !== deletedElementId,
-                );
-
-                const updatedElementsWithNewOrder = updatedElements.map((element) => {
-                    if (element.deviceOrder > deletedElementOrder) {
-                        return {
-                            ...element,
-                            deviceOrder: element.deviceOrder - 1,
-                        };
-                    } else if (element.deviceOrder === deletedElementOrder) {
-                        return {
-                            ...element,
-                            deviceOrder: deletedElementOrder,
-                        };
-                    }
-                    return element;
-                });
+                const updated = filteredElements
+                    .filter((e) => e.id !== deletedId)
+                    .map((e) =>
+                        e.deviceOrder > deleted.deviceOrder
+                            ? { ...e, deviceOrder: e.deviceOrder - 1 }
+                            : e,
+                    );
 
                 saveDeviceElementsSortOrder(
-                    updatedElementsWithNewOrder.map((element) => ({
-                        id: element.id,
-                        deviceOrder: element.deviceOrder,
-                    })),
+                    updated.map((e) => ({ id: e.id, deviceOrder: e.deviceOrder })),
                 );
 
-                setFilteredElements(updatedElementsWithNewOrder);
+                setFilteredElements(updated);
 
-                let newIndex = currentIndex;
-                if (currentIndex >= updatedElementsWithNewOrder.length) {
-                    newIndex = currentIndex - 1;
-                }
+                const newIndex = Math.max(0, Math.min(currentIndex, updated.length - 1));
+                setCurrentIndex(newIndex);
 
-                if (newIndex >= 0 && newIndex < updatedElementsWithNewOrder.length) {
-                    scrollViewRef.current?.scrollTo({
-                        x: newIndex * (isTablet ? windowWidth * 0.25 : windowWidth),
-                        animated: true,
-                    });
-                    setCurrentIndex(newIndex);
-                }
+                scrollViewRef.current?.scrollTo({
+                    x: newIndex * ELEMENT_WIDTH,
+                    animated: true,
+                });
             } catch (error) {
                 setErrorMessage(error.message);
                 setErrorModalVisible(true);
             }
         },
-        [filteredElements, currentIndex, isTablet],
+        [filteredElements, currentIndex],
     );
 
     const handleMove = useCallback(
         async (element: InspectionDeviceElement, direction: 'left' | 'right') => {
-            const currentIndex = filteredElements.findIndex((el) => el.id === element.id);
-            if (currentIndex === -1) return;
+            const index = filteredElements.findIndex((el) => el.id === element.id);
+            if (index === -1) return;
 
-            const siblingIndex = direction === 'left' ? currentIndex - 1 : currentIndex + 1;
+            const targetIndex = direction === 'left' ? index - 1 : index + 1;
+            if (targetIndex < 0 || targetIndex >= filteredElements.length) return;
 
-            if (siblingIndex < 0 || siblingIndex >= filteredElements.length) return;
-
-            const sibling = filteredElements[siblingIndex];
+            const target = filteredElements[targetIndex];
 
             try {
                 saveDeviceElementsSortOrder([
-                    {
-                        id: element.id,
-                        deviceOrder: sibling.deviceOrder,
-                    },
-                    {
-                        id: sibling.id,
-                        deviceOrder: element.deviceOrder,
-                    },
+                    { id: element.id, deviceOrder: target.deviceOrder },
+                    { id: target.id, deviceOrder: element.deviceOrder },
                 ]);
 
-                const updatedElements = [...filteredElements];
-                updatedElements[currentIndex] = { ...sibling, deviceOrder: element.deviceOrder };
-                updatedElements[siblingIndex] = { ...element, deviceOrder: sibling.deviceOrder };
+                const updated = [...filteredElements];
+                updated[index] = { ...target, deviceOrder: element.deviceOrder };
+                updated[targetIndex] = { ...element, deviceOrder: target.deviceOrder };
+                setFilteredElements(updated);
+                setCurrentIndex(targetIndex);
 
-                setFilteredElements(updatedElements);
+                const elementX = targetIndex * ELEMENT_WIDTH;
+                const visibleStart = scrollViewPosition.current;
+                const visibleEnd = visibleStart + windowWidth;
 
-                const elementWidth = isTablet ? windowWidth * 0.1 : windowWidth * 0.33;
-                const elementPosition = siblingIndex * elementWidth;
-                const currentScrollPosition = scrollViewPosition.current;
-                const endOfVisibleArea = currentScrollPosition + windowWidth;
-
-                // **Dodato**: Pomeranje ulevo ranije
-                if (
-                    (direction === 'left' && elementPosition < currentScrollPosition) ||
-                    (direction === 'right' && elementPosition + elementWidth)
-                ) {
+                if (elementX < visibleStart) {
+                    scrollViewRef.current?.scrollTo({ x: elementX, animated: true });
+                } else if (elementX + ELEMENT_WIDTH > visibleEnd) {
                     scrollViewRef.current?.scrollTo({
-                        x: elementPosition,
+                        x: elementX + ELEMENT_WIDTH - windowWidth,
                         animated: true,
                     });
                 }
-
-                setCurrentIndex(siblingIndex);
             } catch (error) {
                 setErrorMessage(error.message);
                 setErrorModalVisible(true);
             }
         },
-        [filteredElements, isTablet],
+        [filteredElements],
     );
 
     const handleScroll = (event: any) => {
         const scrollX = event.nativeEvent.contentOffset.x;
         scrollViewPosition.current = scrollX;
-
-        // Sinhronizuje samo indeks bez promene redosleda
-        const newIndex = Math.round(scrollX / (windowWidth * 0.1));
-        setCurrentIndex(newIndex);
+        setCurrentIndex(Math.round(scrollX / ELEMENT_WIDTH));
     };
 
-    const fetchUpdatedDeviceElements = useCallback(() => {
-        fetchInspectionDeviceElements(inspectionId, setInspectionDeviceElements);
-    }, [inspectionId]);
+    const handleScrollLeft = () => {
+        if (currentIndex <= 0) return;
+        const newIndex = currentIndex - 1;
+        setCurrentIndex(newIndex);
+        scrollViewRef.current?.scrollTo({
+            x: newIndex * ELEMENT_WIDTH,
+            animated: true,
+        });
+    };
 
-    const handleScrollRight = useCallback(() => {
-        if (currentIndex < filteredElements.length - 1) {
-            const newIndex = currentIndex + 1;
-            setCurrentIndex(newIndex);
-            scrollViewRef.current?.scrollTo({
-                x: newIndex * (isTablet ? windowWidth * 0.1 : windowWidth * 0.33),
-                animated: true,
-            });
-        }
-    }, [currentIndex, filteredElements.length, isTablet]);
-
-    const handleScrollLeft = useCallback(() => {
-        if (currentIndex > 0) {
-            const newIndex = currentIndex - 1;
-            setCurrentIndex(newIndex);
-            scrollViewRef.current?.scrollTo({
-                x: newIndex * (isTablet ? windowWidth * 0.1 : windowWidth * 0.33),
-                animated: true,
-            });
-        }
-    }, [currentIndex, isTablet]);
-
-    const totalItemsWidth = useMemo(
-        () =>
-            isTablet
-                ? filteredElements.length * (windowWidth * 0.25)
-                : filteredElements.length * (windowWidth * 0.33),
-        [filteredElements.length, isTablet],
-    );
-
-    const remainingSpace = useMemo(() => totalItemsWidth - windowWidth, [totalItemsWidth]);
-    const snapInterval = useMemo(
-        () => (remainingSpace < filteredElements.length ? remainingSpace : windowWidth),
-        [remainingSpace, filteredElements.length],
-    );
+    const handleScrollRight = () => {
+        if (currentIndex >= filteredElements.length - 1) return;
+        const newIndex = currentIndex + 1;
+        setCurrentIndex(newIndex);
+        scrollViewRef.current?.scrollTo({
+            x: newIndex * ELEMENT_WIDTH,
+            animated: true,
+        });
+    };
 
     const positionName = useMemo(() => {
         switch (positionId) {
@@ -274,35 +202,31 @@ const InspectionDeviceElements: FC<Props> = ({ inspectionDeviceElements, positio
                     </View>
                 </View>
             </View>
+
             <View style={styles.containerImages}>
-                {filteredElements.length > 0 && (
-                    <ScrollView
-                        ref={scrollViewRef}
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                        snapToInterval={snapInterval}
-                        snapToAlignment="center"
-                        decelerationRate="normal"
-                        onScroll={handleScroll}
-                        scrollEventThrottle={16}
-                    >
-                        {filteredElements.map((element) => (
-                            <InspectionDeviceElementImg
-                                key={element.id}
-                                deviceElement={element}
-                                onFocusChange={handleFocusChange}
-                                isFocused={element.id.toString() === focusedDeviceId}
-                                onDeleteElement={handleDeleteElement}
-                                moveLeft={() => handleMove(element, 'left')}
-                                moveRight={() => handleMove(element, 'right')}
-                                isTablet={isTablet}
-                                currentIndex={currentIndex}
-                                index={filteredElements.indexOf(element)}
-                                selectedElementsCount={selectedElementsCount}
-                            />
-                        ))}
-                    </ScrollView>
-                )}
+                <ScrollView
+                    ref={scrollViewRef}
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    onScroll={handleScroll}
+                    scrollEventThrottle={16}
+                >
+                    {filteredElements.map((element, index) => (
+                        <InspectionDeviceElementImg
+                            key={element.id}
+                            deviceElement={element}
+                            onFocusChange={handleFocusChange}
+                            isFocused={element.id.toString() === focusedDeviceId}
+                            onDeleteElement={handleDeleteElement}
+                            moveLeft={() => handleMove(element, 'left')}
+                            moveRight={() => handleMove(element, 'right')}
+                            isTablet={isTablet}
+                            currentIndex={currentIndex}
+                            index={index}
+                            selectedElementsCount={filteredElements.length}
+                        />
+                    ))}
+                </ScrollView>
             </View>
 
             <ErrorInformationModal

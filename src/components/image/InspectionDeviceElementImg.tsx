@@ -13,6 +13,10 @@ import { customColors } from '../../assets/styles/customStyles';
 
 const windowWidth = Dimensions.get('window').width;
 
+// 🔒 JEDINO PRAVILO
+const MAX_PER_SCREEN = 6;
+const ELEMENT_WIDTH = windowWidth / MAX_PER_SCREEN;
+
 type Props = {
     deviceElement: InspectionDeviceElement;
     onFocusChange: (deviceId: string, focused: boolean) => void;
@@ -36,17 +40,12 @@ const InspectionDeviceElementImg: FC<Props> = ({
     isTablet,
     index,
     currentIndex,
-    selectedElementsCount,
 }) => {
     const inspectionId = useInspectionStore((state) => state.inspectionId);
     const [modalVisible, setModalVisible] = useState(false);
     const setInspectionDeviceElements = useInspectionDeviceElementsStore(
         (state) => state.setInspectionDeviceElements,
     );
-
-    const hideModal = () => {
-        setModalVisible(false);
-    };
 
     const handlePressIn = () => {
         onFocusChange(deviceElement.id.toString(), true);
@@ -56,21 +55,15 @@ const InspectionDeviceElementImg: FC<Props> = ({
         onFocusChange(deviceElement.id.toString(), false);
     };
 
-    const handleDeleteInspectionElements = async (inspectionId: string) => {
-        await deleteInspectionDeviceElement(inspectionId);
-    };
-
-    const handleConfirmDelete = () => {
-        if (deviceElement) {
-            handleDeleteInspectionElements(deviceElement.id.toString());
-            hideModal();
-            onDeleteElement(deviceElement.id.toString());
-            fetchUpdatedDeviceElements();
-        }
-    };
-
     const fetchUpdatedDeviceElements = () => {
         fetchInspectionDeviceElements(inspectionId, setInspectionDeviceElements);
+    };
+
+    const handleConfirmDelete = async () => {
+        await deleteInspectionDeviceElement(deviceElement.id.toString());
+        setModalVisible(false);
+        onDeleteElement(deviceElement.id.toString());
+        fetchUpdatedDeviceElements();
     };
 
     function capitalizeFirstLetter(str = '') {
@@ -79,22 +72,13 @@ const InspectionDeviceElementImg: FC<Props> = ({
         return substring.charAt(0).toUpperCase() + substring.slice(1);
     }
 
-    const calculateWidth = (selectedElementsCount: number) => {
-        const elementsPerRow = Math.min(Math.ceil(selectedElementsCount), 8);
-        return windowWidth / elementsPerRow;
-    };
-
-    const calculateImageSize = (selectedElementsCount: number) => {
-        return calculateWidth(selectedElementsCount) * 0.75;
-    };
-
     return (
         <TouchableOpacity
             key={deviceElement.id}
             style={[
                 styles.inspectionElementContainer,
                 {
-                    width: calculateWidth(selectedElementsCount),
+                    width: ELEMENT_WIDTH,
                     paddingTop: isTablet ? 0 : windowWidth * 0.05,
                     justifyContent: isTablet ? 'center' : 'flex-start',
                 },
@@ -111,13 +95,14 @@ const InspectionDeviceElementImg: FC<Props> = ({
                         style={[
                             styles.elementImage,
                             isFocused && styles.imageFocused,
-                            { width: calculateImageSize(selectedElementsCount) },
+                            { width: ELEMENT_WIDTH * 0.75 },
                         ]}
                         source={DeviceElementImage.GetImage(deviceElement.imageFileName)}
                         resizeMode="contain"
                     />
                 )}
             </View>
+
             <TextImageName
                 text={capitalizeFirstLetter(deviceElement.imageFileName)}
                 isTablet={isTablet}
@@ -139,14 +124,16 @@ const InspectionDeviceElementImg: FC<Props> = ({
                     </TouchableOpacity>
                 </View>
             )}
+
             {isFocused && (
                 <TouchableOpacity style={styles.xContainer} onPress={() => setModalVisible(true)}>
                     <Icon name="x" size={24} color="white" />
                 </TouchableOpacity>
             )}
+
             <ConfirmDeleteModal
                 modalVisible={modalVisible}
-                hideModal={hideModal}
+                hideModal={() => setModalVisible(false)}
                 handleConfirmDelete={handleConfirmDelete}
             />
         </TouchableOpacity>

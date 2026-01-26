@@ -64,9 +64,9 @@ const DeviceElementImg: FC<Props> = ({
         }
     };
 
-    const calculateWidth = (selectedElementsCount: number) => {
-        const elementsPerRow = Math.min(Math.ceil(selectedElementsCount / 2), 8);
-        return windowWidth / elementsPerRow;
+    const calculateWidth = (_selectedElementsCount: number) => {
+        const ELEMENTS_PER_ROW = 4;
+        return windowWidth / ELEMENTS_PER_ROW;
     };
 
     const calculateImageSize = (selectedElementsCount: number) => {
