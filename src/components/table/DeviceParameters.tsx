@@ -57,7 +57,7 @@ const DeviceParameters: React.FC<Props> = ({
                             setInspection({ ...inspection, lastMaintenance: value.toString() })
                         }
                         onBlur={handleSaveInspection}
-                        placeholder="z.A."
+                        placeholder="k.A."
                     />
                     {/* <InputNumberNullToString
                         value={lastMaintenance}

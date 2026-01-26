@@ -25,7 +25,7 @@ export const uploadImagesToCloudS3 = async (
 ) => {
     try {
         const adminApiUrl = getAdminApiUrl();
-        console.log('adminApiUrl', adminApiUrl);
+
         if (!adminApiUrl) {
             throw new Error('Admin API URL is not defined');
         }

@@ -37,8 +37,24 @@ const JsreportPdfViewer = ({ inspectionData }: JsreportPdfViewerProps) => {
                         }),
                     },
                 );
+                console.log('JSREPORT STATUS:', response.status);
+                console.log('JSREPORT HEADERS:', JSON.stringify([...response.headers.entries()]));
 
-                if (!response.ok) throw new Error('Fehler beim Generieren des PDF-Berichts');
+                const contentType = response.headers.get('content-type');
+                console.log('JSREPORT CONTENT-TYPE:', contentType);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('JSREPORT ERROR BODY:', errorText);
+                    throw new Error('Fehler beim Generieren des PDF-Berichts');
+                }
+
+                if (!contentType || !contentType.includes('application/pdf')) {
+                    const text = await response.text();
+                    console.error('JSREPORT DID NOT RETURN PDF');
+                    console.error('BODY:', text);
+                    throw new Error('Response is not PDF');
+                }
 
                 const blob = await response.blob();
                 const reader = new FileReader();
