@@ -11,6 +11,9 @@ import { useCameraDevice, useCodeScanner, Camera } from 'react-native-vision-cam
 import CloseCameraButton from '../buttons/CloseCameraButton';
 import ErrorBoundary from '../errors/ErrorBoundary';
 import ErrorInformationModal from '../modals/ErrorInformationModal';
+import { useWindowDimensions } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { useCameraFormat } from 'react-native-vision-camera';
 
 type Props = {
     width?: number;
@@ -31,20 +34,29 @@ const BarcodeScanner: FC<Props> = ({
     const [errorModalVisible, setErrorModalVisible] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [currentCode, setCurrentCode] = useState<string | null>(null);
+    const { width: screenWidth, height: screenHeight } = useWindowDimensions();
+    const frameSize = Math.min(screenWidth, screenHeight) * 0.7;
+    const navigation = useNavigation();
 
     const device = useCameraDevice('back');
+
+    useEffect(() => {
+        navigation.setOptions({ headerShown: false });
+
+        const backPressHandler = () => true;
+        BackHandler.addEventListener('hardwareBackPress', backPressHandler);
+
+        return () => {
+            navigation.setOptions({ headerShown: true });
+            BackHandler.removeEventListener('hardwareBackPress', backPressHandler);
+        };
+    }, []);
 
     useEffect(() => {
         if (isScannerOpen) {
             requestCameraPermission();
         }
     }, [isScannerOpen]);
-
-    useEffect(() => {
-        const backPressHandler = () => true;
-        BackHandler.addEventListener('hardwareBackPress', backPressHandler);
-        return () => BackHandler.removeEventListener('hardwareBackPress', backPressHandler);
-    }, []);
 
     const codeScanner = useCodeScanner({
         codeTypes: ['ean-13', 'code-128', 'code-93', 'code-39', 'ean-8'],
@@ -66,41 +78,72 @@ const BarcodeScanner: FC<Props> = ({
         }
     };
 
+    const frameTop = (screenHeight - frameSize) / 2;
+
+    const isLandscape = screenWidth > screenHeight;
+
+    const format = useCameraFormat(device, [{ videoAspectRatio: 4 / 3 }]);
+
+    const buttonStyle = isLandscape
+        ? {
+              bottom: 32,
+              left: 20,
+              right: 20,
+          }
+        : {
+              top: frameTop + frameSize + 24,
+              left: 20,
+              right: 20,
+          };
+
     if (!isScannerOpen || !hasPermission || !device) {
         return <Text>Kamerafehler</Text>;
     }
 
     return (
         <ErrorBoundary>
-            <Camera
-                style={StyleSheet.absoluteFillObject}
-                device={device}
-                isActive={true}
-                codeScanner={codeScanner}
-                enableZoomGesture
-            />
+            <View style={StyleSheet.absoluteFill}>
+                <Camera
+                    device={device}
+                    format={format}
+                    isActive
+                    codeScanner={codeScanner}
+                    resizeMode="cover"
+                    style={StyleSheet.absoluteFill}
+                />
+            </View>
 
             {/* Scan frame */}
             <View
                 style={{
-                    width: width ?? 300,
-                    height: height ?? 300,
-                    borderColor: 'white',
-                    borderWidth: 2,
-                    alignSelf: 'center',
-                    marginTop: 80,
+                    position: 'absolute',
+                    top: 0,
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    justifyContent: 'center',
+                    alignItems: 'center',
                 }}
-            />
+            >
+                <View
+                    style={{
+                        width: frameSize,
+                        height: frameSize,
+                        borderColor: 'white',
+                        borderWidth: 2,
+                    }}
+                />
+            </View>
 
             {/* Detected codes */}
             <View
-                style={{
-                    position: 'absolute',
-                    bottom: 120,
-                    left: 20,
-                    right: 20,
-                    alignItems: 'center',
-                }}
+                style={[
+                    {
+                        position: 'absolute',
+                        alignItems: 'center',
+                    },
+                    buttonStyle,
+                ]}
             >
                 {!currentCode ? (
                     <View

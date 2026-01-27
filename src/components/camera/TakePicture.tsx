@@ -1,5 +1,15 @@
+// src/components/camera/TakePicture.tsx
+
 import React, { useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, Image, PermissionsAndroid, Modal, Dimensions } from 'react-native';
+import {
+    View,
+    StyleSheet,
+    Image,
+    PermissionsAndroid,
+    Modal,
+    Text,
+    TouchableOpacity,
+} from 'react-native';
 import { Camera, useCameraDevice } from 'react-native-vision-camera';
 import { CameraRoll } from '@react-native-camera-roll/camera-roll';
 import CameraButton from '../buttons/CameraButton';
@@ -25,25 +35,24 @@ const TakePicture: React.FC<Props> = ({
     const cameraRef = useRef<Camera>(null);
     const device = useCameraDevice('back');
     const { setIsLoading, setLoadingText, setError } = useInspectionStore();
+
     const [hasPermission, setHasPermission] = useState(false);
-    const { width } = Dimensions.get('window');
+    const [torchOn, setTorchOn] = useState(false);
 
     useEffect(() => {
         requestCameraPermission();
     }, []);
 
+    useEffect(() => {
+        if (!visible) {
+            setTorchOn(false);
+            setPhotoPreview(null);
+        }
+    }, [visible]);
+
     const requestCameraPermission = async () => {
         try {
-            const granted = await PermissionsAndroid.request(
-                PermissionsAndroid.PERMISSIONS.CAMERA,
-                {
-                    title: 'Camera Permission',
-                    message: 'This app requires camera permission.',
-                    buttonNeutral: 'Ask Me Later',
-                    buttonNegative: 'Cancel',
-                    buttonPositive: 'OK',
-                },
-            );
+            const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.CAMERA);
 
             if (granted === PermissionsAndroid.RESULTS.GRANTED) {
                 setHasPermission(true);
@@ -81,7 +90,6 @@ const TakePicture: React.FC<Props> = ({
         try {
             setIsLoading(true);
             setLoadingText('Foto wird gespeichert...');
-            console.log('Saving photo to gallery:', photoPreview);
 
             const asset = await CameraRoll.saveAsset(photoPreview, {
                 album: 'Inspections',
@@ -89,8 +97,8 @@ const TakePicture: React.FC<Props> = ({
             });
 
             const galleryUri = asset.node.image.uri;
-
             saveImage(galleryUri);
+
             setPhotoPreview(null);
             onClose();
         } catch {
@@ -110,12 +118,10 @@ const TakePicture: React.FC<Props> = ({
                 <View style={styles.previewContainer}>
                     <Image
                         source={{ uri: photoPreview }}
-                        style={{
-                            width: width,
-                            height: width * (16 / 9),
-                        }}
+                        style={StyleSheet.absoluteFill}
                         resizeMode="cover"
                     />
+
                     <View style={styles.buttonContainer}>
                         <PrimaryButton title="Speichern" onPress={handleAcceptPhoto} />
                         <PrimaryButton title="Wiederholung" onPress={handleRejectPhoto} />
@@ -124,16 +130,26 @@ const TakePicture: React.FC<Props> = ({
             ) : (
                 device &&
                 hasPermission && (
-                    <Camera
-                        ref={cameraRef}
-                        style={{
-                            width: width,
-                            height: width * (16 / 9),
-                        }}
-                        device={device}
-                        isActive={true}
-                        photo={true}
-                    />
+                    <>
+                        <Camera
+                            ref={cameraRef}
+                            style={StyleSheet.absoluteFill}
+                            device={device}
+                            isActive
+                            photo
+                            torch={torchOn ? 'on' : 'off'}
+                        />
+
+                        {/* Flash toggle – opposite side of Close button */}
+                        <TouchableOpacity
+                            onPress={() => setTorchOn((prev) => !prev)}
+                            style={styles.flashButton}
+                            activeOpacity={0.8}
+                        >
+                            <Text style={styles.flashIcon}>{torchOn ? '⚡' : '⚡'}</Text>
+                            {!torchOn && <View style={styles.flashSlash} />}
+                        </TouchableOpacity>
+                    </>
                 )
             )}
 
@@ -146,14 +162,11 @@ const TakePicture: React.FC<Props> = ({
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        height: '100%',
         width: '100%',
-        zIndex: 1,
+        height: '100%',
     },
     previewContainer: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
         backgroundColor: '#000',
     },
     buttonContainer: {
@@ -162,6 +175,31 @@ const styles = StyleSheet.create({
         width: '80%',
         position: 'absolute',
         bottom: 20,
+        alignSelf: 'center',
+    },
+
+    /* Flash button (top-left) */
+    flashButton: {
+        position: 'absolute',
+        top: 20,
+        left: 20,
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        backgroundColor: 'rgba(0,0,0,0.6)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    flashIcon: {
+        fontSize: 22,
+        color: '#fff',
+    },
+    flashSlash: {
+        position: 'absolute',
+        width: 28,
+        height: 2,
+        backgroundColor: '#ff3b30',
+        transform: [{ rotate: '-45deg' }],
     },
 });
 
