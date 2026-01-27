@@ -189,19 +189,31 @@ const ElementsStateScreen: React.FC = () => {
 
     const handleUploadFromDevice = async (inspectionElementDeviceId: string) => {
         try {
-            const result = await launchImageLibrary({ mediaType: 'photo' });
+            setIsLoading(true);
+            setLoadingText('Bilder werden hochgeladen...');
 
-            if (result.assets && result.assets.length > 0) {
-                const imagePath = result.assets[0].uri;
+            const result = await launchImageLibrary({
+                mediaType: 'photo',
+                selectionLimit: 0, // ✅ multi-select
+            });
+
+            if (!result.assets?.length) return;
+
+            for (const asset of result.assets) {
+                if (!asset.uri) continue;
+
                 await handleSaveDeviceElementImage(
-                    imagePath,
+                    asset.uri,
                     inspectionElementDeviceId,
                     imageSaveParams?.titleId,
                     imageSaveParams?.groupTypeId,
                 );
             }
         } catch (error) {
-            console.error('Error uploading image:', error);
+            console.error('Error uploading images:', error);
+            setError('Fehler beim Hochladen der Bilder.');
+        } finally {
+            setIsLoading(false);
         }
     };
 

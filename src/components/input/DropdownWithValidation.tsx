@@ -42,7 +42,7 @@ const DropdownWithValidation: FC<Props> = ({
     const placeholderLabel = pickerPlaceholder || 'Select Item';
     const INPUT_FONT_SIZE = isTablet ? 22 : 16;
     const MODAL_FONT_SIZE = isTablet ? 22 : 16;
-    const INPUT_HEIGHT = isTablet ? 'auto' : 40;
+    const INPUT_HEIGHT = isTablet ? 56 : 48;
 
     useEffect(() => {
         const isTabletDevice = windowWidth >= tabletThreshold;
@@ -62,16 +62,19 @@ const DropdownWithValidation: FC<Props> = ({
             justifyContent: 'space-between',
             alignItems: 'center',
             height: INPUT_HEIGHT,
-            paddingVertical: 10,
             paddingHorizontal: 15,
         },
+
         selectedItemText: {
             color: customColors.blueLight,
             fontSize: INPUT_FONT_SIZE,
+            lineHeight: INPUT_FONT_SIZE * 1.3,
         },
+
         placeholderText: {
             color: customColors.placeholder,
             fontSize: INPUT_FONT_SIZE,
+            lineHeight: INPUT_FONT_SIZE * 1.3,
         },
         modalContainer: {
             flex: 1,

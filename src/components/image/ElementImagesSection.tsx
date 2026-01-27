@@ -45,14 +45,21 @@ const ElementImagesSection: React.FC<Props> = ({ inspectionDeviceElementId, onIm
     }, [inspectionDeviceElementId]);
 
     const handleUpload = async () => {
-        const result = await launchImageLibrary({ mediaType: 'photo' });
-
-        if (!result.assets?.[0]?.uri) return;
-
-        await saveInspectionDeviceElementImage(inspectionDeviceElementId, {
-            storagePath: result.assets[0].uri,
-            name: IMAGE_TYPES.DeviceElement_Image as ImageTypesByDbTable,
+        const result = await launchImageLibrary({
+            mediaType: 'photo',
+            selectionLimit: 0, // ✅ multi-select
         });
+
+        if (!result.assets?.length) return;
+
+        for (const asset of result.assets) {
+            if (!asset.uri) continue;
+
+            await saveInspectionDeviceElementImage(inspectionDeviceElementId, {
+                storagePath: asset.uri,
+                name: IMAGE_TYPES.DeviceElement_Image as ImageTypesByDbTable,
+            });
+        }
 
         await fetchImages();
     };
