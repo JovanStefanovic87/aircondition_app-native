@@ -1,9 +1,7 @@
 import RNFS from 'react-native-fs';
-import { Platform } from 'react-native';
 import { HETZNER_BUCKET_NAME, HETZNER_S3_ENDPOINT } from './helpers/constants';
 import { getAdminApiUrl } from './helpers/functions';
-
-const DB_NAME = 'app.db';
+import { findExistingDbPath, getDatabase } from '../../database/dbConnection/initDatabase';
 
 export const uploadSqliteBackupToS3 = async (username: string) => {
     const adminApiUrl = getAdminApiUrl();
@@ -11,17 +9,10 @@ export const uploadSqliteBackupToS3 = async (username: string) => {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const backupFileName = `backup-${timestamp}.db`;
 
-    const dbPath =
-        Platform.OS === 'android'
-            ? `/data/data/${RNFS.MainBundlePath.split('/files')[0]}/databases/${DB_NAME}`
-            : `${RNFS.DocumentDirectoryPath}/${DB_NAME}`;
-
+    const dbPath = await findExistingDbPath();
     const tempBackupPath = `${RNFS.DocumentDirectoryPath}/${backupFileName}`;
 
-    const exists = await RNFS.exists(dbPath);
-    if (!exists) {
-        throw new Error('SQLite database file not found');
-    }
+    await getDatabase().executeSql('PRAGMA wal_checkpoint(FULL);');
 
     await RNFS.copyFile(dbPath, tempBackupPath);
 
@@ -35,20 +26,21 @@ export const uploadSqliteBackupToS3 = async (username: string) => {
     });
 
     if (!response.ok) {
-        const err = await response.text();
-        throw new Error(err);
+        throw new Error(await response.text());
     }
 
     const { url, Key } = await response.json();
-
-    const fileBuffer = await RNFS.readFile(tempBackupPath, 'base64');
 
     const putRes = await fetch(url, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/octet-stream',
         },
-        body: Buffer.from(fileBuffer, 'base64') as any,
+        body: {
+            uri: `file://${tempBackupPath}`,
+            type: 'application/octet-stream',
+            name: backupFileName,
+        } as any,
     });
 
     if (!putRes.ok) {

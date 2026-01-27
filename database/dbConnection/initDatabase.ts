@@ -4,15 +4,31 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 
 const DB_NAME = 'AC_inspector.db';
+const PACKAGE_NAME = 'com.acinspector';
 let database: SQLite.SQLiteDatabase | null = null;
 
 const getPossibleAndroidPaths = () => {
-    const packageName = 'com.acinspector';
     return [
-        `/data/user/0/${packageName}/databases/${DB_NAME}`,
-        `/data/data/${packageName}/databases/${DB_NAME}`,
+        `/data/user/0/${PACKAGE_NAME}/databases/${DB_NAME}`,
+        `/data/data/${PACKAGE_NAME}/databases/${DB_NAME}`,
         `${RNFS.DocumentDirectoryPath}/../databases/${DB_NAME}`,
     ];
+};
+
+export const findExistingDbPath = async (): Promise<string> => {
+    const possiblePaths = [
+        `/data/user/0/${PACKAGE_NAME}/databases/${DB_NAME}`,
+        `/data/data/${PACKAGE_NAME}/databases/${DB_NAME}`,
+        `${RNFS.DocumentDirectoryPath}/../databases/${DB_NAME}`,
+    ];
+
+    for (const path of possiblePaths) {
+        if (await RNFS.exists(path)) {
+            return path;
+        }
+    }
+
+    throw new Error(`SQLite database not found. Checked paths:\n${possiblePaths.join('\n')}`);
 };
 
 export const checkFreshInstall = async () => {

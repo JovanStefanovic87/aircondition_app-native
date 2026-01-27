@@ -31,6 +31,7 @@ import {
 import ErrorInformationModal from '../components/modals/ErrorInformationModal';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { uploadSqliteBackupToS3 } from '../api/uploadSqliteBackupToS3';
 
 type NavScreenNavigationProp = NavigationProp<any, any>;
 
@@ -103,6 +104,15 @@ const DevToolsScreen: React.FC = () => {
                     ? `New inspection copied with ID: ${newInspectionId}`
                     : 'Failed to copy inspection',
             );
+        },
+        uploadSqliteBackupToS3: async () => {
+            try {
+                const result = await uploadSqliteBackupToS3('dev_user');
+
+                log(`Backup uploaded to S3: ${JSON.stringify(result)}`);
+            } catch (error) {
+                log(`Error uploading backup: ${error}`);
+            }
         },
     };
 
@@ -187,6 +197,12 @@ const DevToolsScreen: React.FC = () => {
                         iconName="copy"
                         iconColor="blue"
                         onPress={handle.copyInspection}
+                    />
+                    <NavButton
+                        buttonText="Upload SQLite Backup to S3"
+                        iconName="upload"
+                        iconColor="blue"
+                        onPress={handle.uploadSqliteBackupToS3}
                     />
                 </ScrollView>
 
