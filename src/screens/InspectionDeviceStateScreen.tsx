@@ -148,18 +148,26 @@ const InspectionDeviceStateScreen = () => {
     const handleUploadFromDevice = async () => {
         try {
             setIsLoading(true);
-            setLoadingText('Bild wird hochgeladen...');
-            const result = await launchImageLibrary({ mediaType: 'photo' });
-            if (result.assets && result.assets.length > 0) {
-                const imagePath = result.assets[0].uri;
+            setLoadingText('Bilder werden hochgeladen...');
+
+            const result = await launchImageLibrary({
+                mediaType: 'photo',
+                selectionLimit: 0, // ✅ dozvoli više slika
+            });
+
+            if (!result.assets?.length) return;
+
+            for (const asset of result.assets) {
+                if (!asset.uri) continue;
+
                 if (isInspectionImage) {
-                    handleSaveInspectionImage(imagePath);
+                    handleSaveInspectionImage(asset.uri);
                 } else {
-                    handleSaveDeviceStateImage(imagePath);
+                    handleSaveDeviceStateImage(asset.uri);
                 }
             }
         } catch (err) {
-            setError('Fehler beim Hochladen des Bildes.');
+            setError('Fehler beim Hochladen der Bilder.');
         } finally {
             setIsLoading(false);
         }
