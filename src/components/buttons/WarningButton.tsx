@@ -1,3 +1,4 @@
+//src\components\buttons\WarningButton.tsx
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, Dimensions } from 'react-native';
 

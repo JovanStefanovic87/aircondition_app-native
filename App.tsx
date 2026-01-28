@@ -1,23 +1,26 @@
 // App.tsx
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createStackNavigator } from '@react-navigation/stack';
+import { ActivityIndicator, View, Text } from 'react-native';
+
 import TabNavigator from './src/navigators/TabNavigator';
-import { runDBUpdates } from './database/dbUpdates/runUpdates';
+import LoginScreen from './src/screens/LoginScreen';
+
+import { AuthProvider, useAuth } from './src/context/AuthContext';
+import { useInspectionStore } from './src/store/store';
+import GlobalUI from './src/components/ui/GlobalUI';
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { runDBUpdates } from './database/dbUpdates/runUpdates';
 import {
     checkFreshInstall,
     dbConnectionExist,
     initDatabase,
 } from './database/dbConnection/initDatabase';
 import { checkSession } from './database/dataAccess/Helper/auth';
-import LoginScreen from './src/screens/LoginScreen';
-import { AuthProvider, useAuth } from './src/context/AuthContext';
-import { ActivityIndicator, View, Text } from 'react-native';
-import { useInspectionStore } from './src/store/store';
-import GlobalUI from './src/components/ui/GlobalUI';
 
-const Stack = createNativeStackNavigator();
+const Stack = createStackNavigator();
 
 const AppNavigator = () => {
     const { isLoggedIn, setIsLoggedIn } = useAuth();
@@ -26,7 +29,7 @@ const AppNavigator = () => {
         checkSession((user) => {
             setIsLoggedIn(!!user);
         });
-    }, []);
+    }, [setIsLoggedIn]);
 
     if (isLoggedIn === null) {
         return null;
@@ -45,15 +48,15 @@ const AppNavigator = () => {
 
 const App = () => {
     const [loading, setLoading] = useState(true);
-    const { isLoading, loadingText } = useInspectionStore(); // ✅ koristi hook
+    const { isLoading, loadingText } = useInspectionStore();
 
     useEffect(() => {
         const initializeApp = async () => {
             try {
                 await checkFreshInstall();
                 await initDatabase();
+
                 const migrationRunning = await AsyncStorage.getItem('dbMigrationStatus');
-                console.log('migrationRunning', migrationRunning);
 
                 if (migrationRunning !== 'started') {
                     await AsyncStorage.setItem('dbMigrationStatus', 'started');
