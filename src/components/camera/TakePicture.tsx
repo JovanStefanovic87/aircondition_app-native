@@ -17,6 +17,7 @@ import CameraButton from '../buttons/CameraButton';
 import CloseCameraButton from '../buttons/CloseCameraButton';
 import PrimaryButton from '../buttons/PrimaryButton';
 import { useInspectionStore } from '../../store/store';
+import ImageResizer from 'react-native-image-resizer';
 
 interface Props {
     visible: boolean;
@@ -29,9 +30,6 @@ interface Props {
 const { width, height } = Dimensions.get('window');
 const { width: screenWidth } = Dimensions.get('window');
 
-const CAMERA_RATIO = 3 / 4;
-const PREVIEW_HEIGHT = screenWidth * CAMERA_RATIO;
-
 const TakePicture: React.FC<Props> = ({
     visible,
     onClose,
@@ -42,7 +40,7 @@ const TakePicture: React.FC<Props> = ({
     const cameraRef = useRef<Camera>(null);
     const device = useCameraDevice('back');
 
-    const format = useCameraFormat(device, [{ photoAspectRatio: CAMERA_RATIO }]);
+    const format = useCameraFormat(device, [{ photoAspectRatio: 4 / 3 }]);
 
     const { setIsLoading, setLoadingText, setError } = useInspectionStore();
 
@@ -83,9 +81,7 @@ const TakePicture: React.FC<Props> = ({
             setIsLoading(true);
             setLoadingText('Foto wird aufgenommen...');
 
-            const photo = await cameraRef.current.takePhoto({
-                flash: torchOn ? 'on' : 'off',
-            });
+            const photo = await cameraRef.current.takePhoto();
 
             if (photo?.path) {
                 setPhotoPreview('file://' + photo.path);
@@ -93,6 +89,7 @@ const TakePicture: React.FC<Props> = ({
         } catch {
             setError('Fehler beim Fotografieren.');
         } finally {
+            setTorchOn(false);
             setIsLoading(false);
         }
     };
@@ -104,13 +101,28 @@ const TakePicture: React.FC<Props> = ({
             setIsLoading(true);
             setLoadingText('Foto wird gespeichert...');
 
-            const asset = await CameraRoll.saveAsset(photoPreview, {
+            const { width: screenW, height: screenH } = Dimensions.get('window');
+
+            const resized = await ImageResizer.createResizedImage(
+                photoPreview,
+                screenW,
+                screenH,
+                'JPEG',
+                90,
+                0,
+                undefined,
+                false,
+                {
+                    mode: 'cover', // 🔥 KLJUČNO – isto kao preview
+                },
+            );
+
+            const asset = await CameraRoll.saveAsset(resized.uri, {
                 album: 'Inspections',
                 type: 'photo',
             });
 
             saveImage(asset.node.image.uri);
-
             setPhotoPreview(null);
             onClose();
         } catch {
@@ -135,8 +147,8 @@ const TakePicture: React.FC<Props> = ({
                 <View style={styles.previewContainer}>
                     <Image
                         source={{ uri: photoPreview }}
-                        style={styles.previewImage}
-                        resizeMode="contain"
+                        style={StyleSheet.absoluteFill}
+                        resizeMode="cover"
                     />
 
                     <View style={styles.buttonContainer}>
@@ -155,6 +167,7 @@ const TakePicture: React.FC<Props> = ({
                             format={format}
                             isActive={visible && !photoPreview}
                             photo
+                            torch={torchOn ? 'on' : 'off'}
                             androidPreviewViewType="texture-view"
                         />
 
@@ -188,12 +201,6 @@ const styles = StyleSheet.create({
     previewContainer: {
         flex: 1,
         backgroundColor: '#000',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    previewImage: {
-        width: screenWidth,
-        height: PREVIEW_HEIGHT,
     },
     buttonContainer: {
         flexDirection: 'row',

@@ -126,3 +126,9 @@ dependencies {
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
 apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")
+
+afterEvaluate {
+    tasks.matching { it.name == "generateReleaseLintVitalReportModel" }.configureEach {
+        dependsOn("copyReactNativeVectorIconFonts")
+    }
+}

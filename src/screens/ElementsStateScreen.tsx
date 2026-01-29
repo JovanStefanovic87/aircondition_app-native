@@ -163,6 +163,22 @@ const ElementsStateScreen: React.FC = () => {
         isCompleteCheckPerElement();
     }, [elementCompleted]);
 
+    const fetchElementsImagesStatus = async () => {
+        const statusMap: Record<string, boolean> = {};
+
+        for (const el of deviceElementCompleted) {
+            const images = await getInspectionElementTitleGroupImages(
+                el.inspectionDeviceElementId,
+                null,
+                null,
+            );
+
+            statusMap[el.inspectionDeviceElementId] = images.length > 0;
+        }
+
+        setElementImagesMap(statusMap);
+    };
+
     const toggleCameraDevice = (titleId: number, groupTypeId: number) => {
         setCameraVisible(!isCameraVisible);
         setImageSaveParams({ titleId: titleId, groupTypeId: groupTypeId });
@@ -445,7 +461,11 @@ const ElementsStateScreen: React.FC = () => {
         }
     };
 
-    const canProceed = allElementsCompleted && hasElementImages;
+    const hasImagesForAllElements = deviceElementCompleted.every(
+        (el) => elementImagesMap[el.inspectionDeviceElementId] === true,
+    );
+
+    const canProceed = allElementsCompleted && hasImagesForAllElements;
 
     const mergedDeviceElementCompleted = deviceElementCompleted.map((el) => {
         const hasImages = elementImagesMap[el.inspectionDeviceElementId];
