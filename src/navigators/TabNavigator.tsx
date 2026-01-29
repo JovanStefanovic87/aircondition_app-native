@@ -73,7 +73,7 @@ const TabNavigator = () => {
                 component={PdfViewerScreen}
                 options={{ title: 'PDF Viewer' }}
             />
-            {__DEV__ && <Stack.Screen name="DevToolsScreen" component={DevToolsScreen} />}
+            <Stack.Screen name="DevToolsScreen" component={DevToolsScreen} />
         </Stack.Navigator>
     );
 };
