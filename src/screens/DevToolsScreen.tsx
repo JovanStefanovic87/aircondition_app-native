@@ -32,6 +32,7 @@ import ErrorInformationModal from '../components/modals/ErrorInformationModal';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { uploadSqliteBackupToS3 } from '../api/uploadSqliteBackupToS3';
+import { deleteLocalDatabase } from '../../database/dbConnection/initDatabase';
 
 type NavScreenNavigationProp = NavigationProp<any, any>;
 
@@ -106,12 +107,21 @@ const DevToolsScreen: React.FC = () => {
             );
         },
         uploadSqliteBackupToS3: async () => {
+            const session = await getStoredUser();
             try {
-                const result = await uploadSqliteBackupToS3('dev_user');
+                const result = await uploadSqliteBackupToS3(session ? session.username : 'unknown');
 
                 log(`Backup uploaded to S3: ${JSON.stringify(result)}`);
             } catch (error) {
                 log(`Error uploading backup: ${error}`);
+            }
+        },
+        deleteLocalDatabase: async () => {
+            try {
+                await deleteLocalDatabase();
+                log('Local database deleted successfully.');
+            } catch (error) {
+                log(`Error deleting local database: ${error}`);
             }
         },
     };
@@ -125,6 +135,12 @@ const DevToolsScreen: React.FC = () => {
                         iconName="database"
                         iconColor="red"
                         onPress={handle.deleteAllTables}
+                    />
+                    <NavButton
+                        buttonText="Delete Local Database"
+                        iconName="database"
+                        iconColor="red"
+                        onPress={handle.deleteLocalDatabase}
                     />
                     <NavButton
                         buttonText="Get All Tables"

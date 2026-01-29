@@ -81,3 +81,38 @@ export const dbConnectionExist = () => {
     }
     return true;
 };
+
+export const getDatabaseFilePath = () => {
+    if (Platform.OS === 'android') {
+        return `${RNFS.DocumentDirectoryPath}/../databases/${DB_NAME}`;
+    }
+    throw new Error('Unsupported platform');
+};
+
+export const databaseFileExists = async () => {
+    const path = getDatabaseFilePath();
+    return RNFS.exists(path);
+};
+
+export const deleteLocalDatabase = async () => {
+    try {
+        const db = getDatabase();
+
+        await new Promise<void>((resolve) => {
+            db.close(resolve, resolve as any);
+        });
+
+        const dbPath = await findExistingDbPath();
+
+        const filesToDelete = [dbPath, `${dbPath}-wal`, `${dbPath}-shm`];
+
+        for (const path of filesToDelete) {
+            const exists = await RNFS.exists(path);
+            if (exists) {
+                await RNFS.unlink(path);
+            }
+        }
+    } catch (err) {
+        throw err;
+    }
+};

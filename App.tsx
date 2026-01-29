@@ -1,21 +1,15 @@
-// App.tsx
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import TabNavigator from './src/navigators/TabNavigator';
-import { runDBUpdates } from './database/dbUpdates/runUpdates';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {
-    checkFreshInstall,
-    dbConnectionExist,
-    initDatabase,
-} from './database/dbConnection/initDatabase';
-import { checkSession } from './database/dataAccess/Helper/auth';
 import LoginScreen from './src/screens/LoginScreen';
-import { AuthProvider, useAuth } from './src/context/AuthContext';
 import { ActivityIndicator, View, Text } from 'react-native';
-import { useInspectionStore } from './src/store/store';
+import { AuthProvider, useAuth } from './src/context/AuthContext';
 import GlobalUI from './src/components/ui/GlobalUI';
+
+import { checkFreshInstall } from './database/dbConnection/initDatabase';
+import { checkSession } from './database/dataAccess/Helper/auth';
+import { restoreBackupDb } from './database/dbUpdates/restoreBackupDb';
 
 const Stack = createNativeStackNavigator();
 
@@ -28,9 +22,7 @@ const AppNavigator = () => {
         });
     }, []);
 
-    if (isLoggedIn === null) {
-        return null;
-    }
+    if (isLoggedIn === null) return null;
 
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -45,30 +37,27 @@ const AppNavigator = () => {
 
 const App = () => {
     const [loading, setLoading] = useState(true);
-    const { isLoading, loadingText } = useInspectionStore(); // ✅ koristi hook
 
     useEffect(() => {
         const initializeApp = async () => {
             try {
                 await checkFreshInstall();
-                await initDatabase();
-                const migrationRunning = await AsyncStorage.getItem('dbMigrationStatus');
-                console.log('migrationRunning', migrationRunning);
 
-                if (migrationRunning !== 'started') {
-                    await AsyncStorage.setItem('dbMigrationStatus', 'started');
-                    await runDBUpdates();
-                    await AsyncStorage.setItem('dbMigrationStatus', 'done');
+                const user = await new Promise<any>((resolve) => {
+                    checkSession(resolve);
+                });
+
+                if (user) {
+                    await restoreBackupDb(user.username);
                 }
-            } catch (error) {
-                console.error('Error during app database update: ', error);
+            } catch (err) {
+                console.error('App initialization failed:', err);
             } finally {
                 setLoading(false);
             }
         };
 
-        if (!dbConnectionExist()) initializeApp();
-        else setLoading(false);
+        initializeApp();
     }, []);
 
     if (loading) {

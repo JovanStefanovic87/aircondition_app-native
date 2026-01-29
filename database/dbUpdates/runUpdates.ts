@@ -68,61 +68,6 @@ async function executeSqlScript(scriptContent: string) {
     });
 }
 
-// async function executeSqlScript(scriptContent: string) {
-//     const db = getDatabase();
-
-//     return new Promise<void>((resolve, reject) => {
-//         const statements = scriptContent?.split(';').filter((statement) => statement.trim() !== '');
-
-//         const generateGuids = (script: string) => {
-//             return script.replace(/<GUID>/g, () => {
-//                 const guid = uuid.v4();
-//                 return `'${guid}'`;
-//             });
-//         };
-
-//         db.transaction((tx) => {
-//             console.log('.................Database update started.................');
-//             const processStatement = (index: number) => {
-//                 if (statements && index < statements.length) {
-//                     const sql = generateGuids(statements[index]);
-
-//                     console.log('sql', sql);
-
-//                     tx.executeSql(
-//                         sql,
-//                         [],
-//                         (_, result) => {
-//                             processStatement(index + 1);
-//                         },
-//                         (_, error) => {
-//                             console.log('error-executeSqlScript', error);
-//                             reject(error);
-//                         },
-//                     );
-//                 } else {
-//                     // All statements executed, commit the transaction
-//                     tx.executeSql(
-//                         'COMMIT',
-//                         [],
-//                         () => {
-//                             console.log('resolved');
-//                             resolve();
-//                         },
-//                         (_, error) => {
-//                             console.log('error-commit', error);
-//                             reject(error);
-//                         },
-//                     );
-//                 }
-//             };
-
-//             // Start processing statements
-//             processStatement(0);
-//         });
-//     });
-// }
-
 async function updateDatabaseVersion(newVersion: number) {
     const db = getDatabase();
     return new Promise<void>((resolve, reject) => {
