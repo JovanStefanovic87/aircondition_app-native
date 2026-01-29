@@ -195,6 +195,7 @@ export type ImageTypesByDbTable =
     | 'Inspection_Image'
     | 'DeviceElement_Image'
     | 'Inspection_Element_Title_Group_Image'
+    | 'Inspection_Element_Image'
     | 'Question_Image';
 
 export type DeviceStateByInspection = {

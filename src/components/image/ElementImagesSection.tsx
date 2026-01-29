@@ -27,12 +27,13 @@ const ElementImagesSection: React.FC<Props> = ({ inspectionDeviceElementId, onIm
 
     const fetchImages = async () => {
         const result = await getInspectionElementImages(inspectionDeviceElementId);
+        console.log('Fetched element images:', result);
 
         const mapped: ImageGallery[] = result
             ? result.map((img) => ({
                   imageId: img.id,
                   imagePath: img.storagePath,
-                  imageType: IMAGE_TYPES.DeviceElement_Image as ImageTypesByDbTable,
+                  imageType: IMAGE_TYPES.Inspection_Element_Image as ImageTypesByDbTable,
               }))
             : [];
 
@@ -67,7 +68,7 @@ const ElementImagesSection: React.FC<Props> = ({ inspectionDeviceElementId, onIm
     const handleSaveFromCamera = async (path: string) => {
         await saveInspectionDeviceElementImage(inspectionDeviceElementId, {
             storagePath: path,
-            name: IMAGE_TYPES.DeviceElement_Image as ImageTypesByDbTable,
+            name: IMAGE_TYPES.Inspection_Element_Image as ImageTypesByDbTable,
         });
 
         setCameraVisible(false);

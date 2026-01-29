@@ -433,11 +433,19 @@ export const deleteDeviceStateImage = async (imageId: string): Promise<void> => 
 };
 
 /**
- * deleteDeviceElementImage - Function that deletes selected image in step 4 of element images
+ * deleteDeviceElementImage - Function that deletes element.. images used in step 3
  * @param imageId - ImageStorage table
  */
 export const deleteDeviceElementImage = async (imageId: string): Promise<void> => {
     await deleteImage(imageId, 'DeviceElement_Image');
+};
+
+/**
+ * deleteInspectionElementImage - Function that deletes selected image in step 4 of element images
+ * @param imageId - ImageStorage table
+ */
+export const deleteInspectionElementImage = async (imageId: string): Promise<void> => {
+    await deleteImage(imageId, 'Inspection_Element_Image');
 };
 
 /**
