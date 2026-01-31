@@ -4,15 +4,31 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 
 const DB_NAME = 'AC_inspector.db';
+const PACKAGE_NAME = 'com.acinspector';
 let database: SQLite.SQLiteDatabase | null = null;
 
 const getPossibleAndroidPaths = () => {
-    const packageName = 'com.acinspector';
     return [
-        `/data/user/0/${packageName}/databases/${DB_NAME}`,
-        `/data/data/${packageName}/databases/${DB_NAME}`,
+        `/data/user/0/${PACKAGE_NAME}/databases/${DB_NAME}`,
+        `/data/data/${PACKAGE_NAME}/databases/${DB_NAME}`,
         `${RNFS.DocumentDirectoryPath}/../databases/${DB_NAME}`,
     ];
+};
+
+export const findExistingDbPath = async (): Promise<string> => {
+    const possiblePaths = [
+        `/data/user/0/${PACKAGE_NAME}/databases/${DB_NAME}`,
+        `/data/data/${PACKAGE_NAME}/databases/${DB_NAME}`,
+        `${RNFS.DocumentDirectoryPath}/../databases/${DB_NAME}`,
+    ];
+
+    for (const path of possiblePaths) {
+        if (await RNFS.exists(path)) {
+            return path;
+        }
+    }
+
+    throw new Error(`SQLite database not found. Checked paths:\n${possiblePaths.join('\n')}`);
 };
 
 export const checkFreshInstall = async () => {
@@ -64,4 +80,39 @@ export const dbConnectionExist = () => {
         return false;
     }
     return true;
+};
+
+export const getDatabaseFilePath = () => {
+    if (Platform.OS === 'android') {
+        return `${RNFS.DocumentDirectoryPath}/../databases/${DB_NAME}`;
+    }
+    throw new Error('Unsupported platform');
+};
+
+export const databaseFileExists = async () => {
+    const path = getDatabaseFilePath();
+    return RNFS.exists(path);
+};
+
+export const deleteLocalDatabase = async () => {
+    try {
+        const db = getDatabase();
+
+        await new Promise<void>((resolve) => {
+            db.close(resolve, resolve as any);
+        });
+
+        const dbPath = await findExistingDbPath();
+
+        const filesToDelete = [dbPath, `${dbPath}-wal`, `${dbPath}-shm`];
+
+        for (const path of filesToDelete) {
+            const exists = await RNFS.exists(path);
+            if (exists) {
+                await RNFS.unlink(path);
+            }
+        }
+    } catch (err) {
+        throw err;
+    }
 };

@@ -1,4 +1,3 @@
-// App.tsx
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -12,13 +11,9 @@ import { useInspectionStore } from './src/store/store';
 import GlobalUI from './src/components/ui/GlobalUI';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { runDBUpdates } from './database/dbUpdates/runUpdates';
-import {
-    checkFreshInstall,
-    dbConnectionExist,
-    initDatabase,
-} from './database/dbConnection/initDatabase';
+import { checkFreshInstall, initDatabase } from './database/dbConnection/initDatabase';
 import { checkSession } from './database/dataAccess/Helper/auth';
+import { restoreBackupDb } from './database/dbUpdates/restoreBackupDb';
 
 const Stack = createStackNavigator();
 
@@ -31,9 +26,7 @@ const AppNavigator = () => {
         });
     }, [setIsLoggedIn]);
 
-    if (isLoggedIn === null) {
-        return null;
-    }
+    if (isLoggedIn === null) return null;
 
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -48,7 +41,6 @@ const AppNavigator = () => {
 
 const App = () => {
     const [loading, setLoading] = useState(true);
-    const { isLoading, loadingText } = useInspectionStore();
 
     useEffect(() => {
         const initializeApp = async () => {
@@ -56,22 +48,21 @@ const App = () => {
                 await checkFreshInstall();
                 await initDatabase();
 
-                const migrationRunning = await AsyncStorage.getItem('dbMigrationStatus');
+                const user = await new Promise<any>((resolve) => {
+                    checkSession(resolve);
+                });
 
-                if (migrationRunning !== 'started') {
-                    await AsyncStorage.setItem('dbMigrationStatus', 'started');
-                    await runDBUpdates();
-                    await AsyncStorage.setItem('dbMigrationStatus', 'done');
+                if (user) {
+                    await restoreBackupDb(user.username);
                 }
-            } catch (error) {
-                console.error('Error during app database update: ', error);
+            } catch (err) {
+                console.error('App initialization failed:', err);
             } finally {
                 setLoading(false);
             }
         };
 
-        if (!dbConnectionExist()) initializeApp();
-        else setLoading(false);
+        initializeApp();
     }, []);
 
     if (loading) {

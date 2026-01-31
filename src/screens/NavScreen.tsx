@@ -84,14 +84,12 @@ const NavScreen: React.FC = () => {
                         iconColor="red"
                         buttonText="Ausloggen"
                     />
-                    {/* {__DEV__ && ( */}
                     <NavButton
                         onPress={() => navigation.navigate('DevToolsScreen')}
                         iconName="gear"
                         iconColor="green"
-                        buttonText="Dev Tools"
+                        buttonText="Einstellungen"
                     />
-                    {/* )} */}
                 </View>
             </ScrollView>
         </GestureHandlerRootView>

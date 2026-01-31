@@ -31,6 +31,8 @@ import {
 import ErrorInformationModal from '../components/modals/ErrorInformationModal';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { uploadSqliteBackupToS3 } from '../api/uploadSqliteBackupToS3';
+import { deleteLocalDatabase } from '../../database/dbConnection/initDatabase';
 
 type NavScreenNavigationProp = NavigationProp<any, any>;
 
@@ -104,89 +106,123 @@ const DevToolsScreen: React.FC = () => {
                     : 'Failed to copy inspection',
             );
         },
+        uploadSqliteBackupToS3: async () => {
+            const session = await getStoredUser();
+            try {
+                const result = await uploadSqliteBackupToS3(session ? session.username : 'unknown');
+
+                log(`Backup uploaded to S3: ${JSON.stringify(result)}`);
+            } catch (error) {
+                log(`Error uploading backup: ${error}`);
+            }
+        },
+        deleteLocalDatabase: async () => {
+            try {
+                await deleteLocalDatabase();
+                log('Local database deleted successfully.');
+            } catch (error) {
+                log(`Error deleting local database: ${error}`);
+            }
+        },
     };
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <View style={{ flex: 1 }}>
                 <ScrollView contentContainerStyle={styles.container}>
-                    <NavButton
-                        buttonText="Delete All Tables"
-                        iconName="database"
-                        iconColor="red"
-                        onPress={handle.deleteAllTables}
-                    />
-                    <NavButton
-                        buttonText="Get All Tables"
-                        iconName="database"
-                        iconColor="red"
-                        onPress={handle.getAllTables}
-                    />
-                    <NavButton
-                        buttonText="Get DB Version"
-                        iconName="database"
-                        iconColor="red"
-                        onPress={handle.getDBVersion}
-                    />
+                    {__DEV__ && (
+                        <>
+                            <NavButton
+                                buttonText="Delete All Tables"
+                                iconName="database"
+                                iconColor="red"
+                                onPress={handle.deleteAllTables}
+                            />
+                            <NavButton
+                                buttonText="Delete Local Database"
+                                iconName="database"
+                                iconColor="red"
+                                onPress={handle.deleteLocalDatabase}
+                            />
+                            <NavButton
+                                buttonText="Get All Tables"
+                                iconName="database"
+                                iconColor="red"
+                                onPress={handle.getAllTables}
+                            />
+                            <NavButton
+                                buttonText="Get DB Version"
+                                iconName="database"
+                                iconColor="red"
+                                onPress={handle.getDBVersion}
+                            />
 
-                    <NavButton
-                        buttonText="JS Report PDF Viewer"
-                        iconName="file-pdf-o"
-                        iconColor="blue"
-                        onPress={() =>
-                            navigation.navigate('PdfViewerScreen', {
-                                inspectionId: '',
-                            })
-                        }
-                    />
+                            <NavButton
+                                buttonText="JS Report PDF Viewer"
+                                iconName="file-pdf-o"
+                                iconColor="blue"
+                                onPress={() =>
+                                    navigation.navigate('PdfViewerScreen', {
+                                        inspectionId: '',
+                                    })
+                                }
+                            />
 
+                            <NavButton
+                                buttonText="Get Session"
+                                iconName="database"
+                                iconColor="red"
+                                onPress={handle.getSession}
+                            />
+                            <NavButton
+                                buttonText="Save Question Image"
+                                iconName="database"
+                                iconColor="red"
+                                onPress={handle.saveQuestionImage}
+                            />
+                            <NavButton
+                                buttonText="Get Question Images"
+                                iconName="database"
+                                iconColor="red"
+                                onPress={handle.getQuestionImages}
+                            />
+                            <NavButton
+                                buttonText="Get All Images"
+                                iconName="database"
+                                iconColor="red"
+                                onPress={handle.getAllImages}
+                            />
+                            <NavButton
+                                buttonText="Get All Inspection Images"
+                                iconName="database"
+                                iconColor="red"
+                                onPress={handle.getAllInspectionImages}
+                            />
+                            <NavButton
+                                buttonText="Device Elements by Group Type"
+                                iconName="database"
+                                iconColor="red"
+                                onPress={handle.deviceByGroupType}
+                            />
+                            <NavButton
+                                buttonText="Get All Inspections"
+                                iconName="database"
+                                iconColor="red"
+                                onPress={handle.getAllInspections}
+                            />
+                            <NavButton
+                                buttonText="Copy Inspection"
+                                iconName="copy"
+                                iconColor="blue"
+                                onPress={handle.copyInspection}
+                            />
+                        </>
+                    )}
                     <NavButton
-                        buttonText="Get Session"
-                        iconName="database"
-                        iconColor="red"
-                        onPress={handle.getSession}
-                    />
-                    <NavButton
-                        buttonText="Save Question Image"
-                        iconName="database"
-                        iconColor="red"
-                        onPress={handle.saveQuestionImage}
-                    />
-                    <NavButton
-                        buttonText="Get Question Images"
-                        iconName="database"
-                        iconColor="red"
-                        onPress={handle.getQuestionImages}
-                    />
-                    <NavButton
-                        buttonText="Get All Images"
-                        iconName="database"
-                        iconColor="red"
-                        onPress={handle.getAllImages}
-                    />
-                    <NavButton
-                        buttonText="Get All Inspection Images"
-                        iconName="database"
-                        iconColor="red"
-                        onPress={handle.getAllInspectionImages}
-                    />
-                    <NavButton
-                        buttonText="Device Elements by Group Type"
-                        iconName="database"
-                        iconColor="red"
-                        onPress={handle.deviceByGroupType}
-                    />
-                    <NavButton
-                        buttonText="Get All Inspections"
-                        iconName="database"
-                        iconColor="red"
-                        onPress={handle.getAllInspections}
-                    />
-                    <NavButton
-                        buttonText="Copy Inspection"
-                        iconName="copy"
+                        buttonText="Database Backup to S3"
+                        iconName="upload"
                         iconColor="blue"
-                        onPress={handle.copyInspection}
+                        onPress={handle.uploadSqliteBackupToS3}
                     />
                 </ScrollView>
 

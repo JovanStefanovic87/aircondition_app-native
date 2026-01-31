@@ -13,8 +13,8 @@ import {
 import { ReactNativeZoomableView } from '@openspacelabs/react-native-zoomable-view';
 import { ImageGallery } from '../../../database/types';
 import {
-    deleteDeviceElementImage,
     deleteDeviceStateImage,
+    deleteInspectionElementImage,
     deleteInspectionImage,
 } from '../../../database/dataAccess/Command/sqlCommands';
 import IconOverImageButton from '../buttons/IconOverImageButton';
@@ -109,8 +109,8 @@ const GalleryModal: React.FC<Props> = ({ visible, images, onClose, title, setGal
                 case IMAGE_TYPES.Inspection_Image:
                     await deleteInspectionImage(selectedImage.imageId);
                     break;
-                case IMAGE_TYPES.DeviceElement_Image:
-                    await deleteDeviceElementImage(selectedImage.imageId);
+                case IMAGE_TYPES.Inspection_Element_Image:
+                    await deleteInspectionElementImage(selectedImage.imageId);
                     break;
                 case IMAGE_TYPES.Inspection_Element_Title_Group_Image:
                     await deleteDeviceStateImage(selectedImage.imageId);

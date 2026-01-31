@@ -532,6 +532,26 @@ export const getInspectionElementImages = async (
     return executeQuery<ImageStorage>({ query });
 };
 
+export const elementImagesExist = async (inspectionDeviceElementId: string): Promise<boolean> => {
+    const query = `
+        SELECT 
+            CASE 
+                WHEN COUNT(*) > 0 THEN 1 
+                ELSE 0 
+            END AS hasRecords
+        FROM Inspection_Element_Image
+        WHERE inspectionDeviceElementId = '${inspectionDeviceElementId}'
+    `;
+
+    const result = await executeQuery<{ hasRecords: number }>({
+        query,
+        mapper: (row) => ({ hasRecords: row.hasRecords }),
+    });
+    console.log('Element images exist query result:', result);
+
+    return Boolean(result[0]?.hasRecords);
+};
+
 export const getInspectionElementImagesByElementId = async (
     inspectionDeviceElementId: string,
 ): Promise<ImageStorage[]> => {
