@@ -7,13 +7,17 @@ import TabNavigator from './src/navigators/TabNavigator';
 import LoginScreen from './src/screens/LoginScreen';
 
 import { AuthProvider, useAuth } from './src/context/AuthContext';
-import { useInspectionStore } from './src/store/store';
 import GlobalUI from './src/components/ui/GlobalUI';
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { checkFreshInstall, initDatabase } from './database/dbConnection/initDatabase';
+import {
+    checkFreshInstall,
+    initDatabase,
+    databaseFileExists,
+    getDatabaseFilePath,
+} from './database/dbConnection/initDatabase';
 import { checkSession } from './database/dataAccess/Helper/auth';
-import { restoreBackupDb } from './database/dbUpdates/restoreBackupDb';
+import { runDBUpdates } from './database/dbUpdates/runUpdates';
+import { downloadLatestDb, latestDbExists } from './src/api/uploadSqliteBackupToS3';
 
 const Stack = createStackNavigator();
 
@@ -47,13 +51,26 @@ const App = () => {
             try {
                 await checkFreshInstall();
                 await initDatabase();
+                await runDBUpdates();
 
                 const user = await new Promise<any>((resolve) => {
                     checkSession(resolve);
                 });
 
                 if (user) {
-                    await restoreBackupDb(user.username);
+                    const localExists = await databaseFileExists();
+
+                    if (!localExists) {
+                        const remoteExists = await latestDbExists(user.username);
+
+                        if (remoteExists) {
+                            const targetPath = getDatabaseFilePath();
+                            await downloadLatestDb(user.username, targetPath);
+
+                            await initDatabase();
+                            await runDBUpdates();
+                        }
+                    }
                 }
             } catch (err) {
                 console.error('App initialization failed:', err);
