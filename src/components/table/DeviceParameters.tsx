@@ -1,15 +1,13 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { calculateMinColumnWidth } from '../../helpers/universalFunctions';
 import InputText from '../input/InputText';
 import { Inspection } from '../../../database/types';
 import { customColors } from '../../assets/styles/customStyles';
-import InputNumber from '../input/InputNumeric';
 import AutoFitTableContainer from '../containers/AutoFitTableContainer';
 import RowContainerFlex from '../containers/RowContainerFlex';
 import IconButton from '../buttons/IconButton';
 import InputNumberNullToString from '../input/InputNumberNullToString';
-import { deleteInspectionImage } from '../../../database/dataAccess/Command/sqlCommands';
 
 interface Props {
     inspection: Inspection;
@@ -29,9 +27,18 @@ const DeviceParameters: React.FC<Props> = ({
     onPressUpload,
 }) => {
     const { constructionYear, lastMaintenance, airVolume, note } = inspection;
+    const pendingSaveRef = useRef(false);
 
-    const handleSaveInspection = () => {
-        saveInspection(inspection);
+    // Čuva se samo kada je pendingSaveRef postavljeno na true (tj. na blur)
+    useEffect(() => {
+        if (pendingSaveRef.current) {
+            saveInspection(inspection);
+            pendingSaveRef.current = false;
+        }
+    }, [inspection]);
+
+    const triggerSave = () => {
+        pendingSaveRef.current = true;
     };
 
     const minColWidth = calculateMinColumnWidth(29);
@@ -46,7 +53,7 @@ const DeviceParameters: React.FC<Props> = ({
                         setValue={(value) =>
                             setInspection({ ...inspection, constructionYear: value })
                         }
-                        onBlur={handleSaveInspection}
+                        onBlur={triggerSave}
                     />
                 </AutoFitTableContainer>
                 <AutoFitTableContainer minColumnWidth={minColWidth}>
@@ -56,23 +63,16 @@ const DeviceParameters: React.FC<Props> = ({
                         setValue={(value) =>
                             setInspection({ ...inspection, lastMaintenance: value.toString() })
                         }
-                        onBlur={handleSaveInspection}
+                        onBlur={triggerSave}
                         placeholder="k.A."
                     />
-                    {/* <InputNumberNullToString
-                        value={lastMaintenance}
-                        setValue={(value) =>
-                            setInspection({ ...inspection, lastMaintenance: value.toString() })
-                        }
-                        onBlur={handleSaveInspection}
-                    /> */}
                 </AutoFitTableContainer>
                 <AutoFitTableContainer minColumnWidth={minColWidth}>
                     <Text style={styles.title}>{'Volumentstrom (m3/h)'}</Text>
                     <InputNumberNullToString
                         value={airVolume}
                         setValue={(value) => setInspection({ ...inspection, airVolume: value })}
-                        onBlur={handleSaveInspection}
+                        onBlur={triggerSave}
                     />
                 </AutoFitTableContainer>
             </RowContainerFlex>
@@ -83,7 +83,7 @@ const DeviceParameters: React.FC<Props> = ({
                 <InputText
                     value={note}
                     setValue={(value) => setInspection({ ...inspection, note: value })}
-                    onBlur={handleSaveInspection}
+                    onBlur={triggerSave}
                     placeholder="Notiz"
                 />
             </View>

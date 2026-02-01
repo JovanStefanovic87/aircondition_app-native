@@ -4,7 +4,10 @@ import { View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-nativ
 import IconButton from '../../components/buttons/IconButton';
 import QuestionButton from '../../components/buttons/QustionButton';
 import { customColors } from '../../assets/styles/customStyles';
+import { Dimensions } from 'react-native';
 
+const { width } = Dimensions.get('window');
+console.log('Screen width:', width);
 const RenderGroup = (
     group,
     responses,
@@ -133,14 +136,13 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
         alignItems: 'center',
         marginTop: 10,
         paddingHorizontal: 5,
+        gap: 8,
     },
     commentInput: {
         flex: 1,
-        marginTop: 10,
         padding: 10,
         borderRadius: 6,
         backgroundColor: 'white',
@@ -148,6 +150,7 @@ const styles = StyleSheet.create({
         borderColor: '#ccc',
         fontSize: 18,
         color: customColors.blackText,
+        minWidth: 0, // sprečava flex child overflow
     },
     allYesButton: {
         backgroundColor: customColors.greenMid,
@@ -164,10 +167,8 @@ const styles = StyleSheet.create({
     },
     cameraIconsContainer: {
         flexDirection: 'row',
-        justifyContent: 'flex-start',
-        gap: 10,
-        maxWidth: '40%',
-        paddingLeft: 10,
+        gap: 6,
+        flexShrink: 0, // dugmeta ne shrink-uju
     },
 });
 

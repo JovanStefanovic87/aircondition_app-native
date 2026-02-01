@@ -76,6 +76,9 @@ const InspectionDeviceStateScreen = () => {
                     getInspectionById(newInspectionId),
                 ]);
 
+                // DODAJ OVO:
+                console.log('inspectionData:', JSON.stringify(inspectionData, null, 2));
+
                 setInspectionDeviceStateDetails(deviceStateDetails);
                 setInspection(inspectionData);
             } catch (err: any) {

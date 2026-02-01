@@ -17,6 +17,7 @@ import {
     getDeviceElementCompletionState,
     getInspectionType,
     getInspectionElementTitleGroupImages,
+    getInspectionElementImages,
 } from '../../database/dataAccess/Query/sqlQueries';
 import {
     DeviceElementCompletionState,
@@ -81,7 +82,6 @@ const ElementsStateScreen: React.FC = () => {
 
     const [isScannerOpen, setScannerOpen] = useState(false);
     const [scannerTargetId, setScannerTargetId] = useState<string | null>(null);
-    const [hasElementImages, setHasElementImages] = useState(false);
     const [elementImagesMap, setElementImagesMap] = useState<Record<string, boolean>>({});
 
     const openScannerForDeviceState = (inspectionDeviceStateId: string) => {
@@ -167,17 +167,19 @@ const ElementsStateScreen: React.FC = () => {
         const statusMap: Record<string, boolean> = {};
 
         for (const el of deviceElementCompleted) {
-            const images = await getInspectionElementTitleGroupImages(
-                el.inspectionDeviceElementId,
-                null,
-                null,
-            );
+            const images = await getInspectionElementImages(el.inspectionDeviceElementId);
 
             statusMap[el.inspectionDeviceElementId] = images.length > 0;
         }
 
         setElementImagesMap(statusMap);
     };
+
+    useEffect(() => {
+        if (deviceElementCompleted.length > 0) {
+            fetchElementsImagesStatus();
+        }
+    }, [deviceElementCompleted, selectedDeviceElementId]);
 
     const toggleCameraDevice = (titleId: number, groupTypeId: number) => {
         setCameraVisible(!isCameraVisible);
@@ -310,12 +312,12 @@ const ElementsStateScreen: React.FC = () => {
     };
 
     const submit = async () => {
-        if (!hasElementImages) {
+        if (!hasImagesForAllElements) {
             setError('Mindestens ein Bild für das Element ist erforderlich.');
             return;
         }
 
-        const isPageCompleted = await isAllCompleted();
+        const isPageCompleted = isAllCompleted();
 
         if (!isPageCompleted) {
             setError('Nicht alle Elemente sind abgeschlossen.');
