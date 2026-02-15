@@ -21,6 +21,8 @@ export const uploadSqliteBackupToS3 = async (username: string) => {
         body: JSON.stringify({ username, fileName: backupFileName }),
     });
 
+    console.log('Backup URL response status:', response);
+
     if (!response.ok) {
         throw new Error(await response.text());
     }
@@ -62,7 +64,7 @@ const baseUrl = `https://${HETZNER_S3_ENDPOINT!.replace(
     '',
 )}/${HETZNER_BUCKET_NAME}`;
 
-export const latestDbExists = async (username: string) => {
+export const backupDbExists = async (username: string) => {
     const url = `${baseUrl}/ac/db/${username}/latest.db`;
     const res = await fetch(url, { method: 'HEAD' });
     return res.ok;

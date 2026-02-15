@@ -18,6 +18,7 @@ import {
     getInspectionElementStateDetails,
     getAllInspectionImages,
     getDBVersionTable,
+    getInspectionStatus,
 } from '../../database/dataAccess/Query/sqlQueries';
 import { deleteAllTables, getAllTables } from '../../database/dataAccess/Helper/helpers';
 import { getStoredUser } from '../../database/dataAccess/Helper/auth';
@@ -42,7 +43,7 @@ const DevToolsScreen: React.FC = () => {
     const [messages, setMessages] = useState<string[]>([]);
     const navigation = useNavigation<NavScreenNavigationProp>();
 
-    const inspectionId = '7610aad5-691e-4ddf-80ed-f6e794246aac';
+    const inspectionId = '39827eeb-5f1c-4a82-a8fc-1685c5ddae0c';
 
     const log = (value: any) => {
         const text = typeof value === 'string' ? value : JSON.stringify(value, null, 2);
@@ -73,6 +74,7 @@ const DevToolsScreen: React.FC = () => {
         getQuestionImages: async () => log(await getInspectionQuestionImages('id')),
         getAllImages: async () => log(await getAllImageStorages()),
         getAllInspectionImages: async () => log(await getAllInspectionImages(inspectionId)),
+        getInspectionStatus: async () => log(await getInspectionStatus(inspectionId)),
         deviceByGroupType: async () => log(await getInspectionDeviceStateByGroupType('')),
         getAllInspections: async () => log(await getInspections()),
         getInspectionElements: async () => log(await getInspectionDeviceElements(inspectionId)),
@@ -191,6 +193,12 @@ const DevToolsScreen: React.FC = () => {
                                 iconName="database"
                                 iconColor="red"
                                 onPress={handle.getAllImages}
+                            />
+                            <NavButton
+                                buttonText="Get Inspection Status"
+                                iconName="database"
+                                iconColor="red"
+                                onPress={handle.getInspectionStatus}
                             />
                             <NavButton
                                 buttonText="Get All Inspection Images"

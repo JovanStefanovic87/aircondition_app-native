@@ -6,13 +6,13 @@ import {
 } from '../dbConnection/initDatabase';
 
 import { runDBUpdates } from './runUpdates';
-import { downloadLatestDb, latestDbExists } from '../../src/api/uploadSqliteBackupToS3';
+import { downloadLatestDb, backupDbExists } from '../../src/api/uploadSqliteBackupToS3';
 
 export const restoreBackupDb = async (username: string) => {
     const localExists = await databaseFileExists();
 
     if (!localExists) {
-        const remoteExists = await latestDbExists(username);
+        const remoteExists = await backupDbExists(username);
 
         if (remoteExists) {
             const targetPath = getDatabaseFilePath();

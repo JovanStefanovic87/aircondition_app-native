@@ -72,9 +72,9 @@ export const getInspectionType = async (inspectionId: string): Promise<number> =
     return executeQuerySimple<number>(query);
 };
 
-export const getInspectionStatus = async (): Promise<InspectionStatus[]> => {
-    const query = `SELECT * FROM InspectionStatus`;
-    return executeQuery<InspectionStatus>({ query });
+export const getInspectionStatus = async (inspectionId): Promise<number> => {
+    const query = `SELECT inspectionStatusId FROM Inspection WHERE id = '${inspectionId}'`;
+    return executeQuerySimple<number>(query);
 };
 
 export const getInspections = async (): Promise<Inspection[]> => {

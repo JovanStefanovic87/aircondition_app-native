@@ -27,7 +27,7 @@ import {
     getInspectionTypes,
     getInspectionById,
 } from '../../database/dataAccess/Query/sqlQueries';
-import { getStoredUser } from '../../database/dataAccess/Helper/auth';
+import { getStoredUser, logoutUser } from '../../database/dataAccess/Helper/auth';
 import { saveInspection } from '../../database/dataAccess/Command/sqlCommands';
 import TextMain from '../components/text/TextMain';
 import ErrorBoundary from '../components/errors/ErrorBoundary';
@@ -80,6 +80,8 @@ const InspectionBasicDetailsScreen = () => {
         contractNumber: true,
     });
 
+    console.log('inspectionId', inspectionId);
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -99,7 +101,7 @@ const InspectionBasicDetailsScreen = () => {
                     const userId = storedUser?.id ?? '';
                     if (!userId) {
                         setError('Kein Benutzer angemeldet.');
-                        return;
+                        setTimeout(() => logoutUser(), 2000);
                     }
                     setForm((prevForm) => ({ ...prevForm, userId }));
                 }
@@ -141,7 +143,7 @@ const InspectionBasicDetailsScreen = () => {
                         createdAt: inspectionData.createdAt ?? '',
                         inspectionDate: inspectionData.inspectionDate ?? '',
                         userId: inspectionData.userId ?? fallbackUserId,
-                        inspectionStatusId: inspectionData.inspectionStatusId ?? 0,
+                        inspectionStatusId: inspectionData.inspectionStatusId || 1, // New Inspection Status is saved as (1, 'Started')
                     });
                 }
             } catch (err: any) {

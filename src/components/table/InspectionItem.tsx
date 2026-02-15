@@ -9,10 +9,14 @@ import PdfButton from '../buttons/PdfButton';
 import EditButton from '../buttons/EditButton';
 import DuplicateButton from '../buttons/DuplicateButton';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { copyInspection } from '../../../database/dataAccess/Command/sqlCommands';
+import {
+    copyInspection,
+    updateInspectionStatus,
+} from '../../../database/dataAccess/Command/sqlCommands';
 import { useInspectionStore } from '../../store/store';
 import DeleteButton from '../buttons/DeleteButton';
 import { syncInspectionImagesToS3 } from '../../../database/dataAccess/Command/sqlCommandsS3';
+import LockButton from '../buttons/LockButton';
 
 type NavScreenNavigationProp = NavigationProp<any, any>;
 
@@ -20,11 +24,62 @@ interface Props {
     inspection: InspectionUpdate;
     onPress?: (id: string) => void;
     onDelete?: () => void;
+    onStatusChange?: () => void;
 }
 
-const InspectionItem: React.FC<Props> = ({ inspection, onPress, onDelete }) => {
+const InspectionItem: React.FC<Props> = ({ inspection, onPress, onDelete, onStatusChange }) => {
     const navigation = useNavigation<NavScreenNavigationProp>();
     const [isLoading, setIsLoading] = useState(false);
+
+    const getNextInspectionStatus = (inspection) => {
+        const isLocked = inspection.inspectionStatusId === 4;
+        const canBeLocked = inspection.inspectionTypeId === 2 || inspection.inspectionTypeId === 3;
+
+        if (isLocked) return 2;
+        if (canBeLocked) return 4;
+
+        return null;
+    };
+
+    const executeStatusChange = async (inspection, nextStatus) => {
+        setIsLoading(true);
+        try {
+            await updateInspectionStatus(inspection.id, nextStatus);
+
+            Alert.alert(
+                'Erfolg', // 'Success',
+                nextStatus === 4 ? 'Inspektionsstatus gesperrt.' : 'Inspektionsstatus entsperrt.', // 'Inspection status locked/unlocked.'
+            );
+            if (onStatusChange) onStatusChange();
+        } catch (error) {
+            Alert.alert(
+                'Fehler', // 'Error',
+                nextStatus === 4
+                    ? 'Status konnte nicht gesperrt werden.' // 'Status could not be locked.'
+                    : 'Status konnte nicht entsperrt werden.', // 'Status could not be unlocked.'
+            );
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const confirmStatusChange = (inspection, nextStatus) => {
+        const locking = nextStatus === 4;
+
+        Alert.alert(
+            locking ? 'Bestätigung' : 'Entsperren bestätigen', // 'Confirm Locking' : 'Confirm Unlocking'
+            locking
+                ? 'Möchten Sie den Inspektionsstatus sperren?' // 'Do you want to lock the inspection status?'
+                : 'Möchten Sie den Inspektionsstatus entsperren?', // 'Do you want to unlock the inspection status?'
+            [
+                { text: 'Abbrechen', style: 'cancel' }, // 'Cancel'
+                {
+                    text: 'Bestätigen', // 'Confirm'
+                    onPress: () => executeStatusChange(inspection, nextStatus),
+                },
+            ],
+        );
+    };
 
     return (
         <>
@@ -39,11 +94,38 @@ const InspectionItem: React.FC<Props> = ({ inspection, onPress, onDelete }) => {
                 <View style={styles.actionsContainer}>
                     <View style={styles.actionRow}>
                         <PdfButton
-                            onPress={(e) => {
+                            onPress={async (e) => {
                                 e.stopPropagation();
-                                navigation.navigate('PdfViewerScreen', {
-                                    inspectionId: inspection.id,
-                                });
+                                try {
+                                    await syncInspectionImagesToS3(inspection.id);
+                                    Alert.alert(
+                                        'Erfolg', // 'Success',
+                                        'Bilder erfolgreich synchronisiert.', // 'Images synced successfully.'
+                                    );
+                                } catch (error) {
+                                    const nothingToSync =
+                                        error.message === 'Nichts zum Synchronisieren';
+                                    if (nothingToSync) {
+                                        console.log(
+                                            'No images to sync for inspection:',
+                                            inspection.id,
+                                        );
+                                    } else {
+                                        Alert.alert(
+                                            'Synchronisierung fehlgeschlagen', // 'Sync Failed'
+                                            error.message ||
+                                                'Ein unerwarteter Fehler ist aufgetreten.', // 'An unexpected error occurred.'
+                                        );
+                                    }
+                                } finally {
+                                    setIsLoading(false);
+                                }
+
+                                setTimeout(() => {
+                                    navigation.navigate('PdfViewerScreen', {
+                                        inspectionId: inspection.id,
+                                    });
+                                }, 2000);
                             }}
                         />
 
@@ -81,27 +163,25 @@ const InspectionItem: React.FC<Props> = ({ inspection, onPress, onDelete }) => {
                             }}
                         />
 
-                        {/* Novo dugme za sinhronizaciju */}
-                        <TouchableOpacity
-                            style={styles.syncButton}
-                            onPress={async (e) => {
+                        {/* Dugme za otkljucavanje i zakljucavanje inspekcije */}
+                        <LockButton
+                            locked={inspection.inspectionStatusId === 4}
+                            onPress={(e) => {
                                 e.stopPropagation();
-                                setIsLoading(true);
-                                try {
-                                    await syncInspectionImagesToS3(inspection.id);
-                                    Alert.alert('Success', 'Images synced successfully.');
-                                } catch (error) {
+
+                                const nextStatus = getNextInspectionStatus(inspection);
+
+                                if (nextStatus === null) {
                                     Alert.alert(
-                                        'Sync Failed',
-                                        error.message || 'An unexpected error occurred.',
+                                        'Nicht erlaubt',
+                                        'Dieser Inspektionstyp kann nicht gesperrt werden.',
                                     );
-                                } finally {
-                                    setIsLoading(false);
+                                    return;
                                 }
+
+                                confirmStatusChange(inspection, nextStatus);
                             }}
-                        >
-                            <TextMain text="Sync" isBold={true} />
-                        </TouchableOpacity>
+                        />
                     </View>
                     <View style={styles.flexEnd}>
                         {inspection.inspectionStatusId ? <CheckedIcon /> : <DangerIcon />}

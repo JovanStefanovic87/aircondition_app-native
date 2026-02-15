@@ -6,10 +6,13 @@ import { useInspectionStore } from '../store/store';
 import {
     getInspectionQuestions,
     getInspectionQuestionImages,
+    getInspectionStatus,
+    getInspectionType,
 } from '../../database/dataAccess/Query/sqlQueries';
 import {
     saveInspectionQuestion,
     saveQuestionImage,
+    updateInspectionStatus,
 } from '../../database/dataAccess/Command/sqlCommands';
 import { ImageGallery, ImageTypesByDbTable, TypedQuestionGroupForUI } from '../../database/types';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -153,6 +156,12 @@ const QuestionsScreen = () => {
     };
 
     const submit = async () => {
+        const inspectionType = await getInspectionType(inspectionId);
+
+        if ([1, 2, 6].includes(inspectionType)) {
+            updateInspectionStatus(inspectionId, 2);
+        }
+
         if (isAllCompleted()) {
             navigation.navigate('AllInspectionsScreen');
         } else {

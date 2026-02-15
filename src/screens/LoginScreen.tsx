@@ -14,6 +14,7 @@ import {
     Keyboard,
 } from 'react-native';
 import { loginUser } from '../../database/dataAccess/Helper/auth';
+import { dbConnectionExist, initializeAppPostLogin } from '../../database/dbConnection/initDatabase';
 import { useAuth } from '../context/AuthContext';
 import NavButton from '../components/buttons/NavButton';
 import { useInspectionStore } from '../store/store';
@@ -37,10 +38,28 @@ const LoginPage = ({ navigation }) => {
         setLoadingText('Anmeldung läuft...');
 
         loginUser(userName, password, (success, user, error) => {
-            setIsLoading(false);
             if (success && user) {
-                setIsLoggedIn(true);
+                if (!dbConnectionExist()) {
+                    setLoadingText('Datenbank wird initialisiert...');
+                    initializeAppPostLogin(user)
+                        .then(() => {
+                            setIsLoading(false);
+                            setIsLoggedIn(true);
+                        })
+                        .catch((err) => {
+                            setIsLoading(false);
+                            setError(
+                                err instanceof Error
+                                    ? err.message
+                                    : 'Datenbankinitialisierung fehlgeschlagen.',
+                            );
+                        });
+                } else {
+                    setIsLoading(false);
+                    setIsLoggedIn(true);
+                }
             } else {
+                setIsLoading(false);
                 setError(error || 'Login fehlgeschlagen.');
             }
         });

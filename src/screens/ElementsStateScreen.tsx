@@ -34,6 +34,7 @@ import InspectionDeviceElementsMerged from '../components/image/InspectionDevice
 import {
     saveInspectionElementTitleGroupImage,
     saveInspectionDeviceState,
+    updateInspectionStatus,
 } from '../../database/dataAccess/Command/sqlCommands';
 import { customColors } from '../assets/styles/customStyles';
 import PrimaryButton from '../components/buttons/PrimaryButton';
@@ -322,6 +323,10 @@ const ElementsStateScreen: React.FC = () => {
         if (!isPageCompleted) {
             setError('Nicht alle Elemente sind abgeschlossen.');
             return;
+        }
+
+        if (inspectionType === 3) {
+            updateInspectionStatus(inspectionId!, 2);
         }
 
         if ([1, 2, 6].includes(inspectionType)) {

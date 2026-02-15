@@ -4,7 +4,7 @@ import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { getInspections } from '../../database/dataAccess/Query/sqlQueries';
 import { deleteInspection } from '../../database/dataAccess/Command/sqlCommands';
 import InspectionItem from '../components/table/InspectionItem';
-import { InspectionUpdate } from '../../database/types';
+import { Inspection, InspectionUpdate } from '../../database/types';
 import { useInspectionStore } from '../store/store';
 import Dropdown from '../components/input/DropdownWithValidation';
 import NoResultMessage from '../components/text/NoResultMessage';
@@ -16,7 +16,7 @@ type AllInspectionsScreenNavigationProp = NavigationProp<Record<string, object>,
 
 const AllInspectionsScreen = () => {
     const navigation = useNavigation<AllInspectionsScreenNavigationProp>();
-    const [inspections, setInspections] = useState<InspectionUpdate[]>([]);
+    const [inspections, setInspections] = useState<Inspection[]>([]);
     const setInspectionId = useInspectionStore((state) => state.setInspectionId);
     const [selectedStatus, setSelectedStatus] = useState<number>(0);
 
@@ -34,15 +34,12 @@ const AllInspectionsScreen = () => {
             ),
         });
     }, [navigation]);
+    console.log('inspections', inspections);
 
     const fetchInspections = useCallback(async () => {
         try {
             const inspectionsData = await getInspections();
-            const inspections = inspectionsData.map((inspection: InspectionUpdate) => ({
-                ...inspection,
-                inspectionStatusId: inspection.inspectionStatusId || 0,
-            }));
-            setInspections(inspections);
+            setInspections(inspectionsData);
         } catch (error: any) {
             setErrorMessage(error.message);
             setErrorModalVisible(true);
@@ -80,7 +77,7 @@ const AllInspectionsScreen = () => {
     };
 
     const filteredInspections = inspections.filter(
-        (inspection) => inspection.inspectionStatusId === selectedStatus,
+        (inspection) => selectedStatus === 0 || inspection.inspectionStatusId === selectedStatus,
     );
 
     return (
@@ -91,10 +88,11 @@ const AllInspectionsScreen = () => {
                         <View style={styles.dropdownWrapper}>
                             <Dropdown
                                 items={[
-                                    { label: 'Gestartet Inspektionen', value: 0 },
-                                    { label: 'Vollendet Inspektionen', value: 1 },
-                                    { label: 'Finalisiert Inspektionen', value: 2 },
-                                    { label: 'Gesperrt Inspektionen', value: 3 },
+                                    { label: 'Alle Inspektionen', value: 0 },
+                                    { label: 'Gestartet Inspektionen', value: 1 },
+                                    { label: 'Vollendet Inspektionen', value: 2 },
+                                    // { label: 'Finalisiert Inspektionen', value: 3 },
+                                    { label: 'Gesperrt Inspektionen', value: 4 },
                                 ]}
                                 selectedValue={selectedStatus}
                                 setSelectedValue={(value) => setSelectedStatus(value)}
@@ -121,6 +119,7 @@ const AllInspectionsScreen = () => {
                                     inspection={inspection}
                                     onPress={() => handlePress(inspection.id)}
                                     onDelete={() => confirmDelete(inspection.id)}
+                                    onStatusChange={fetchInspections}
                                 />
                             ))
                         )}

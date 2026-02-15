@@ -8,16 +8,8 @@ import LoginScreen from './src/screens/LoginScreen';
 
 import { AuthProvider, useAuth } from './src/context/AuthContext';
 import GlobalUI from './src/components/ui/GlobalUI';
-
-import {
-    checkFreshInstall,
-    initDatabase,
-    databaseFileExists,
-    getDatabaseFilePath,
-} from './database/dbConnection/initDatabase';
+import { initializeApp } from './database/dbConnection/initDatabase';
 import { checkSession } from './database/dataAccess/Helper/auth';
-import { runDBUpdates } from './database/dbUpdates/runUpdates';
-import { downloadLatestDb, latestDbExists } from './src/api/uploadSqliteBackupToS3';
 
 const Stack = createStackNavigator();
 
@@ -45,48 +37,25 @@ const AppNavigator = () => {
 
 const App = () => {
     const [loading, setLoading] = useState(true);
+    const [initError, setInitError] = useState<string | null>(null);
 
     useEffect(() => {
-        const initializeApp = async () => {
-            try {
-                await checkFreshInstall();
-                await initDatabase();
-                await runDBUpdates();
-
-                const user = await new Promise<any>((resolve) => {
-                    checkSession(resolve);
-                });
-
-                if (user) {
-                    const localExists = await databaseFileExists();
-
-                    if (!localExists) {
-                        const remoteExists = await latestDbExists(user.username);
-
-                        if (remoteExists) {
-                            const targetPath = getDatabaseFilePath();
-                            await downloadLatestDb(user.username, targetPath);
-
-                            await initDatabase();
-                            await runDBUpdates();
-                        }
-                    }
-                }
-            } catch (err) {
-                console.error('App initialization failed:', err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        initializeApp();
+        initializeApp(setLoading, setInitError);
     }, []);
 
-    if (loading) {
+    if (loading || initError) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <ActivityIndicator size="large" />
-                <Text>App wird initialisiert (Initializing app) ...</Text>
+                {initError ? (
+                    <Text style={{ color: 'red', textAlign: 'center', padding: 24 }}>
+                        {initError}
+                    </Text>
+                ) : (
+                    <>
+                        <ActivityIndicator size="large" />
+                        <Text>App wird initialisiert (Initializing app) ...</Text>
+                    </>
+                )}
             </View>
         );
     }

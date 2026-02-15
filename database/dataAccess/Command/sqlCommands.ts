@@ -46,6 +46,7 @@ import {
     getInspectionQuestionImages,
     getAllInspectionImages,
 } from '../Query/sqlQueries';
+import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 /**
  * saveInspection - Function inserts or updates an inspection in step 1 and fills all needed device states for step 2, if inspection is new.
@@ -66,6 +67,25 @@ export const saveInspection = async (
     }
 
     return newInspectionId;
+};
+
+/**
+ * updateInspectionStatus - Function that updates only the inspection status in the Inspection table
+ * @param inspectionId - Id of inspection
+ * @param inspectionStatusId - New status id
+ */
+export const updateInspectionStatus = async (
+    inspectionId: string,
+    inspectionStatusId: number,
+): Promise<void> => {
+    const inspection = await getInspectionById(inspectionId);
+    if (!inspection) throw new Error('Inspection not found');
+
+    const record: InspectionUpdate = {
+        ...inspection,
+        inspectionStatusId: inspectionStatusId,
+    };
+    await executeUpdate<InspectionUpdate>('Inspection', record);
 };
 
 /**
