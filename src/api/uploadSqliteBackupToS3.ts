@@ -2,7 +2,7 @@ import RNFS from 'react-native-fs';
 import { HETZNER_BUCKET_NAME, HETZNER_S3_ENDPOINT } from './helpers/constants';
 import { getAdminApiUrl } from './helpers/functions';
 import { findExistingDbPath, getDatabase } from '../../database/dbConnection/initDatabase';
-import { getStoredUser } from '../../database/dataAccess/Helper/auth';
+import { getStoredUser, handleUnauthorized } from '../../database/dataAccess/Helper/auth';
 
 export const uploadSqliteBackupToS3 = async (username: string) => {
     const adminApiUrl = getAdminApiUrl();
@@ -28,6 +28,10 @@ export const uploadSqliteBackupToS3 = async (username: string) => {
         body: JSON.stringify({ username, fileName: backupFileName }),
     });
 
+    if (response.status === 401) {
+        await handleUnauthorized();
+        throw new Error('Session expired');
+    }
     if (!response.ok) {
         throw new Error(await response.text());
     }
@@ -82,6 +86,10 @@ export const backupDbExists = async (username: string) => {
         },
         body: JSON.stringify({ username }),
     });
+    if (res.status === 401) {
+        await handleUnauthorized();
+        return false;
+    }
     return res.ok;
 };
 
@@ -101,6 +109,10 @@ export const downloadLatestDb = async (username: string, targetPath: string) => 
         body: JSON.stringify({ username }),
     });
 
+    if (res.status === 401) {
+        await handleUnauthorized();
+        throw new Error('Session expired');
+    }
     if (!res.ok) {
         throw new Error('Failed to get download URL');
     }

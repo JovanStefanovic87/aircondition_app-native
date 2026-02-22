@@ -50,9 +50,18 @@ export const loginUser = async (
 };
 
 export const logoutUser = async () => {
-    console.log('Logging out user...');
-    await AsyncStorage.removeItem('userId');
-    await AsyncStorage.removeItem('sessionExpiry');
+    await AsyncStorage.multiRemove(['userId', 'username', 'userToken', 'sessionExpiry']);
+};
+
+let _onUnauthorized: (() => void) | null = null;
+
+export const setUnauthorizedHandler = (handler: () => void): void => {
+    _onUnauthorized = handler;
+};
+
+export const handleUnauthorized = async (): Promise<void> => {
+    await logoutUser();
+    _onUnauthorized?.();
 };
 
 export const isSessionValid = async (): Promise<boolean> => {

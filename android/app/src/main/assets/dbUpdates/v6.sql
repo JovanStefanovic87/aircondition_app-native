@@ -1,0 +1,4 @@
+-- update_v6.sql
+
+ALTER TABLE ImageStorage ADD COLUMN isDeleted INTEGER DEFAULT 0;
+ALTER TABLE ImageStorage ADD COLUMN isDeletedS3 INTEGER DEFAULT 0;

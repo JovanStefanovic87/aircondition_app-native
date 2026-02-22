@@ -96,36 +96,33 @@ const InspectionItem: React.FC<Props> = ({ inspection, onPress, onDelete, onStat
                         <PdfButton
                             onPress={async (e) => {
                                 e.stopPropagation();
+                                const { setIsLoading: setGlobalLoading, setLoadingText } =
+                                    useInspectionStore.getState();
+                                setGlobalLoading(true);
+                                setLoadingText('Laden...');
                                 try {
+                                    setLoadingText('Bilder werden mit S3 synchronisiert...');
                                     await syncInspectionImagesToS3(inspection.id);
-                                    Alert.alert(
-                                        'Erfolg', // 'Success',
-                                        'Bilder erfolgreich synchronisiert.', // 'Images synced successfully.'
-                                    );
                                 } catch (error) {
                                     const nothingToSync =
                                         error.message === 'Nichts zum Synchronisieren';
-                                    if (nothingToSync) {
-                                        console.log(
-                                            'No images to sync for inspection:',
-                                            inspection.id,
-                                        );
-                                    } else {
+                                    if (!nothingToSync) {
+                                        setGlobalLoading(false);
+                                        setLoadingText(null);
                                         Alert.alert(
-                                            'Synchronisierung fehlgeschlagen', // 'Sync Failed'
+                                            'Synchronisierung fehlgeschlagen',
                                             error.message ||
-                                                'Ein unerwarteter Fehler ist aufgetreten.', // 'An unexpected error occurred.'
+                                                'Ein unerwarteter Fehler ist aufgetreten.',
                                         );
+                                        return;
                                     }
                                 } finally {
-                                    setIsLoading(false);
+                                    setGlobalLoading(false);
+                                    setLoadingText(null);
                                 }
-
-                                setTimeout(() => {
-                                    navigation.navigate('PdfViewerScreen', {
-                                        inspectionId: inspection.id,
-                                    });
-                                }, 2000);
+                                navigation.navigate('PdfViewerScreen', {
+                                    inspectionId: inspection.id,
+                                });
                             }}
                         />
 

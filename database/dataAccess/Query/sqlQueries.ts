@@ -139,7 +139,7 @@ export const getInspectionElementsForReport = async (
             LEFT JOIN DeviceElement de ON de.id = ide.deviceElementId
             LEFT JOIN DeviceElement_Image dei ON dei.deviceElementId = de.id
             RIGHT JOIN ImageStorage s ON s.id = dei.imageId
-        WHERE ide.inspectionId = '${inspectionId}'`;
+        WHERE ide.inspectionId = '${inspectionId}' AND s.isDeleted = 0`;
 
     return executeQuery<InspectionElementsForReport>({ query });
 };
@@ -448,13 +448,13 @@ export const getImageStorageByInspectionId = async (
 ): Promise<InspectionAndImageStorage[]> => {
     const query = `
         SELECT i.id, i.inspectionId, i.imageId, s.name, s.storagePath FROM Inspection_Image i
-        LEFT JOIN ImageStorage s on s.id = i.imageId WHERE i.inspectionId = '${inspectionId}'`;
+        LEFT JOIN ImageStorage s on s.id = i.imageId WHERE i.inspectionId = '${inspectionId}' AND s.isDeleted = 0`;
     return executeQuery<InspectionAndImageStorage>({ query });
 };
 
 export const getImageStorageById = async (imageId: string): Promise<ImageStorage> => {
     const query = `
-        SELECT * FROM ImageStorage WHERE id = '${imageId}'`;
+        SELECT * FROM ImageStorage WHERE id = '${imageId}' AND isDeleted = 0`;
     return executeQuerySingle<ImageStorage>({ query });
 };
 
@@ -462,7 +462,7 @@ export const getInspectionImages = async (inspectionId: string): Promise<ImageSt
     const query = `
         SELECT s.* FROM Inspection_Image ii
         LEFT JOIN ImageStorage s ON s.id = ii.imageId
-        WHERE ii.inspectionId = '${inspectionId}'`;
+        WHERE ii.inspectionId = '${inspectionId}' AND s.isDeleted = 0`;
     return executeQuery<ImageStorage>({ query });
 };
 
@@ -474,10 +474,11 @@ export const getInspectionTitleGroupImages = async (
     const query = `
         SELECT s.* FROM Inspection_Title_Group_Image g
         LEFT JOIN ImageStorage s ON s.id = g.imageId
-        WHERE 
+        WHERE
             g.inspectionId = '${inspectionId}' and
             g.titleComponentId = ${titleId} and
-            g.groupTypeId = ${groupId}
+            g.groupTypeId = ${groupId} and
+            s.isDeleted = 0
     `;
     return executeQuery<ImageStorage>({ query });
 };
@@ -486,8 +487,9 @@ export const getInspectionStateImages = async (inspectionId: string): Promise<Im
     const query = `
         SELECT s.* FROM Inspection_Title_Group_Image g
         LEFT JOIN ImageStorage s ON s.id = g.imageId
-        WHERE 
-            g.inspectionId = '${inspectionId}'
+        WHERE
+            g.inspectionId = '${inspectionId}' and
+            s.isDeleted = 0
     `;
     return executeQuery<ImageStorage>({ query });
 };
@@ -500,10 +502,11 @@ export const getInspectionElementTitleGroupImages = async (
     const query = `
         SELECT s.* FROM Inspection_Element_Title_Group_Image g
         LEFT JOIN ImageStorage s ON s.id = g.imageId
-        WHERE 
+        WHERE
             g.inspectionDeviceElementId = '${inspectionDeviceElementId}' and
             g.titleComponentId = ${titleId} and
-            g.groupTypeId = ${groupId}
+            g.groupTypeId = ${groupId} and
+            s.isDeleted = 0
     `;
     return executeQuery<ImageStorage>({ query });
 };
@@ -514,8 +517,9 @@ export const getInspectionElementTitleGroupImagesByElementId = async (
     const query = `
         SELECT s.* FROM Inspection_Element_Title_Group_Image g
         LEFT JOIN ImageStorage s ON s.id = g.imageId
-        WHERE 
-            g.inspectionDeviceElementId = '${inspectionDeviceElementId}'
+        WHERE
+            g.inspectionDeviceElementId = '${inspectionDeviceElementId}' and
+            s.isDeleted = 0
     `;
     return executeQuery<ImageStorage>({ query });
 };
@@ -526,8 +530,9 @@ export const getInspectionElementImages = async (
     const query = `
         SELECT s.* FROM Inspection_Element_Image g
         LEFT JOIN ImageStorage s ON s.id = g.imageId
-        WHERE 
-            g.inspectionDeviceElementId = '${inspectionDeviceElementId}'
+        WHERE
+            g.inspectionDeviceElementId = '${inspectionDeviceElementId}' and
+            s.isDeleted = 0
     `;
     return executeQuery<ImageStorage>({ query });
 };
@@ -558,8 +563,9 @@ export const getInspectionElementImagesByElementId = async (
     const query = `
         SELECT s.* FROM Inspection_Element_Image g
         LEFT JOIN ImageStorage s ON s.id = g.imageId
-        WHERE 
-            g.inspectionDeviceElementId = '${inspectionDeviceElementId}'
+        WHERE
+            g.inspectionDeviceElementId = '${inspectionDeviceElementId}' and
+            s.isDeleted = 0
     `;
     return executeQuery<ImageStorage>({ query });
 };
@@ -570,7 +576,7 @@ export const getInspectionQuestionImages = async (
     const query = `
         SELECT s.* FROM InspectionQuestion_Image ii
         LEFT JOIN ImageStorage s ON s.id = ii.imageId
-        WHERE ii.inspectionQuestionId = '${inspectionQuestionId}'`;
+        WHERE ii.inspectionQuestionId = '${inspectionQuestionId}' AND s.isDeleted = 0`;
     return executeQuery<ImageStorage>({ query });
 };
 
@@ -608,11 +614,14 @@ export const getAllInspectionImages = async (inspectionId: string): Promise<Imag
       ON iq.id = iqi.inspectionQuestionId
       AND iq.inspectionId = '${inspectionId}'
     
-    WHERE ii.inspectionId IS NOT NULL
+    WHERE (
+        ii.inspectionId IS NOT NULL
        OR itgi.inspectionId IS NOT NULL
        OR ide.inspectionId IS NOT NULL
        OR ide2.inspectionId IS NOT NULL
        OR iq.inspectionId IS NOT NULL
+    )
+    AND (i.isDeleted = 0 OR (i.isDeleted = 1 AND i.isDeletedS3 = 0))
   `;
 
     return executeQuery<ImageStorage>({ query });
@@ -630,7 +639,7 @@ export const getDeviceElementStateImages = async (
     const query = `
         SELECT s.* FROM DeviceElement_Image d
         LEFT JOIN ImageStorage s ON s.id = d.imageId
-        WHERE d.deviceElementId = ${deviceElementId}`;
+        WHERE d.deviceElementId = ${deviceElementId} AND s.isDeleted = 0`;
     return executeQuery<ImageStorage>({ query });
 };
 

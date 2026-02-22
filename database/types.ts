@@ -307,6 +307,8 @@ export type ImageStorage = {
     name: string;
     storagePath: string;
     storagePathS3?: string;
+    isDeleted?: number;
+    isDeletedS3?: number;
 };
 
 export type InspectionAndImageStorage = {

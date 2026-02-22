@@ -85,6 +85,8 @@ const ElementsStateScreen: React.FC = () => {
     const [scannerTargetId, setScannerTargetId] = useState<string | null>(null);
     const [elementImagesMap, setElementImagesMap] = useState<Record<string, boolean>>({});
 
+    console.log('InspectionId:', inspectionId);
+
     const openScannerForDeviceState = (inspectionDeviceStateId: string) => {
         setScannerTargetId(inspectionDeviceStateId);
         setScannerOpen(true);

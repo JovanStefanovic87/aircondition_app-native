@@ -426,14 +426,14 @@ export const deleteImage = async (imageId: string, tableName: string): Promise<v
         console.log('Image ID is missing. Image Not deleted');
         return;
     }
-    await executeDeleteByConditions(tableName, {
-        imageId: imageId,
-    });
     const image = await getImageStorageById(imageId);
 
     deleteFile(image?.storagePath || '');
+    console.log(
+        `Deleted image with ID ${imageId} from table ${tableName} and removed file from storage`,
+    );
 
-    await executeDeleteById('ImageStorage', imageId);
+    await executeUpdate('ImageStorage', { id: imageId, isDeleted: 1 });
 };
 
 /**

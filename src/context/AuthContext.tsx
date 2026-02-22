@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { setUnauthorizedHandler } from '../../database/dataAccess/Helper/auth';
 
 type AuthContextType = {
     isLoggedIn: boolean;
@@ -9,6 +10,10 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+    useEffect(() => {
+        setUnauthorizedHandler(() => setIsLoggedIn(false));
+    }, []);
 
     return (
         <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>
