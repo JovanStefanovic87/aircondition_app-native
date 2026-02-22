@@ -8,9 +8,10 @@ import { useInspectionStore } from '../../store/store';
 
 type JsreportPdfViewerProps = {
     inspectionData?: ReportData;
+    onPdfReady?: (path: string) => void;
 };
 
-const JsreportPdfViewer = ({ inspectionData }: JsreportPdfViewerProps) => {
+const JsreportPdfViewer = ({ inspectionData, onPdfReady }: JsreportPdfViewerProps) => {
     const { setIsLoading, setLoadingText, setError } = useInspectionStore();
     const [pdfPath, setPdfPath] = useState<string | null>(null);
 
@@ -64,6 +65,7 @@ const JsreportPdfViewer = ({ inspectionData }: JsreportPdfViewerProps) => {
                     const filePath = `${RNFetchBlob.fs.dirs.DocumentDir}/report.pdf`;
                     await RNFetchBlob.fs.writeFile(filePath, base64Data, 'base64');
                     setPdfPath(filePath);
+                    onPdfReady?.(filePath);
                 };
 
                 reader.readAsDataURL(blob);
