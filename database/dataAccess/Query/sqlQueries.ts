@@ -90,7 +90,7 @@ export const getInspectionById = async (inspectionId: string): Promise<Inspectio
 export const getInspectionByIdWithDetails = async (
     inspectionId: string,
 ): Promise<InspectionData> => {
-    const query = `SELECT i.*, it.name as inspectioTypeName, dt.name as deviceTypeName FROM Inspection i
+    const query = `SELECT i.*, it.name as inspectionTypeName, dt.name as deviceTypeName FROM Inspection i
             LEFT JOIN InspectionType it ON i.inspectionTypeId = it.id
             LEFT JOIN DeviceType dt ON i.deviceTypeId = dt.id
         WHERE i.id = '${inspectionId}'`;
