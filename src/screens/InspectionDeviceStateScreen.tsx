@@ -352,7 +352,9 @@ const InspectionDeviceStateScreen = () => {
                         </RowContainerFlex>
                         <RowContainerFlex>
                             {inspectionDeviceStateDetails !== null &&
-                                inspectionDeviceStateDetails.map(
+                                inspectionDeviceStateDetails
+                                .filter((group) => !NON_VERIFICATION_GROUP_TYPES.includes(group.groupTypeName))
+                                .map(
                                     (
                                         group: DeviceStateComponentsForInspection,
                                         groupIndex: number,
