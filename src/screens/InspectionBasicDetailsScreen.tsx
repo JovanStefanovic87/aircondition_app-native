@@ -80,8 +80,6 @@ const InspectionBasicDetailsScreen = () => {
         contractNumber: true,
     });
 
-    console.log('inspectionId', inspectionId);
-
     useEffect(() => {
         const fetchData = async () => {
             try {

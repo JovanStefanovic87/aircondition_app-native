@@ -2,9 +2,13 @@ import RNFS from 'react-native-fs';
 import { HETZNER_BUCKET_NAME, HETZNER_S3_ENDPOINT } from './helpers/constants';
 import { getAdminApiUrl } from './helpers/functions';
 import { findExistingDbPath, getDatabase } from '../../database/dbConnection/initDatabase';
+import { getStoredUser } from '../../database/dataAccess/Helper/auth';
 
 export const uploadSqliteBackupToS3 = async (username: string) => {
     const adminApiUrl = getAdminApiUrl();
+
+    const user = await getStoredUser();
+    if (!user) throw new Error('No active session');
 
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const backupFileName = `backup-${timestamp}.db`;
@@ -17,11 +21,12 @@ export const uploadSqliteBackupToS3 = async (username: string) => {
 
     const response = await fetch(`${adminApiUrl}/api/db-backup-url`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${user.token}`,
+        },
         body: JSON.stringify({ username, fileName: backupFileName }),
     });
-
-    console.log('Backup URL response status:', response);
 
     if (!response.ok) {
         throw new Error(await response.text());
@@ -66,9 +71,15 @@ const baseUrl = `https://${HETZNER_S3_ENDPOINT!.replace(
 
 export const backupDbExists = async (username: string) => {
     const adminApiUrl = getAdminApiUrl();
+    const user = await getStoredUser();
+    if (!user) return false;
+
     const res = await fetch(`${adminApiUrl}/api/db-backup-download-url`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${user.token}`,
+        },
         body: JSON.stringify({ username }),
     });
     return res.ok;
@@ -78,9 +89,15 @@ export const downloadLatestDb = async (username: string, targetPath: string) => 
     const adminApiUrl = getAdminApiUrl();
     const tmpPath = `${RNFS.DocumentDirectoryPath}/latest.db`;
 
+    const user = await getStoredUser();
+    if (!user) throw new Error('No active session');
+
     const res = await fetch(`${adminApiUrl}/api/db-backup-download-url`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${user.token}`,
+        },
         body: JSON.stringify({ username }),
     });
 
