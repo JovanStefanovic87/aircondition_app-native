@@ -16,7 +16,7 @@ export const syncInspectionImagesToS3 = async (inspectionId: string) => {
         const images = await getAllInspectionImages(inspectionId);
 
         if (!images || images.length === 0) {
-            throw new Error(`Keine Bilder für die Inspektions-ID gefunden ${inspectionId}`);
+            return { success: true };
         }
 
         // --- Upload ---
