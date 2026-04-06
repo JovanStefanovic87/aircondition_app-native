@@ -143,6 +143,7 @@ export const mergeElementsAndStates = (
             imageTitle: el.imageTitle,
             imageDataUri: el.imageDataUri,
             elementPositionId: el.elementPositionId,
+            sortOrder: el.deviceOrder,
             elementValues: {
                 p: maxByGroup(groupTypes.Physicalisch),
                 k: maxByGroup(groupTypes.Konstruktiv),

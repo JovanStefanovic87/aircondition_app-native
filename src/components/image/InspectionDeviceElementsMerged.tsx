@@ -48,8 +48,14 @@ const InspectionDeviceElementsMerged: FC<Props> = ({
         }));
 
         const sortedElements = mappedDeviceElements.sort((a, b) => {
-            const order = [2, 1, 3];
-            return order.indexOf(a.elementPositionId) - order.indexOf(b.elementPositionId);
+            const groupOrder = [2, 1, 3];
+
+            const groupDiff =
+                groupOrder.indexOf(a.elementPositionId) - groupOrder.indexOf(b.elementPositionId);
+
+            if (groupDiff !== 0) return groupDiff;
+
+            return a.deviceOrder - b.deviceOrder;
         });
 
         setFilteredElements(sortedElements);

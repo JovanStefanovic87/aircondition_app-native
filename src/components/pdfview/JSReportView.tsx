@@ -38,8 +38,6 @@ const JsreportPdfViewer = ({ inspectionData, onPdfReady }: JsreportPdfViewerProp
                         }),
                     },
                 );
-                console.log('JSREPORT STATUS:', response.status);
-                console.log('JSREPORT HEADERS:', JSON.stringify([...response.headers.entries()]));
 
                 const contentType = response.headers.get('content-type');
                 console.log('JSREPORT CONTENT-TYPE:', contentType);

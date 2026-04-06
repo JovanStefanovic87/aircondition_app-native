@@ -41,7 +41,7 @@ const LoginPage = ({ navigation }) => {
             if (success && user) {
                 if (!dbConnectionExist()) {
                     setLoadingText('Datenbank wird initialisiert...');
-                    initializeAppPostLogin(user)
+                    initializeAppPostLogin(user, setLoadingText)
                         .then(() => {
                             setIsLoading(false);
                             setIsLoggedIn(true);

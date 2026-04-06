@@ -1,5 +1,6 @@
 /**
  * THIRD PAGE OF INSPECTION
+ * Step 3
  * Selecting elements contained in the device
  */
 

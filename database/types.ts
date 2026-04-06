@@ -53,8 +53,8 @@ export interface InspectionUpdate {
     lastInspectionDate?: string;
     nextInspectionDate?: string;
     inspectionDate: string;
-    airVolume?: number;
-    constructionYear?: number;
+    airVolume?: string;
+    constructionYear?: string;
     lastMaintenance?: string;
     userId: string;
     inspectionStatusId: number;
@@ -106,8 +106,8 @@ export type Inspection = {
     contractNumber: string;
     createdAt: string;
     lastInspectionDate?: string;
-    airVolume?: number;
-    constructionYear?: number;
+    airVolume?: string;
+    constructionYear?: string;
     lastMaintenance?: string;
     userId: string;
     inspectionStatusId: number;
@@ -483,6 +483,7 @@ export type InspectionElementsForReport = {
     elementValues: Record<string, number>;
     imageDataUri: string;
     elementPositionId: number;
+    deviceOrder: number;
 };
 
 export type InspectionDeviceStatesForReport = {

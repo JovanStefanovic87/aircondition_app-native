@@ -9,8 +9,8 @@ export const REPORT_DATA = {
     device: {
         location: 'Busbetriebshof',
         type: 'Anlage Umkleide/Waschräume',
-        airVolume: 2000,
-        constructionYear: 2012,
+        airVolume: '2000',
+        constructionYear: '2012',
         lastMaintenance: '11/2020',
         id: '5b0692923cdeb',
     },

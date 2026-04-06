@@ -4,11 +4,23 @@ import { View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-nativ
 import IconButton from '../../components/buttons/IconButton';
 import QuestionButton from '../../components/buttons/QustionButton';
 import { customColors } from '../../assets/styles/customStyles';
-import { Dimensions } from 'react-native';
+import { saveInspectionQuestion } from '../../../database/dataAccess/Command/sqlCommands';
 
-const { width } = Dimensions.get('window');
-console.log('Screen width:', width);
-const RenderGroup = (
+interface RenderGroupProps {
+    group: any;
+    responses: Record<number, { answerId: string | null; comment: string }>;
+    handleResponse: (questionId: string, label: string) => void;
+    handleCommentChange: (questionId: string, comment: string) => void;
+    handleCommentBlur: (questionId: string) => void;
+    toggleCameraDevice: (questionId: string, groupId: number) => void;
+    onPressGallery: (questionId: string) => void;
+    setIsLoading: (value: boolean) => void;
+    setLoadingText: (text: string | null) => void;
+    setError: (text: string) => void;
+    setResponses: React.Dispatch<React.SetStateAction<Record<number, { answerId: string | null; comment: string }>>>;
+}
+
+const RenderGroup: React.FC<RenderGroupProps> = ({
     group,
     responses,
     handleResponse,
@@ -19,7 +31,8 @@ const RenderGroup = (
     setIsLoading,
     setLoadingText,
     setError,
-) => (
+    setResponses,
+}) => (
     <View key={group.groupId} style={styles.groupContainer}>
         <View style={styles.groupHeader}>
             <Text style={styles.groupTitle} numberOfLines={2} ellipsizeMode="middle">
@@ -33,11 +46,29 @@ const RenderGroup = (
                         try {
                             setLoadingText('Setze alle Antworten auf "Ja"...');
                             setIsLoading(true);
-                            await new Promise((resolve) => setTimeout(resolve, 50));
 
-                            for (const q of group.questions) {
-                                await handleResponse(q.inspectionQuestionId, 'Ja');
-                            }
+                            // Single state update for all questions at once
+                            setResponses((prev) => {
+                                const updates: Record<number, { answerId: string | null; comment: string }> = {};
+                                for (const q of group.questions) {
+                                    updates[q.inspectionQuestionId] = {
+                                        answerId: 1,
+                                        comment: prev[q.inspectionQuestionId]?.comment || '',
+                                    };
+                                }
+                                return { ...prev, ...updates };
+                            });
+
+                            // All DB writes in parallel
+                            await Promise.all(
+                                group.questions.map((q) =>
+                                    saveInspectionQuestion({
+                                        id: q.inspectionQuestionId,
+                                        answerId: '1',
+                                        comment: responses[q.inspectionQuestionId]?.comment || '',
+                                    }),
+                                ),
+                            );
                         } catch (error) {
                             console.error('Fehler beim Aktualisieren der Antworten:', error);
                             setError('Fehler beim Aktualisieren der Antworten.');
@@ -150,7 +181,7 @@ const styles = StyleSheet.create({
         borderColor: '#ccc',
         fontSize: 18,
         color: customColors.blackText,
-        minWidth: 0, // sprečava flex child overflow
+        minWidth: 0,
     },
     allYesButton: {
         backgroundColor: customColors.greenMid,
@@ -168,7 +199,7 @@ const styles = StyleSheet.create({
     cameraIconsContainer: {
         flexDirection: 'row',
         gap: 6,
-        flexShrink: 0, // dugmeta ne shrink-uju
+        flexShrink: 0,
     },
 });
 

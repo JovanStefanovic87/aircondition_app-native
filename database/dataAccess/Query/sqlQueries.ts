@@ -134,7 +134,7 @@ export const getInspectionElementsForReport = async (
 ): Promise<InspectionElementsForReport[]> => {
     const query = `
         SELECT 
-            ide.id as inspectionDeviceElementId, de.name as imageTitle, s.storagePathS3 as imageDataUri, ide.elementPositionId
+            ide.id as inspectionDeviceElementId, de.name as imageTitle, s.storagePathS3 as imageDataUri, ide.elementPositionId, ide.deviceOrder
         FROM Inspection_DeviceElement ide
             LEFT JOIN DeviceElement de ON de.id = ide.deviceElementId
             LEFT JOIN DeviceElement_Image dei ON dei.deviceElementId = de.id
@@ -765,6 +765,19 @@ export const getAllInspectionQuestions = async (): Promise<InspectionQuestion[]>
 export const getAllQuestions = async (): Promise<QuestionComponent[]> => {
     const query = `SELECT * FROM QuestionComponent`;
     return executeQuery<QuestionComponent>({ query });
+};
+
+export const getInspectionQuestionImagesForReport = async (
+    inspectionId: string,
+): Promise<{ inspectionQuestionId: string; storagePathS3: string }[]> => {
+    const query = `
+        SELECT ii.inspectionQuestionId, s.storagePathS3
+        FROM InspectionQuestion_Image ii
+        LEFT JOIN ImageStorage s ON s.id = ii.imageId
+        LEFT JOIN Inspection_Question iq ON iq.id = ii.inspectionQuestionId
+        WHERE iq.inspectionId = '${inspectionId}' AND s.isDeleted = 0 AND s.storagePathS3 IS NOT NULL
+    `;
+    return executeQuery({ query });
 };
 
 export const getQuestionGroups = async (): Promise<QuestionGroup[]> => {

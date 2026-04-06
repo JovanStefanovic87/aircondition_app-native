@@ -9,6 +9,7 @@ interface Props {
     questionsData: TypedQuestionGroupForUI[];
     selectedTab: number | null;
     responses: Record<number, { answerId: string | null; comment: string }>;
+    setResponses: React.Dispatch<React.SetStateAction<Record<number, { answerId: string | null; comment: string }>>>;
     handleResponse: (questionId: string, label: string) => void;
     handleCommentChange: (questionId: string, comment: string) => void;
     handleCommentBlur: (questionId: string) => void;
@@ -23,6 +24,7 @@ const RenderQuestionsByType: React.FC<Props> = ({
     questionsData,
     selectedTab,
     responses,
+    setResponses,
     handleResponse,
     handleCommentChange,
     handleCommentBlur,
@@ -38,20 +40,22 @@ const RenderQuestionsByType: React.FC<Props> = ({
                 .filter((type) => type.inspectionTypeId === selectedTab)
                 .map((type) => (
                     <View key={type.inspectionTypeId} style={styles.inspectionContainer}>
-                        {type.questionsByGroup.map((group) =>
-                            RenderGroup(
-                                group,
-                                responses,
-                                handleResponse,
-                                handleCommentChange,
-                                handleCommentBlur,
-                                toggleCameraDevice,
-                                onPressGallery,
-                                setIsLoading,
-                                setLoadingText,
-                                setError,
-                            ),
-                        )}
+                        {type.questionsByGroup.map((group) => (
+                            <RenderGroup
+                                key={group.groupId}
+                                group={group}
+                                responses={responses}
+                                setResponses={setResponses}
+                                handleResponse={handleResponse}
+                                handleCommentChange={handleCommentChange}
+                                handleCommentBlur={handleCommentBlur}
+                                toggleCameraDevice={toggleCameraDevice}
+                                onPressGallery={onPressGallery}
+                                setIsLoading={setIsLoading}
+                                setLoadingText={setLoadingText}
+                                setError={setError}
+                            />
+                        ))}
                     </View>
                 ))}
         </>

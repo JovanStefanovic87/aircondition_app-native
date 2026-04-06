@@ -119,10 +119,15 @@ export const downloadLatestDb = async (username: string, targetPath: string) => 
 
     const { url } = await res.json();
 
-    await RNFS.downloadFile({
+    const downloadResult = await RNFS.downloadFile({
         fromUrl: url,
         toFile: tmpPath,
     }).promise;
+
+    if (downloadResult.statusCode !== 200) {
+        await RNFS.exists(tmpPath).then((exists) => exists && RNFS.unlink(tmpPath)).catch(() => {});
+        throw new Error(`Backup download failed with HTTP ${downloadResult.statusCode}`);
+    }
 
     await RNFS.moveFile(tmpPath, targetPath);
 };

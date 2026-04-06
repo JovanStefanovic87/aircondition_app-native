@@ -143,16 +143,27 @@ export const deleteLocalDatabase = async () => {
  *
  * Throws on failure so the caller can surface the error in the login UI.
  */
-export const initializeAppPostLogin = async (user: AuthenticatedUser): Promise<void> => {
+export const initializeAppPostLogin = async (
+    user: AuthenticatedUser,
+    onStatus?: (message: string) => void,
+): Promise<void> => {
     const localDbExists = await databaseFileExists();
 
     if (!localDbExists) {
         const backupExists = await backupDbExists(user.username);
 
         if (backupExists) {
-            console.log('Backup DB found on S3, downloading...');
-            const targetPath = getDatabaseFilePath();
-            await downloadLatestDb(user.username, targetPath);
+            try {
+                onStatus?.('Backup wird heruntergeladen...');
+                console.log('Backup DB found on S3, downloading...');
+                const targetPath = getDatabaseFilePath();
+                await downloadLatestDb(user.username, targetPath);
+            } catch (err) {
+                console.warn('Backup download failed, proceeding with fresh DB:', err);
+                onStatus?.('Kein Backup gefunden. Neue Datenbank wird erstellt...');
+            }
+        } else {
+            onStatus?.('Kein Backup gefunden. Neue Datenbank wird erstellt...');
         }
     }
 
@@ -188,6 +199,7 @@ export const initializeAppPostLogin = async (user: AuthenticatedUser): Promise<v
 export const initializeApp = async (
     setLoading: (value: boolean) => void,
     setError: (error: string) => void,
+    setStatus?: (message: string) => void,
 ) => {
     try {
         await checkFreshInstall();
@@ -202,7 +214,7 @@ export const initializeApp = async (
             return;
         }
 
-        await initializeAppPostLogin(user);
+        await initializeAppPostLogin(user, setStatus);
     } catch (err) {
         console.error('App initialization failed:', err);
         setError(err instanceof Error ? err.message : 'App initialization failed');

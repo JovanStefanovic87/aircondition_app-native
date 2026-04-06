@@ -1,5 +1,6 @@
 /**
  * FIRST PAGE OF INSPECTION
+ * Step 1
  * Basic details about the inspection and device
  */
 

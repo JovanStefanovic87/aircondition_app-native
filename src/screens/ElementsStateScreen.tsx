@@ -1,5 +1,6 @@
 /**
  * FORTH PAGE OF INSPECTION
+ * Step 4
  * Recording the state of selected elements
  */
 import React, { useEffect, useState } from 'react';
@@ -84,8 +85,6 @@ const ElementsStateScreen: React.FC = () => {
     const [isScannerOpen, setScannerOpen] = useState(false);
     const [scannerTargetId, setScannerTargetId] = useState<string | null>(null);
     const [elementImagesMap, setElementImagesMap] = useState<Record<string, boolean>>({});
-
-    console.log('InspectionId:', inspectionId);
 
     const openScannerForDeviceState = (inspectionDeviceStateId: string) => {
         setScannerTargetId(inspectionDeviceStateId);

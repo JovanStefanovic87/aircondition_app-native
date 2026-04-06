@@ -52,6 +52,10 @@ const DeviceStateMerged: React.FC<Props> = ({
     }, [value]);
 
     useEffect(() => {
+        setNoteValue(note);
+    }, [note]);
+
+    useEffect(() => {
         if (isMounted) {
             saveInspectionDeviceState({
                 id: inspectionDeviceStateId,

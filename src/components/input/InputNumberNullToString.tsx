@@ -8,7 +8,7 @@ const tabletThreshold = 600;
 interface Props {
     value: number | null | string;
     placeholder?: string;
-    setValue: (value: number | null) => void;
+    setValue: (value: string | null) => void;
     onBlur?: () => void;
     width?: DimensionValue;
     minWidth?: DimensionValue;
@@ -45,8 +45,7 @@ const InputNumberNullToString: React.FC<Props> = ({
     }, [value]);
 
     const handleChange = (text: string) => {
-        const formattedText = text.replace(/[^0-9.,]/g, '');
-        setInputText(formattedText);
+        setInputText(text);
     };
 
     const styles = StyleSheet.create({
@@ -71,7 +70,7 @@ const InputNumberNullToString: React.FC<Props> = ({
         if (inputText === '') {
             setValue(null);
         } else {
-            setValue(Number(inputText.replace(/,/g, '')));
+            setValue(inputText);
         }
 
         onBlur?.();

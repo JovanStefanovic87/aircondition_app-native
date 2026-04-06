@@ -1,3 +1,9 @@
+/**
+ * Fifth PAGE OF INSPECTION
+ * Step 5
+ * Answering questions related to the inspection
+ */
+
 import React, { useEffect, useState } from 'react';
 import { View, ScrollView, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
@@ -247,6 +253,7 @@ const QuestionsScreen = () => {
                             questionsData={questionsData}
                             selectedTab={selectedTab}
                             responses={responses}
+                            setResponses={setResponses}
                             handleResponse={handleResponse}
                             handleCommentChange={handleCommentChange}
                             handleCommentBlur={handleCommentBlur}

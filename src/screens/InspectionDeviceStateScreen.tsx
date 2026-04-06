@@ -1,5 +1,6 @@
 /**
  * SECOND PAGE OF INSPECTION
+ * Step 2
  * Recording the general state of the device
  */
 import React, { useState, useEffect } from 'react';
@@ -353,99 +354,110 @@ const InspectionDeviceStateScreen = () => {
                         <RowContainerFlex>
                             {inspectionDeviceStateDetails !== null &&
                                 inspectionDeviceStateDetails
-                                .filter((group) => !NON_VERIFICATION_GROUP_TYPES.includes(group.groupTypeName))
-                                .map(
-                                    (
-                                        group: DeviceStateComponentsForInspection,
-                                        groupIndex: number,
-                                    ) => (
-                                        <React.Fragment key={groupIndex}>
-                                            {group.titleComponents.map(
-                                                (title: TitleComponent, j) => (
-                                                    <AutoFitTableContainer
-                                                        key={j}
-                                                        minColumnWidth={calculateMinColumnWidth(49)}
-                                                    >
-                                                        <DeviceStateColumnContainer
-                                                            title={group.groupTypeName}
-                                                            group={group}
-                                                            setIsGroupCompleted={(isCompleted) =>
-                                                                updateCompletionStatus(
-                                                                    `${group.groupTypeName}-${groupIndex}`,
-                                                                    NON_VERIFICATION_GROUP_TYPES.includes(
-                                                                        group.groupTypeName,
-                                                                    ) || isCompleted,
-                                                                )
-                                                            }
-                                                            isSingleElement={true}
+                                    .filter(
+                                        (group) =>
+                                            !NON_VERIFICATION_GROUP_TYPES.includes(
+                                                group.groupTypeName,
+                                            ),
+                                    )
+                                    .map(
+                                        (
+                                            group: DeviceStateComponentsForInspection,
+                                            groupIndex: number,
+                                        ) => (
+                                            <React.Fragment key={groupIndex}>
+                                                {group.titleComponents.map(
+                                                    (title: TitleComponent, j) => (
+                                                        <AutoFitTableContainer
+                                                            key={j}
+                                                            minColumnWidth={calculateMinColumnWidth(
+                                                                49,
+                                                            )}
                                                         >
-                                                            <InspectionTitle
-                                                                title={title.name}
-                                                                onPressCamera={() =>
-                                                                    handleCameraToggleForDeviceState(
-                                                                        title,
+                                                            <DeviceStateColumnContainer
+                                                                title={group.groupTypeName}
+                                                                group={group}
+                                                                setIsGroupCompleted={(
+                                                                    isCompleted,
+                                                                ) =>
+                                                                    updateCompletionStatus(
+                                                                        `${group.groupTypeName}-${groupIndex}`,
+                                                                        NON_VERIFICATION_GROUP_TYPES.includes(
+                                                                            group.groupTypeName,
+                                                                        ) || isCompleted,
                                                                     )
                                                                 }
-                                                                onPressGallery={() =>
-                                                                    handleDeviceStateGalleryClick(
-                                                                        title
-                                                                            .deviceStateComponents[0]
-                                                                            .titleComponentId,
-                                                                        title
-                                                                            .deviceStateComponents[0]
-                                                                            .groupTypeId,
-                                                                    )
-                                                                }
-                                                                onPressUpload={() => {
-                                                                    const titleId =
-                                                                        title
-                                                                            .deviceStateComponents[0]
-                                                                            .titleComponentId;
-                                                                    const groupTypeId =
-                                                                        title
-                                                                            .deviceStateComponents[0]
-                                                                            .groupTypeId;
-                                                                    setIsInspectionImage(false);
-                                                                    setImageSaveParams({
-                                                                        titleId,
-                                                                        groupTypeId,
-                                                                    });
-                                                                    handleUploadFromDevice();
-                                                                }}
-                                                            />
-
-                                                            <View
-                                                                style={styles.iconsGroupContainer}
+                                                                isSingleElement={true}
                                                             >
-                                                                {title.deviceStateComponents.map(
-                                                                    (
-                                                                        deviceState: DeviceStateComponent,
-                                                                    ) => (
-                                                                        <DeviceState
-                                                                            key={deviceState.id}
-                                                                            deviceState={
-                                                                                deviceState
-                                                                            }
-                                                                            groupTypeName={
-                                                                                group.groupTypeName
-                                                                            }
-                                                                            onOpenScanner={
-                                                                                openScannerForDeviceState
-                                                                            }
-                                                                            saveInspectionDeviceState={
-                                                                                saveDeviceStateAndUpdateInspection
-                                                                            }
-                                                                        />
-                                                                    ),
-                                                                )}
-                                                            </View>
-                                                        </DeviceStateColumnContainer>
-                                                    </AutoFitTableContainer>
-                                                ),
-                                            )}
-                                        </React.Fragment>
-                                    ),
-                                )}
+                                                                <InspectionTitle
+                                                                    title={title.name}
+                                                                    onPressCamera={() =>
+                                                                        handleCameraToggleForDeviceState(
+                                                                            title,
+                                                                        )
+                                                                    }
+                                                                    onPressGallery={() =>
+                                                                        handleDeviceStateGalleryClick(
+                                                                            title
+                                                                                .deviceStateComponents[0]
+                                                                                .titleComponentId,
+                                                                            title
+                                                                                .deviceStateComponents[0]
+                                                                                .groupTypeId,
+                                                                        )
+                                                                    }
+                                                                    onPressUpload={() => {
+                                                                        const titleId =
+                                                                            title
+                                                                                .deviceStateComponents[0]
+                                                                                .titleComponentId;
+                                                                        const groupTypeId =
+                                                                            title
+                                                                                .deviceStateComponents[0]
+                                                                                .groupTypeId;
+                                                                        setIsInspectionImage(false);
+                                                                        setImageSaveParams({
+                                                                            titleId,
+                                                                            groupTypeId,
+                                                                        });
+                                                                        handleUploadFromDevice();
+                                                                    }}
+                                                                />
+
+                                                                <View
+                                                                    style={
+                                                                        styles.iconsGroupContainer
+                                                                    }
+                                                                >
+                                                                    {title.deviceStateComponents.map(
+                                                                        (
+                                                                            deviceState: DeviceStateComponent,
+                                                                        ) => (
+                                                                            <DeviceState
+                                                                                key={deviceState.id}
+                                                                                deviceState={
+                                                                                    deviceState
+                                                                                }
+                                                                                groupTypeName={
+                                                                                    group.groupTypeName
+                                                                                }
+                                                                                onOpenScanner={
+                                                                                    openScannerForDeviceState
+                                                                                }
+                                                                                saveInspectionDeviceState={
+                                                                                    saveDeviceStateAndUpdateInspection
+                                                                                }
+                                                                            />
+                                                                        ),
+                                                                    )}
+                                                                </View>
+                                                            </DeviceStateColumnContainer>
+                                                        </AutoFitTableContainer>
+                                                    ),
+                                                )}
+                                            </React.Fragment>
+                                        ),
+                                    )}
                         </RowContainerFlex>
                     </ScrollView>
                     <View style={styles.horizontalLine}></View>

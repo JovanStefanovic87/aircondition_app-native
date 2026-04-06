@@ -31,7 +31,7 @@ const DeviceParamsTableContainer: React.FC<Props> = ({
                     parameters.airVolume !== null &&
                     parameters.constructionYear !== null &&
                     parameters.constructionYear !== null &&
-                    parameters.constructionYear.toString() !== 'N/A' &&
+                    parameters.constructionYear !== 'N/A' &&
                     parameters.lastMaintenance !== null &&
                     parameters.lastMaintenance !== 'N/A' &&
                     parameters.lastMaintenance !== '',

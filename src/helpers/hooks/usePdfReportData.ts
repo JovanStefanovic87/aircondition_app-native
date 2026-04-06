@@ -10,6 +10,8 @@ import {
     getInspectionElementStateDetails,
     getInspectionElementTitleGroupImagesByElementId,
     getInspectionImages,
+    getInspectionQuestionImagesForReport,
+    getInspectionQuestions,
     getInspectionStateImages,
 } from '../../../database/dataAccess/Query/sqlQueries';
 import { REPORT_DATA } from '../../components/pdfview/ReportData';
@@ -61,6 +63,8 @@ export const usePdfReportData = (inspectionId: string) => {
             };
 
             const elements = await getInspectionElementsForReport(inspectionId);
+            console.log('Fetched Elements:', JSON.stringify(elements));
+
             const titleComponentElementState: ElementResult[] = [];
 
             for (const el of elements) {
@@ -135,6 +139,48 @@ export const usePdfReportData = (inspectionId: string) => {
             const statesPerElement = await getInspectionDeviceStateForReport(inspectionId);
             const elementsWithState = mergeElementsAndStates(elements, statesPerElement);
 
+            const questionsData = await getInspectionQuestions(inspectionId);
+            const questionImageRows = await getInspectionQuestionImagesForReport(inspectionId);
+
+            const imageByQuestion: Record<string, string> = {};
+            for (const row of questionImageRows) {
+                if (!imageByQuestion[row.inspectionQuestionId]) {
+                    imageByQuestion[row.inspectionQuestionId] = row.storagePathS3;
+                }
+            }
+
+            const answerIdToText: Record<number, string> = {
+                1: 'Ja',
+                2: 'Nein',
+                3: 'Nicht relevant',
+            };
+
+            const checklists = questionsData.map((typeData) => ({
+                title: typeData.inspectionTypeName,
+                sections: typeData.questionsByGroup.map((group, groupIndex) => ({
+                    number: groupIndex + 1,
+                    title: group.name,
+                    reference: group.groupReference,
+                    questions: group.questions.map((q, qIndex) => {
+                        const entry: {
+                            id: string;
+                            text: string;
+                            answer: string;
+                            comment?: string;
+                            image?: string;
+                        } = {
+                            id: `${groupIndex + 1}.${qIndex + 1}`,
+                            text: q.fullDescription,
+                            answer: answerIdToText[q.answerId] ?? '',
+                        };
+                        if (q.comment) entry.comment = q.comment;
+                        const img = imageByQuestion[q.inspectionQuestionId];
+                        if (img) entry.image = img;
+                        return entry;
+                    }),
+                })),
+            }));
+
             const report: ReportData = {
                 created_on: inspection.createdAt,
                 client: {
@@ -155,6 +201,7 @@ export const usePdfReportData = (inspectionId: string) => {
                 inspection: inspectionData,
                 elements: elementsWithState,
                 elementState: titleComponentElementState,
+                checklists,
             };
 
             setPdfReportData(report);

@@ -6,6 +6,27 @@ export type ReportData = {
     elementState: ElementState[];
     created_on: string;
     elements: ReportElement[];
+    checklists?: Checklist[];
+};
+
+type ChecklistQuestion = {
+    id: string;
+    text: string;
+    answer: string;
+    comment?: string;
+    image?: string;
+};
+
+type ChecklistSection = {
+    number: number;
+    title: string;
+    reference?: string;
+    questions: ChecklistQuestion[];
+};
+
+type Checklist = {
+    title: string;
+    sections: ChecklistSection[];
 };
 
 type Company = {
@@ -28,8 +49,8 @@ type Client = {
 type Device = {
     location: string;
     type: string;
-    airVolume: number;
-    constructionYear: number;
+    airVolume: string;
+    constructionYear: string;
     lastMaintenance: string;
     id: string;
 };

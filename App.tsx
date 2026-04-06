@@ -38,9 +38,10 @@ const AppNavigator = () => {
 const App = () => {
     const [loading, setLoading] = useState(true);
     const [initError, setInitError] = useState<string | null>(null);
+    const [statusText, setStatusText] = useState('App wird initialisiert...');
 
     useEffect(() => {
-        initializeApp(setLoading, setInitError);
+        initializeApp(setLoading, setInitError, setStatusText);
     }, []);
 
     if (loading || initError) {
@@ -53,7 +54,7 @@ const App = () => {
                 ) : (
                     <>
                         <ActivityIndicator size="large" />
-                        <Text>App wird initialisiert (Initializing app) ...</Text>
+                        <Text>{statusText}</Text>
                     </>
                 )}
             </View>
