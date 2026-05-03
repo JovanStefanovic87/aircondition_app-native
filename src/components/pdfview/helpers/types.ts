@@ -49,9 +49,9 @@ type Client = {
 type Device = {
     location: string;
     type: string;
-    airVolume: string;
-    constructionYear: string;
-    lastMaintenance: string;
+    airVolume?: string;
+    constructionYear?: string;
+    lastMaintenance?: string;
     id: string;
 };
 
@@ -86,19 +86,19 @@ type GroupState = {
 
 type Issue = {
     title: string;
-    value: number;
-    valueText: string;
-    comment: string;
+    value: number | null;
+    valueText: string | null;
+    comment: string | null;
 };
 
 type ReportElement = {
     imageId: string;
     imageTitle: string;
     elementValues: {
-        p: number;
-        k: number;
-        m: number;
-        l: number;
+        p: number | null;
+        k: number | null;
+        m: number | null;
+        l: number | null;
     };
     imageDataUri: string;
 };

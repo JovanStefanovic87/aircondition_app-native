@@ -10,6 +10,13 @@ export const groupTypes = {
     LUFTKEIMZAHLMESSUNG: 'LUFTKEIMZAHLMESSUNG',
 };
 
+export const issueState = {
+    GREEN: 1,
+    YELLOW: 2,
+    ORANGE: 3,
+    RED: 4,
+} as const;
+
 export const parseNoteValue = (
     note: string,
     groupTypeName: string,
@@ -24,10 +31,10 @@ export const parseNoteValue = (
         const sum = values.reduce((a, b) => a + b, 0);
 
         let value: number;
-        if (sum <= 24) value = 1;
-        else if (sum <= 49) value = 2;
-        else if (sum <= 99) value = 3;
-        else value = 4;
+        if (sum <= 24) value = issueState.GREEN;
+        else if (sum <= 49) value = issueState.YELLOW;
+        else if (sum <= 99) value = issueState.ORANGE;
+        else value = issueState.RED;
 
         return { value, valueText: note };
     }
@@ -39,10 +46,10 @@ export const parseNoteValue = (
         const second = parts[2].split('/').map((v) => parseInt(v, 10));
         if (first.length !== second.length) return { value: null, valueText: null };
 
-        let result = 1;
+        let result: number = issueState.GREEN;
         for (let i = 0; i < first.length; i++) {
             if (first[i] < second[i]) {
-                result = 4;
+                result = issueState.RED;
                 break;
             }
         }
@@ -111,10 +118,10 @@ export const mergeElementsAndStates = (
             if (parts.length < 2) return null;
             const values = parts[1].split('/').map((v) => parseInt(v, 10));
             const sum = values.reduce((a, b) => a + b, 0);
-            if (sum <= 24) return 1;
-            if (sum <= 49) return 2;
-            if (sum <= 99) return 3;
-            return 4;
+            if (sum <= 24) return issueState.GREEN;
+            if (sum <= 49) return issueState.YELLOW;
+            if (sum <= 99) return issueState.ORANGE;
+            return issueState.RED;
         };
 
         const measurementL = () => {
@@ -128,10 +135,10 @@ export const mergeElementsAndStates = (
             const second = parts[2].split('/').map((v) => parseInt(v, 10));
             if (first.length !== second.length) return null;
 
-            let result = 1;
+            let result: number = issueState.GREEN;
             for (let i = 0; i < first.length; i++) {
                 if (first[i] < second[i]) {
-                    result = 4;
+                    result = issueState.RED;
                     break;
                 }
             }

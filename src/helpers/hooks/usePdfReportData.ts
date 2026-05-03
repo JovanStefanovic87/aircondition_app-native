@@ -19,6 +19,7 @@ import {
     buildImagePathsWithS3Base,
     ElementResult,
     groupTypes,
+    issueState,
     mergeElementsAndStates,
     parseNoteValue,
 } from '../pdfHelpers';
@@ -56,15 +57,13 @@ export const usePdfReportData = (inspectionId: string) => {
             const inspectionData = {
                 type: inspection.inspectionTypeName,
                 date: inspection.inspectionDate,
-                next: inspection.nextInspectionDate,
+                next: inspection.nextInspectionDate ?? '',
                 images: buildImagePathsWithS3Base(inspectionImages),
                 imagePaths: buildImagePathsWithS3Base(inspectionStateImages),
                 state: mappedState,
             };
 
             const elements = await getInspectionElementsForReport(inspectionId);
-            console.log('Fetched Elements:', JSON.stringify(elements));
-
             const titleComponentElementState: ElementResult[] = [];
 
             for (const el of elements) {
@@ -96,16 +95,17 @@ export const usePdfReportData = (inspectionId: string) => {
                         groupTypeName === groupTypes.LUFTKEIMZAHLMESSUNG
                     ) {
                         const note = state.titleComponents?.[0]?.deviceStateComponents?.[0]?.note;
-                        const { value, valueText } = parseNoteValue(note ?? '', groupTypeName);
 
-                        if (value !== null) {
+                        if (note) {
+                            const { value, valueText } = parseNoteValue(note, groupTypeName);
+
                             issues.push({
                                 title:
                                     groupTypeName === groupTypes.MIKROBIOLOGISCH
                                         ? 'Analyse'
                                         : 'Messung',
-                                value,
-                                valueText,
+                                value: value ?? issueState.RED,
+                                valueText: valueText ?? note,
                                 comment: null,
                             });
                         }
@@ -194,8 +194,8 @@ export const usePdfReportData = (inspectionId: string) => {
                     location: inspection.location,
                     type: inspection.deviceTypeName,
                     airVolume: inspection.airVolume,
-                    constructionYear: inspection.constructionYear,
-                    lastMaintenance: inspection.lastMaintenance,
+                    constructionYear: inspection?.constructionYear,
+                    lastMaintenance: inspection?.lastMaintenance,
                     id: inspection.barcode,
                 },
                 inspection: inspectionData,

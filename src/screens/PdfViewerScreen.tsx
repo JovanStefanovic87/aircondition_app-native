@@ -1,12 +1,23 @@
 // screens/PdfViewerScreen.tsx
 import React, { useState } from 'react';
-import { SafeAreaView, StyleSheet, TouchableOpacity, View, Text, Platform, Alert } from 'react-native';
+import {
+    SafeAreaView,
+    StyleSheet,
+    TouchableOpacity,
+    View,
+    Text,
+    Alert,
+    Platform,
+} from 'react-native';
 import { useRoute, RouteProp } from '@react-navigation/native';
 import RNFetchBlob from 'react-native-blob-util';
 import JsreportPdfViewer from '../components/pdfview/JSReportView';
 import { usePdfReportData } from '../helpers/hooks/usePdfReportData';
 
-type PdfViewerScreenRouteProp = RouteProp<any, 'PdfViewerScreen'>;
+type PdfViewerScreenRouteProp = RouteProp<
+    { PdfViewerScreen: { inspectionId: string } },
+    'PdfViewerScreen'
+>;
 
 const PdfViewerScreen = () => {
     const route = useRoute<PdfViewerScreenRouteProp>();
@@ -17,21 +28,14 @@ const PdfViewerScreen = () => {
     const saveToDownloads = async () => {
         if (!pdfPath) return;
         try {
-            const destPath = `${RNFetchBlob.fs.dirs.DownloadDir}/inspection_report_${inspectionId}.pdf`;
-            await RNFetchBlob.fs.cp(pdfPath, destPath);
             if (Platform.OS === 'android') {
-                await RNFetchBlob.android.addCompleteDownload({
-                    title: 'Inspection Report',
-                    description: 'PDF-Bericht wurde in Downloads gespeichert.',
-                    mime: 'application/pdf',
-                    path: destPath,
-                    showNotification: true,
-                });
+                await RNFetchBlob.android.actionViewIntent(pdfPath, 'application/pdf');
+            } else {
+                await RNFetchBlob.ios.openDocument(pdfPath);
             }
-            Alert.alert('Gespeichert', 'PDF wurde im Downloads-Ordner gespeichert.');
         } catch (error) {
-            console.error('Save to downloads error:', error);
-            Alert.alert('Fehler', 'PDF konnte nicht gespeichert werden.');
+            console.error('Share error:', error);
+            Alert.alert('Fehler', 'PDF konnte nicht geteilt werden.');
         }
     };
 
